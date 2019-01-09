@@ -7,7 +7,9 @@ verify_ssl = true
 
 [packages]
 django = "*"
+django-celery-results = "*"
+redis = "*"
 celery = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.6"
