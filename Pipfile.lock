@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "87a6bc6e24ce298434c2b55c31f3d07e76896e83ea68340150bab7845947f742"
+            "sha256": "b8b9e61ed996cd526e6d9ac15d712e56965979a3aac4d84d645f07c759e13c98"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -44,14 +44,6 @@
             ],
             "index": "pypi",
             "version": "==2.1.5"
-        },
-        "django-celery-results": {
-            "hashes": [
-                "sha256:80292a68c8b705c788ff0bca9cacc5a431a4de39d7ff49e2ca8277b700d3d616",
-                "sha256:89ae9e32076efc65bcba31bc729870da9b230c63af22b673b79170c4a98039b1"
-            ],
-            "index": "pypi",
-            "version": "==1.0.4"
         },
         "kombu": {
             "hashes": [
