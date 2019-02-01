@@ -13,15 +13,6 @@ from reporter import api_urls
 
 
 @app.task
-def watchman_update_client(group_id, api_key=str()):
-    # get watchman group information about number of computers
-    results_per_page = 100
-    return (get_watchman_group.s(group_id, api_key) |
-            determine_computer_request_num.s(results_per_page) |
-            queue_watchman_computers_requests.s(results_per_page, group_id, api_key))()
-
-
-@app.task
 def get_watchman_group(group_id, api_key=str()):
     """
     Queries the Watchman Monitoring '/groups/<group_id>' endpoint with a group ID to retrieve information pertaining
@@ -42,22 +33,6 @@ def get_watchman_group(group_id, api_key=str()):
     if req.status_code != status.HTTP_200_OK:
         raise Exception(f'request returned status code {req.status_code}')
     return req.json()
-
-
-@app.task
-def determine_computer_request_num(json, per_page):
-    return math.ceil(json['visible_computer_count'] / per_page)
-
-
-@app.task
-def queue_watchman_computers_requests(request_num, per_page, group_id, api_key=str()):
-    # put the the multiple computer requests in a group
-    computers_chord = chord(get_watchman_computers.s(page=page,
-                                                     per_page=per_page,
-                                                     group_id=group_id,
-                                                     api_key=api_key)
-                            for page in range(1, request_num + 1))
-    return computers_chord(combine_watchman_computer_results.subtask())
 
 
 @app.task
@@ -90,6 +65,38 @@ def get_watchman_computers(page=None, per_page=None, group_id=None, api_key=str(
     if req.status_code != status.HTTP_200_OK:
         raise Exception(f'request returned status code {req.status_code}')
     return req.json()
+
+
+@app.task
+def watchman_update_client(group_id, api_key=str()):
+    """
+    Starts the Watchman update tasks for a specific
+
+    :param group_id:
+    :param api_key:
+    :return:
+    """
+    # get watchman group information about number of computers
+    results_per_page = 100
+    return (get_watchman_group.s(group_id, api_key) |
+            determine_computer_request_num.s(results_per_page) |
+            queue_watchman_computers_requests.s(results_per_page, group_id, api_key))()
+
+
+@app.task
+def determine_computer_request_num(json, per_page):
+    return math.ceil(json['visible_computer_count'] / per_page)
+
+
+@app.task
+def queue_watchman_computers_requests(request_num, per_page, group_id, api_key=str()):
+    # put the the multiple computer requests in a group
+    computers_chord = chord(get_watchman_computers.s(page=page,
+                                                     per_page=per_page,
+                                                     group_id=group_id,
+                                                     api_key=api_key)
+                            for page in range(1, request_num + 1))
+    return computers_chord(combine_watchman_computer_results.subtask())
 
 
 @app.task

@@ -1,8 +1,7 @@
-from celery.result import AsyncResult, result_from_tuple
+from celery.result import result_from_tuple
 from rest_framework import views
 from rest_framework import response
 
-from MRGen.celery import app
 from reporter import tasks
 
 
