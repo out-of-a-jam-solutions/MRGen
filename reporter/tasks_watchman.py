@@ -85,7 +85,7 @@ def queue_watchman_computers_requests(request_num, per_page, group_id, api_key=s
     # put the the multiple computer requests in a group
     computers_chord = chord(get_watchman_computers.s(page=page,
                                                      per_page=per_page,
-                                                     watchman_group_id=group_id,
+                                                     group_id=group_id,
                                                      api_key=api_key)
                             for page in range(1, request_num + 1))
     return computers_chord(combine_watchman_computer_results.subtask())
@@ -179,3 +179,4 @@ def parse_warnings(json):
             # update last checked column
             if warning_object is not None:
                 warning_object.date_last_checked = datetime.now()
+                warning_object.save()
