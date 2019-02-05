@@ -19,7 +19,7 @@ app = Celery('MRGen',
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
 # Load task modules from all registered Django app configs.
-app.autodiscover_tasks()
+app.autodiscover_tasks(['reporter'], related_name='tasks_watchman')
 
 
 @app.task(bind=True)

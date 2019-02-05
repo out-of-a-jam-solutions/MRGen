@@ -5,14 +5,14 @@ import math
 import os
 import requests
 
+from celery import shared_task
 from celery.task import chord
 from rest_framework import status
 
-from MRGen.celery import app
 from reporter import api_urls
 
 
-@app.task
+@shared_task
 def watchman_update_client(group_id, api_key=str()):
     """
     Starts the Watchman update tasks for a specific Watchman group. This is the main task to start the update process
@@ -34,7 +34,7 @@ def watchman_update_client(group_id, api_key=str()):
             queue_watchman_computers_requests.s(results_per_page, group_id, api_key))()
 
 
-@app.task
+@shared_task
 def get_watchman_group(group_id, api_key=str()):
     """
     Queries the Watchman Monitoring '/groups/<group_id>' endpoint with a group ID to retrieve information pertaining
@@ -57,7 +57,7 @@ def get_watchman_group(group_id, api_key=str()):
     return req.json()
 
 
-@app.task
+@shared_task
 def determine_computer_request_num(json, per_page):
     """
     Determines the number of requests to make to retrieve all computers.
@@ -69,7 +69,7 @@ def determine_computer_request_num(json, per_page):
     return math.ceil(json['visible_computer_count'] / per_page)
 
 
-@app.task
+@shared_task
 def queue_watchman_computers_requests(request_num, per_page, group_id, api_key=str()):
     """
     Creates a Celery chord of requests and concatenates the results into one JSON formatted dictionary.
@@ -89,7 +89,7 @@ def queue_watchman_computers_requests(request_num, per_page, group_id, api_key=s
     return computers_chord(combine_watchman_computer_results.subtask())
 
 
-@app.task
+@shared_task
 def get_watchman_computers(page=None, per_page=None, group_id=None, api_key=str()):
     """
     Queries the Watchman Monitoring '/computers' endpoint with a group ID to retrieve a list of all monitored
@@ -121,7 +121,7 @@ def get_watchman_computers(page=None, per_page=None, group_id=None, api_key=str(
     return req.json()
 
 
-@app.task
+@shared_task
 def combine_watchman_computer_results(*results):
     """
     The callback task used in queue_watchman_computers_requests() to concatenate all the results from Watchman the
