@@ -7,6 +7,11 @@ from reporter import tasks_watchman
 
 class Forward(views.APIView):
     def get(self, request):
-        results = tasks_watchman.watchman_update_client(request.query_params['group_id'])
+        # get watchman concatenated results
+        results = tasks_watchman.watchman_update_client(request.query_params['watchman_group_id'])
         res = result_from_tuple(results.get())
-        return response.Response(res.get())
+        results = res.get()
+        # save warnings to database
+        tasks_watchman.parse_warnings(results)
+
+        return response.Response(results)

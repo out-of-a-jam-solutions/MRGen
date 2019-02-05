@@ -1,6 +1,7 @@
 # sheldon woodward
 # jan 8, 2019
 
+from datetime import datetime
 import math
 import os
 import requests
@@ -10,6 +11,7 @@ from celery.task import chord
 from rest_framework import status
 
 from reporter import api_urls
+from reporter import models
 
 
 @shared_task
@@ -83,7 +85,7 @@ def queue_watchman_computers_requests(request_num, per_page, group_id, api_key=s
     # put the the multiple computer requests in a group
     computers_chord = chord(get_watchman_computers.s(page=page,
                                                      per_page=per_page,
-                                                     group_id=group_id,
+                                                     watchman_group_id=group_id,
                                                      api_key=api_key)
                             for page in range(1, request_num + 1))
     return computers_chord(combine_watchman_computer_results.subtask())
@@ -134,3 +136,46 @@ def combine_watchman_computer_results(*results):
     for r in results[0]:
         new_results += r
     return new_results
+
+
+@shared_task
+def parse_warnings(json):
+    """
+    Parses the results of queue_watchman_computers_requests to save new warnings to the database and update existing
+    warnings.
+
+    :param json: A JSON formatted dictionary containing the concatenated results from the multiple requests.
+    :return: None
+    """
+    # check every computer
+    for computer in json:
+        customer = models.Customer.objects.get(watchman_group_id=computer['group'])
+        computer_id = computer['uid']
+        # check every plugin's status
+        for plugin in computer['plugin_results']:
+            warning_id = plugin['uid']
+            warning_status = plugin['status'].upper()
+            # get warning object if it exists
+            try:
+                warning_object = models.WatchmanWarning.objects.get(watchman_group_id=customer,
+                                                                    computer_id=computer_id,
+                                                                    warning_id=warning_id,
+                                                                    date_resolved=None)
+            except models.WatchmanWarning.DoesNotExist:
+                warning_object = None
+
+            # status is OK and a warning does exist
+            if warning_status == 'OK' and warning_object is not None:
+                warning_object.date_resolved = datetime.now()
+            # status is WARNING and no warning exists
+            elif warning_status == 'WARNING' and warning_object is None:
+                # create new warning
+                models.WatchmanWarning(watchman_group_id=customer,
+                                       computer_id=computer_id,
+                                       warning_id=warning_id,
+                                       name=plugin['name'],
+                                       details=plugin['details']).save()
+
+            # update last checked column
+            if warning_object is not None:
+                warning_object.date_last_checked = datetime.now()
