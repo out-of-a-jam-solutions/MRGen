@@ -9,6 +9,9 @@ verify_ssl = true
 django = "*"
 redis = "*"
 celery = "*"
+requests = "*"
+python-dotenv = "*"
+djangorestframework = "*"
 
 [requires]
 python_version = "3.6"

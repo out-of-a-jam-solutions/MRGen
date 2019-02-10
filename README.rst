@@ -16,7 +16,6 @@ Local Setup
 ::
 
   $ pipenv run python manage.py migrate
-  $ pipenv run python manage.py migrate django_celery_results
 
 4. Start Redis
 
