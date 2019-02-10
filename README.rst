@@ -28,3 +28,9 @@ Local Setup
 ::
 
   $ pipenv run celery -A MRGen worker -l info
+
+6. Start the Beat process
+
+::
+
+  $ pipenv run celery -A MRGen beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler

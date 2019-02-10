@@ -12,6 +12,8 @@ celery = "*"
 requests = "*"
 python-dotenv = "*"
 djangorestframework = "*"
+django-celery-beat = "*"
+django-celery-results = "*"
 
 [requires]
 python_version = "3.6"
