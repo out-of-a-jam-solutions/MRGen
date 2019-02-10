@@ -137,9 +137,51 @@ def combine_computer_results(*results):
     for r in results[0]:
         new_results += r
     # update the database with the results
-    parse_warnings.delay(new_results)
+    (parse_computers.si(new_results) |
+     parse_warnings.si(new_results))()
     # return the combined results
     return new_results
+
+
+@shared_task
+def parse_computers(json):
+    """
+    Parses the results of queue_computers_requests to save new computers to the database.
+
+    :param json: A JSON formatted dictionary containing the concatenated results from the multiple requests.
+    :return: None
+    """
+    # check every computer
+    for computer in json:
+        customer = models.Customer.objects.get(watchman_group_id=computer['group'])
+        computer_id = computer['uid']
+        ram_gb = round(int(computer['ram_installed_in_bytes']) / (1024 ** 3), 2)
+        hdd_capacity_gb = float(computer['boot_volume_capacity'][:-3])
+        hdd_usage_gb = float(computer['boot_volume_usage'][:-3])
+        # get computer object if it exists
+        try:
+            computer_object = models.WatchmanComputer.objects.get(watchman_group_id=customer, computer_id=computer_id)
+        except models.WatchmanComputer.DoesNotExist:
+            # add computer to the database
+            computer_object = models.WatchmanComputer(watchman_group_id=customer,
+                                                      computer_id=computer_id,
+                                                      name=computer['computer_name'],
+                                                      os_type=computer['platform'],
+                                                      os_version=computer['os_version'],
+                                                      ram_gb=ram_gb,
+                                                      hdd_capacity_gb=hdd_capacity_gb,
+                                                      hdd_usage_gb=hdd_usage_gb)
+            computer_object.save()
+            continue
+        # update existing computer object
+        computer_object.date_last_reported = datetime.now()
+        computer_object.name = computer['computer_name']
+        computer_object.os_type = computer['platform']
+        computer_object.os_version = computer['os_version']
+        computer_object.ram_gb = ram_gb
+        computer_object.hdd_capacity_gb = hdd_capacity_gb
+        computer_object.hdd_usage_gb = hdd_usage_gb
+        computer_object.save()
 
 
 @shared_task
@@ -153,16 +195,17 @@ def parse_warnings(json):
     """
     # check every computer
     for computer in json:
-        customer = models.Customer.objects.get(watchman_group_id=computer['group'])
-        computer_id = computer['uid']
+        customer_object = models.Customer.objects.get(watchman_group_id=computer['group'])
+        computer_object = models.WatchmanComputer.objects.get(watchman_group_id=computer['group'],
+                                                              computer_id=computer['uid'])
         # check every plugin's status
         for plugin in computer['plugin_results']:
             warning_id = plugin['uid']
             warning_status = plugin['status'].upper()
             # get warning object if it exists
             try:
-                warning_object = models.WatchmanWarning.objects.get(watchman_group_id=customer,
-                                                                    computer_id=computer_id,
+                warning_object = models.WatchmanWarning.objects.get(watchman_group_id=customer_object,
+                                                                    computer_id=computer_object,
                                                                     warning_id=warning_id,
                                                                     date_resolved=None)
             except models.WatchmanWarning.DoesNotExist:
@@ -174,8 +217,8 @@ def parse_warnings(json):
             # status is WARNING and no warning exists
             elif warning_status == 'WARNING' and warning_object is None:
                 # create new warning
-                models.WatchmanWarning(watchman_group_id=customer,
-                                       computer_id=computer_id,
+                models.WatchmanWarning(watchman_group_id=customer_object,
+                                       computer_id=computer_object,
                                        warning_id=warning_id,
                                        name=plugin['name'],
                                        details=plugin['details']).save()
