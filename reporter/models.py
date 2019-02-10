@@ -14,6 +14,13 @@ class WatchmanComputer(models.Model):
                                           on_delete=models.CASCADE)
     computer_id = models.TextField(unique=True)
     date_reported = models.DateField(auto_now_add=True)
+    date_last_reported = models.DateField(auto_now_add=True)
+    name = models.TextField()
+    os_type = models.CharField(max_length=7)
+    os_version = models.TextField()
+    ram_gb = models.FloatField()
+    hdd_capacity_gb = models.FloatField()
+    hdd_usage_gb = models.FloatField()
 
 
 class WatchmanWarning(models.Model):
@@ -35,7 +42,7 @@ class WatchmanWarning(models.Model):
 
 class MonthlyReport(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    date_generate = models.DateField(auto_now_add=True)
+    date_generated = models.DateField(auto_now_add=True)
     num_current_warnings = models.IntegerField(default=0)
     num_resolved_warnings = models.IntegerField(default=0)
     num_mac_os = models.IntegerField(default=0)
