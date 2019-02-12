@@ -46,5 +46,5 @@ class MonthlyReport(models.Model):
     num_current_warnings = models.IntegerField(default=0)
     num_resolved_warnings = models.IntegerField(default=0)
     num_mac_os = models.IntegerField(default=0)
-    num_windows = models.IntegerField(default=0)
-    num_linux = models.IntegerField(default=0)
+    num_windows_os = models.IntegerField(default=0)
+    num_linux_os = models.IntegerField(default=0)

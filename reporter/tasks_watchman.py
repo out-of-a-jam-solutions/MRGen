@@ -1,7 +1,7 @@
 # sheldon woodward
 # jan 8, 2019
 
-from datetime import datetime
+import datetime as dt
 import math
 import os
 import requests
@@ -160,7 +160,17 @@ def parse_computers(json):
         hdd_usage_gb = float(computer['boot_volume_usage'][:-3])
         # get computer object if it exists
         try:
+            # could potentially throw DoesNotExist Exception
             computer_object = models.WatchmanComputer.objects.get(watchman_group_id=customer, computer_id=computer_id)
+            # update existing computer object
+            computer_object.date_last_reported = dt.datetime.now()
+            computer_object.name = computer['computer_name']
+            computer_object.os_type = computer['platform']
+            computer_object.os_version = computer['os_version']
+            computer_object.ram_gb = ram_gb
+            computer_object.hdd_capacity_gb = hdd_capacity_gb
+            computer_object.hdd_usage_gb = hdd_usage_gb
+            computer_object.save()
         except models.WatchmanComputer.DoesNotExist:
             # add computer to the database
             computer_object = models.WatchmanComputer(watchman_group_id=customer,
@@ -172,16 +182,6 @@ def parse_computers(json):
                                                       hdd_capacity_gb=hdd_capacity_gb,
                                                       hdd_usage_gb=hdd_usage_gb)
             computer_object.save()
-            continue
-        # update existing computer object
-        computer_object.date_last_reported = datetime.now()
-        computer_object.name = computer['computer_name']
-        computer_object.os_type = computer['platform']
-        computer_object.os_version = computer['os_version']
-        computer_object.ram_gb = ram_gb
-        computer_object.hdd_capacity_gb = hdd_capacity_gb
-        computer_object.hdd_usage_gb = hdd_usage_gb
-        computer_object.save()
 
 
 @shared_task
@@ -213,7 +213,7 @@ def parse_warnings(json):
 
             # status is OK and a warning does exist
             if warning_status == 'OK' and warning_object is not None:
-                warning_object.date_resolved = datetime.now()
+                warning_object.date_resolved = dt.datetime.now()
             # status is WARNING and no warning exists
             elif warning_status == 'WARNING' and warning_object is None:
                 # create new warning
@@ -225,5 +225,5 @@ def parse_warnings(json):
 
             # update last checked column
             if warning_object is not None:
-                warning_object.date_last_checked = datetime.now()
+                warning_object.date_last_checked = dt.datetime.now()
                 warning_object.save()
