@@ -6,9 +6,9 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-django = "*"
+django = "~=2.2"
 redis = "*"
-celery = "*"
+celery = "~=4.3"
 requests = "*"
 python-dotenv = "*"
 djangorestframework = "*"
@@ -16,4 +16,4 @@ django-celery-beat = "*"
 django-celery-results = "*"
 
 [requires]
-python_version = "3.6"
+python_version = "3.7"
