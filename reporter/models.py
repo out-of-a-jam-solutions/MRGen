@@ -40,8 +40,10 @@ class WatchmanWarning(models.Model):
     details = models.TextField()
 
 
-class MonthlyReport(models.Model):
+class Report(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    start_date = models.DateField()
+    end_date = models.DateField()
     date_generated = models.DateField(auto_now_add=True)
     num_current_warnings = models.IntegerField(default=0)
     num_resolved_warnings = models.IntegerField(default=0)
