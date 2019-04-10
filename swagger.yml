@@ -1,0 +1,165 @@
+openapi: 3.0.2
+servers:
+  - url: 'https://mrgen.outofajam.net/api'
+  - url: 'http://localhost:8000/api'
+info:
+  version: "1.0"
+  title: MRGen API
+  description: The API for MRGen. This includes endpoints to create customers, reports, and reporting schedules.
+paths:
+  '/customer':
+    get:
+      summary: List customers
+      tags:
+        - customer
+      responses:
+        '200':
+          description: The customers were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  candidates:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Customer'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+    post:
+      summary: Create a customer
+      tags:
+        - customer
+      responses:
+        '201':
+          description: The customer was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '422':
+          $ref: '#/components/responses/422UnprocessableEntity'
+      requestBody:
+        $ref: '#/components/requestBodies/CustomerBody'
+  '/customer/{customer_id}':
+    get:
+      summary: Read a customer
+      tags:
+        - customer
+      parameters:
+        - $ref: '#/components/parameters/customer_id'
+      responses:
+        '200':
+          description: The customer was read successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+    put:
+      summary: Update a customer
+      tags:
+        - customer
+      parameters:
+        - $ref: '#/components/parameters/customer_id'
+      responses:
+        '200':
+          description: The customer was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '422':
+          $ref: '#/components/responses/422UnprocessableEntity'
+      requestBody:
+        $ref: '#/components/requestBodies/CustomerBody'
+    delete:
+      summary: Delete a customer
+      tags:
+        - customer
+      parameters:
+        - $ref: '#/components/parameters/customer_id'
+      responses:
+        '204':
+          $ref: '#/components/responses/204NoContent'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+components:
+  parameters:
+    customer_id:
+      name: customer_id
+      in: path
+      description: The ID of the customer to work with.
+      required: true
+      schema:
+        type: string
+  schemas:
+    Customer:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        watchman_group_id:
+          type: string
+        repairshopr_id:
+          type: string
+      example:
+        id: '275'
+        name: 'MSFLC'
+        watchman_group_id: 'g_1234567'
+        repairshopr_id: '1234567'
+  securitySchemes:
+    cookieAuthentication:
+      type: apiKey
+      in: cookie
+      name: token
+  requestBodies:
+    CustomerBody:
+      description: A JSON object containing customer information.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                description: The name of the customer.
+                type: string
+              watchman_group_id:
+                description: The customer's Watchman Monitoring group ID.
+                type: string
+              repairshopr_id:
+                description: The customer's RepairShopr ID.
+                type: string
+            required:
+              - name
+              - watchman_group_id
+              - repairshopr_id
+  responses:
+    204NoContent:
+      description: The request completed successfully and has no response body.
+    400BadRequest:
+      description: The request could not be understood by the server.
+    401NotAuthenticated:
+      description: This action requires authentication.
+    403Forbidden:
+      description: This action requires authorization or is not allowed.
+    404NotFound:
+      description: The resource could not be found.
+    422UnprocessableEntity:
+      description: The request was understood but the data was rejected.
