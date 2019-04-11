@@ -223,11 +223,14 @@ components:
           type: number
         cron:
           type: string
+        time_zone:
+          type: string
         customer_id:
           type: string
       example:
         id: 354
         cron: '0 2 * * *'
+        time_zone: 'UTC'
         customer_id: 41
   requestBodies:
     CustomerBody:
@@ -261,6 +264,9 @@ components:
             properties:
               cron:
                 description: The cron string of the schedule.
+                type: string
+              time_zone:
+                description: The zime zone for cron to run in.
                 type: string
               customer_id:
                 description: A foreign key to a customer to be scheduled.
