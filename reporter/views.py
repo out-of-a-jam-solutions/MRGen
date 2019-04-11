@@ -1,8 +1,9 @@
 from celery.result import result_from_tuple
 from rest_framework import views
+from rest_framework import generics
 from rest_framework import response
 
-from reporter import tasks_watchman
+from reporter import models, serializers, tasks_watchman
 
 
 class Forward(views.APIView):
@@ -13,3 +14,18 @@ class Forward(views.APIView):
         results = results.get()
 
         return response.Response(results)
+
+
+class CustomerLCView(generics.ListCreateAPIView):
+    lookup_field = 'pk'
+    serializer_class = serializers.CustomerSerializer
+
+    def get_queryset(self):
+        return models.Customer.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        new_response = super(CustomerLCView, self).list(request, *args, **kwargs)
+        new_response.data = {
+            'courses': new_response.data
+        }
+        return new_response
