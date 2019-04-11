@@ -30,3 +30,11 @@ class CustomerLCView(generics.ListCreateAPIView):
             'data': new_response.data
         }
         return new_response
+
+
+class CustomerRUDView(generics.RetrieveUpdateDestroyAPIView):
+    lookup_field = 'pk'
+    serializer_class = serializers.CustomerSerializer
+
+    def get_queryset(self):
+        return models.Customer.objects.all()
