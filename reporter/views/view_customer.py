@@ -27,6 +27,6 @@ class CustomerLCView(generics.ListCreateAPIView):
         new_response = super(CustomerLCView, self).list(request, *args, **kwargs)
         # wrap array of results in JSON object
         new_response.data = {
-            'courses': new_response.data
+            'data': new_response.data
         }
         return new_response
