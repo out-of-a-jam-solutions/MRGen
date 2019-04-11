@@ -32,7 +32,7 @@ class CustomerLCView(generics.ListCreateAPIView):
         return new_response
 
 
-class CustomerRUDView(generics.RetrieveUpdateDestroyAPIView):
+class CustomerRUDView(generics.RetrieveUpdateDestroyAPIView):  # pylint: disable=too-many-ancestors
     lookup_field = 'pk'
     serializer_class = serializers.CustomerSerializer
 

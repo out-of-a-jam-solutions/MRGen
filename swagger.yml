@@ -20,7 +20,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  candidates:
+                  data:
                     type: array
                     items:
                       $ref: '#/components/schemas/Customer'
@@ -41,8 +41,6 @@ paths:
           $ref: '#/components/responses/400BadRequest'
         '403':
           $ref: '#/components/responses/403Forbidden'
-        '422':
-          $ref: '#/components/responses/422UnprocessableEntity'
       requestBody:
         $ref: '#/components/requestBodies/CustomerBody'
   '/customer/{customer_id}':
@@ -80,8 +78,6 @@ paths:
           $ref: '#/components/responses/403Forbidden'
         '404':
           $ref: '#/components/responses/404NotFound'
-        '422':
-          $ref: '#/components/responses/422UnprocessableEntity'
       requestBody:
         $ref: '#/components/requestBodies/CustomerBody'
     delete:
@@ -90,6 +86,96 @@ paths:
         - customer
       parameters:
         - $ref: '#/components/parameters/customer_id'
+      responses:
+        '204':
+          $ref: '#/components/responses/204NoContent'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+  '/schedule':
+    get:
+      summary: List schedules
+      tags:
+        - schedule
+      responses:
+        '200':
+          description: The schedules were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Schedule'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+    post:
+      summary: Create a schedule
+      tags:
+        - schedule
+      responses:
+        '201':
+          description: The schedule was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '422':
+          $ref: '#/components/responses/422UnprocessableEntity'
+      requestBody:
+        $ref: '#/components/requestBodies/ScheduleBody'
+  '/schedule/{schedule_id}':
+    get:
+      summary: Read a schedule
+      tags:
+        - schedule
+      parameters:
+        - $ref: '#/components/parameters/schedule_id'
+      responses:
+        '200':
+          description: The schedule was read successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+    put:
+      summary: Update a schedule
+      tags:
+        - schedule
+      parameters:
+        - $ref: '#/components/parameters/schedule_id'
+      responses:
+        '200':
+          description: The schedule was updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+        '422':
+          $ref: '#/components/responses/422UnprocessableEntity'
+      requestBody:
+        $ref: '#/components/requestBodies/CustomerBody'
+    delete:
+      summary: Delete a schedule
+      tags:
+        - schedule
+      parameters:
+        - $ref: '#/components/parameters/schedule_id'
       responses:
         '204':
           $ref: '#/components/responses/204NoContent'
@@ -106,12 +192,19 @@ components:
       required: true
       schema:
         type: string
+    schedule_id:
+      name: schedule_id
+      in: path
+      description: The ID of the schedule to work with.
+      required: true
+      schema:
+        type: string
   schemas:
     Customer:
       type: object
       properties:
         id:
-          type: string
+          type: number
         name:
           type: string
         watchman_group_id:
@@ -119,15 +212,23 @@ components:
         repairshopr_id:
           type: string
       example:
-        id: '275'
+        id: 275
         name: 'MSFLC'
         watchman_group_id: 'g_1234567'
         repairshopr_id: '1234567'
-  securitySchemes:
-    cookieAuthentication:
-      type: apiKey
-      in: cookie
-      name: token
+    Schedule:
+      type: object
+      properties:
+        id:
+          type: number
+        cron:
+          type: string
+        customer_id:
+          type: string
+      example:
+        id: 354
+        cron: '0 2 * * *'
+        customer_id: 41
   requestBodies:
     CustomerBody:
       description: A JSON object containing customer information.
@@ -150,6 +251,23 @@ components:
               - name
               - watchman_group_id
               - repairshopr_id
+    ScheduleBody:
+      description: A JSON object containing schedule information.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              cron:
+                description: The cron string of the schedule.
+                type: string
+              customer_id:
+                description: A foreign key to a customer to be scheduled.
+                type: string
+            required:
+              - cron
+              - customer_id
   responses:
     204NoContent:
       description: The request completed successfully and has no response body.
