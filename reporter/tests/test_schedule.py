@@ -266,3 +266,43 @@ class ScheduleCreateTest(test.APITestCase):
         self.assertEqual(schedule, None)
         self.assertEqual(task, None)
         self.assertEqual(cron, None)
+
+
+class ScheduleRetrieveTest(test.APITestCase):
+    def setUp(self):
+        # create test user
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(username=self.username, password=self.password)
+        self.client.login(username=self.username, password=self.password)
+        # retrieve the view
+        self.lc_view_name = 'reporter:schedule-lc'
+        self.view_name = 'reporter:schedule-rd'
+        # add customer to database
+        models.Customer(name='customer 1', watchman_group_id='g_1111111', repairshopr_id='1111111').save()
+        self.customer = models.Customer.objects.first()
+
+    def test_schedule_retrieve_schedule(self):
+        """
+        Tests that schedules can be retrieved individually.
+        """
+        # create schedules
+        request_body = {
+            'periodic_task': {
+                'minute': '0',
+                'hour': '2',
+                'day_of_week': '*',
+                'day_of_month': '*',
+                'month_of_year': '*',
+            },
+            'customer': self.customer.id,
+            'task_type': 'watchman'
+        }
+        response = self.client.post(reverse(self.lc_view_name), request_body, format='json')
+        response_body = json.loads(response.content.decode('utf-8'))
+        # request
+        response = self.client.get(reverse(self.view_name, args=[response_body['pk']]))
+        response_body = json.loads(response.content.decode('utf-8'))
+        # test response
+        self.assertEqual(type(response_body), dict)
+        self.assertDictContainsSubset(request_body, request_body)
