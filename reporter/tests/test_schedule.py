@@ -141,3 +141,28 @@ class ScheduleCreateTest(test.APITestCase):
                 'month_of_year': cron.month_of_year,
         }
         self.assertEqual(cron_vals, request_body['periodic_task'])
+
+    def test_schedule_create_crontab_invalid(self):
+        """
+        Tests nothing is created if the crontab entry is invalid.
+        """
+        # request
+        request_body = {
+            'periodic_task': {
+                'minute': '61',
+                'hour': '2',
+                'day_of_week': '*',
+                'day_of_month': '*',
+                'month_of_year': '*',
+            },
+            'customer': self.customer.id,
+            'task_type': 'watchman'
+        }
+        self.client.post(reverse(self.view_name), request_body, format='json')
+        # test database
+        schedule = models.Schedule.objects.first()
+        task = PeriodicTask.objects.first()
+        cron = CrontabSchedule.objects.first()
+        self.assertEqual(schedule, None)
+        self.assertEqual(task, None)
+        self.assertEqual(cron, None)

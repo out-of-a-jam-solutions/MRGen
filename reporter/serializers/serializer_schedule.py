@@ -1,3 +1,5 @@
+import re
+
 from django_celery_beat.models import CrontabSchedule, PeriodicTask
 from rest_framework import serializers
 
@@ -28,12 +30,19 @@ class PeriodicTaskField(serializers.Field):
             raise serializers.ValidationError({'customer': 'This field must be a valid customer id'})
         # create the task name
         task_name = '{} {}'.format(customer.name, data['task_type'])
+        # validate the cron data
+        if not re.fullmatch(r'([1-5]?[0-9]|\*)', data['periodic_task']['minute']) or \
+                not re.fullmatch(r'1?[0-9]|2[0-3]|\*', data['periodic_task']['hour']) or \
+                not re.fullmatch(r'[0-6]|\*', data['periodic_task']['day_of_week']) or \
+                not re.fullmatch(r'[1-9]|[1-2][0-9]|3[0-1]|\*', data['periodic_task']['day_of_month']) or \
+                not re.fullmatch(r'[1-9]|1[0-2]|\*', data['periodic_task']['month_of_year']):
+            raise serializers.ValidationError({'periodic_tas': 'Cron parameters are not valid'})
         # get or create the cron schedule
         cron, _ = CrontabSchedule.objects.get_or_create(**data['periodic_task'])
         # check if a periodic task with the same name already exists
         if PeriodicTask.objects.filter(name=task_name).exists():
             raise serializers.ValidationError('A periodic task with this name already exists')
-        # choose the task name
+        # create the appropriate task type, either watchman or repairshopr
         if data['task_type'] == 'watchman':
             task_type = 'reporter.tasks_watchman.update_client'
             task_args = [customer.watchman_group_id]
