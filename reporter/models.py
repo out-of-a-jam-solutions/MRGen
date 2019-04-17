@@ -1,10 +1,21 @@
 from django.db import models
+from django_celery_beat.models import PeriodicTask
 
 
 class Customer(models.Model):
     name = models.TextField()
     watchman_group_id = models.TextField(unique=True, null=True)
     repairshopr_id = models.TextField(unique=True, null=True)
+
+
+class Schedule(models.Model):
+    customer = models.ForeignKey(Customer,
+                                 db_column='customer_id',
+                                 on_delete=models.CASCADE)
+    periodic_task = models.ForeignKey(PeriodicTask,
+                                      db_column='periodic_task_id',
+                                      on_delete=models.CASCADE)
+    task_type = models.CharField(max_length=25)
 
 
 class WatchmanComputer(models.Model):
