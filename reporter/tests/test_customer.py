@@ -28,14 +28,14 @@ class CustomerLCTest(test.APITestCase):
         # test response
         customers = models.Customer.objects.all()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response_body['data']), len(customers))
+        self.assertEqual(len(response_body['results']), len(customers))
         for customer in customers:
             self.assertIn({
                 'pk': customer.id,
                 'name': customer.name,
                 'watchman_group_id': customer.watchman_group_id,
                 'repairshopr_id': customer.repairshopr_id
-            }, response_body['data'])
+            }, response_body['results'])
 
     def test_customer_create(self):
         # request

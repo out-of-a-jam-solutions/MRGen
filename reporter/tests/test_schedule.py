@@ -1,4 +1,5 @@
 import ast
+import json
 
 from django.contrib.auth.models import User
 from django_celery_beat.models import CrontabSchedule, PeriodicTask
@@ -6,6 +7,105 @@ from rest_framework.reverse import reverse
 from rest_framework import test
 
 from reporter import models
+
+
+class ScheduleListTest(test.APITestCase):
+    def setUp(self):
+        # create test user
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(username=self.username, password=self.password)
+        self.client.login(username=self.username, password=self.password)
+        # retrieve the view
+        self.view_name = 'reporter:schedule-lc'
+        # add customer to database
+        models.Customer(name='customer 1', watchman_group_id='g_1111111', repairshopr_id='1111111').save()
+        self.customer = models.Customer.objects.first()
+
+    def test_schedule_list(self):
+        """
+        Tests that schedules are listed if they exist in the database.
+        """
+        # create schedules
+        request_body = {
+            'periodic_task': {
+                'minute': '0',
+                'hour': '2',
+                'day_of_week': '*',
+                'day_of_month': '*',
+                'month_of_year': '*',
+            },
+            'customer': self.customer.id,
+            'task_type': 'watchman'
+        }
+        self.client.post(reverse(self.view_name), request_body, format='json')
+        # request
+        response = self.client.get(reverse(self.view_name))
+        response_body = json.loads(response.content.decode('utf-8'))
+        # test response
+        self.assertEqual(type(response_body), dict)
+        self.assertEqual(len(response_body['results']), 1)
+        self.assertDictContainsSubset(request_body, response_body['results'][0])
+
+    def test_schedule_list_none(self):
+        """
+        Tests that no schedules are listed if none exist in the database.
+        """
+        # request
+        response = self.client.get(reverse(self.view_name))
+        repsonse_body = json.loads(response.content.decode('utf-8'))
+        # test response
+        self.assertEqual(type(repsonse_body), dict)
+        self.assertEqual(len(repsonse_body['results']), 0)
+
+    def test_schedule_list_pagination(self):
+        """
+        Tests that schedules are listed if they exist in the database.
+        """
+        # create schedules
+        request_body_1 = {
+            'periodic_task': {
+                'minute': '0',
+                'hour': '2',
+                'day_of_week': '*',
+                'day_of_month': '*',
+                'month_of_year': '*',
+            },
+            'customer': self.customer.id,
+            'task_type': 'watchman'
+        }
+        request_body_2 = {
+            'periodic_task': {
+                'minute': '0',
+                'hour': '2',
+                'day_of_week': '*',
+                'day_of_month': '*',
+                'month_of_year': '*',
+            },
+            'customer': self.customer.id,
+            'task_type': 'repairshopr'
+        }
+        self.client.post(reverse(self.view_name), request_body_1, format='json')
+        self.client.post(reverse(self.view_name), request_body_2, format='json')
+        # request
+        response = self.client.get(reverse(self.view_name), {'page': '2', 'page_size': '1'})
+        response_body = json.loads(response.content.decode('utf-8'))
+        # test response
+        self.assertEqual(type(response_body), dict)
+        self.assertEqual(len(response_body['results']), 1)
+        self.assertDictContainsSubset(request_body_2, response_body['results'][0])
+
+    def test_schedule_list_pagination_meta(self):
+        """
+        Tests that a paginated list request includes the proper metdata.
+        """
+        # request
+        response = self.client.get(reverse(self.view_name))
+        repsonse_body = json.loads(response.content.decode('utf-8'))
+        # test response
+        self.assertIn('count', repsonse_body)
+        self.assertIn('next', repsonse_body)
+        self.assertIn('previous', repsonse_body)
 
 
 class ScheduleCreateTest(test.APITestCase):

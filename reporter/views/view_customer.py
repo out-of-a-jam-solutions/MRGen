@@ -23,14 +23,6 @@ class CustomerLCView(generics.ListCreateAPIView):
     def get_queryset(self):
         return models.Customer.objects.all()
 
-    def list(self, request, *args, **kwargs):
-        new_response = super(CustomerLCView, self).list(request, *args, **kwargs)
-        # wrap array of results in JSON object
-        new_response.data = {
-            'data': new_response.data
-        }
-        return new_response
-
 
 class CustomerRUDView(generics.RetrieveUpdateDestroyAPIView):  # pylint: disable=too-many-ancestors
     lookup_field = 'pk'

@@ -7,6 +7,9 @@ class Customer(models.Model):
     watchman_group_id = models.TextField(unique=True, null=True)
     repairshopr_id = models.TextField(unique=True, null=True)
 
+    class Meta:
+        ordering = ['id']
+
 
 class Schedule(models.Model):
     customer = models.ForeignKey(Customer,
@@ -16,6 +19,9 @@ class Schedule(models.Model):
                                       db_column='periodic_task_id',
                                       on_delete=models.CASCADE)
     task_type = models.CharField(max_length=25)
+
+    class Meta:
+        ordering = ['id']
 
 
 class WatchmanComputer(models.Model):
@@ -32,6 +38,9 @@ class WatchmanComputer(models.Model):
     ram_gb = models.FloatField()
     hdd_capacity_gb = models.FloatField()
     hdd_usage_gb = models.FloatField()
+
+    class Meta:
+        ordering = ['id']
 
 
 class WatchmanWarning(models.Model):
@@ -50,6 +59,9 @@ class WatchmanWarning(models.Model):
     name = models.TextField()
     details = models.TextField()
 
+    class Meta:
+        ordering = ['id']
+
 
 class Report(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
@@ -61,3 +73,6 @@ class Report(models.Model):
     num_mac_os = models.IntegerField(default=0)
     num_windows_os = models.IntegerField(default=0)
     num_linux_os = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ['id']
