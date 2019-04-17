@@ -4,6 +4,7 @@ import json
 from django.contrib.auth.models import User
 from django_celery_beat.models import CrontabSchedule, PeriodicTask
 from rest_framework.reverse import reverse
+from rest_framework import status
 from rest_framework import test
 
 from reporter import models
@@ -46,6 +47,29 @@ class ScheduleListTest(test.APITestCase):
         self.assertEqual(type(response_body), dict)
         self.assertEqual(len(response_body['results']), 1)
         self.assertDictContainsSubset(request_body, response_body['results'][0])
+
+    def test_schedule_list_status_code(self):
+        """
+        Tests the responses status code for 201 CREATED.
+        """
+        # create schedules
+        request_body = {
+            'periodic_task': {
+                'minute': '0',
+                'hour': '2',
+                'day_of_week': '*',
+                'day_of_month': '*',
+                'month_of_year': '*',
+            },
+            'customer': self.customer.id,
+            'task_type': 'watchman'
+        }
+        self.client.post(reverse(self.view_name), request_body, format='json')
+        # request
+        response = self.client.get(reverse(self.view_name))
+        response_body = json.loads(response.content.decode('utf-8'))
+        # test response
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_schedule_list_none(self):
         """
@@ -120,6 +144,26 @@ class ScheduleCreateTest(test.APITestCase):
         # add customer to database
         models.Customer(name='customer 1', watchman_group_id='g_1111111', repairshopr_id='1111111').save()
         self.customer = models.Customer.objects.first()
+
+    def test_schedule_create_status_code(self):
+        """
+        Tests the responses status code for 201 CREATED.
+        """
+        # request
+        request_body = {
+            'periodic_task': {
+                'minute': '0',
+                'hour': '2',
+                'day_of_week': '*',
+                'day_of_month': '*',
+                'month_of_year': '*',
+            },
+            'customer': self.customer.id,
+            'task_type': 'watchman'
+        }
+        response = self.client.post(reverse(self.view_name), request_body, format='json')
+        # test response
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_schedule_create_schedule(self):
         """
@@ -207,12 +251,14 @@ class ScheduleCreateTest(test.APITestCase):
             'customer': self.customer.id,
             'task_type': 'invalid'
         }
-        self.client.post(reverse(self.view_name), request_body, format='json')
+        response = self.client.post(reverse(self.view_name), request_body, format='json')
         # test database
         schedule = models.Schedule.objects.first()
         task = PeriodicTask.objects.first()
         self.assertEqual(schedule, None)
         self.assertEqual(task, None)
+        # test response
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_schedule_create_crontab(self):
         """
@@ -258,7 +304,7 @@ class ScheduleCreateTest(test.APITestCase):
             'customer': self.customer.id,
             'task_type': 'watchman'
         }
-        self.client.post(reverse(self.view_name), request_body, format='json')
+        response = self.client.post(reverse(self.view_name), request_body, format='json')
         # test database
         schedule = models.Schedule.objects.first()
         task = PeriodicTask.objects.first()
@@ -266,6 +312,7 @@ class ScheduleCreateTest(test.APITestCase):
         self.assertEqual(schedule, None)
         self.assertEqual(task, None)
         self.assertEqual(cron, None)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
 class ScheduleRetrieveTest(test.APITestCase):
@@ -305,4 +352,36 @@ class ScheduleRetrieveTest(test.APITestCase):
         response_body = json.loads(response.content.decode('utf-8'))
         # test response
         self.assertEqual(type(response_body), dict)
-        self.assertDictContainsSubset(request_body, request_body)
+        self.assertDictContainsSubset(request_body, response_body)
+
+    def test_schedule_retrieve_schedule_status_code(self):
+        """
+        Tests that status code is correct for retrieving a single schedule.
+        """
+        # create schedules
+        request_body = {
+            'periodic_task': {
+                'minute': '0',
+                'hour': '2',
+                'day_of_week': '*',
+                'day_of_month': '*',
+                'month_of_year': '*',
+            },
+            'customer': self.customer.id,
+            'task_type': 'watchman'
+        }
+        response = self.client.post(reverse(self.lc_view_name), request_body, format='json')
+        response_body = json.loads(response.content.decode('utf-8'))
+        # request
+        response = self.client.get(reverse(self.view_name, args=[response_body['pk']]))
+        # test response
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_schedule_retrieve_schedule_none(self):
+        """
+        Tests that a 404 error is thrown when no schedule exists.
+        """
+        # request
+        response = self.client.get(reverse(self.view_name, args=[1]))
+        # test response
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
