@@ -12,6 +12,9 @@ paths:
       summary: List customers
       tags:
         - customer
+      parameters:
+        - $ref: '#/components/parameters/page_query'
+        - $ref: '#/components/parameters/page_size_query'
       responses:
         '200':
           description: The customers were retrieved successfully.
@@ -20,10 +23,16 @@ paths:
               schema:
                 type: object
                 properties:
-                  data:
+                  results:
                     type: array
                     items:
                       $ref: '#/components/schemas/Customer'
+                  count:
+                    $ref: '#/components/schemas/PaginationCount'
+                  next:
+                    $ref: '#/components/schemas/PaginationNext'
+                  previous:
+                    $ref: '#/components/schemas/PaginationPrevious'
         '404':
           $ref: '#/components/responses/404NotFound'
     post:
@@ -98,6 +107,9 @@ paths:
       summary: List schedules
       tags:
         - schedule
+      parameters:
+        - $ref: '#/components/parameters/page_query'
+        - $ref: '#/components/parameters/page_size_query'
       responses:
         '200':
           description: The schedules were retrieved successfully.
@@ -106,12 +118,16 @@ paths:
               schema:
                 type: object
                 properties:
-                  data:
+                  results:
                     type: array
                     items:
                       $ref: '#/components/schemas/Schedule'
-        '404':
-          $ref: '#/components/responses/404NotFound'
+                  count:
+                    $ref: '#/components/schemas/PaginationCount'
+                  next:
+                    $ref: '#/components/schemas/PaginationNext'
+                  previous:
+                    $ref: '#/components/schemas/PaginationPrevious'
     post:
       summary: Create a schedule
       tags:
@@ -199,6 +215,20 @@ components:
       required: true
       schema:
         type: string
+    page_query:
+      name: page
+      in: query
+      description: The page number to work with.
+      required: false
+      schema:
+        type: string
+    page_size_query:
+      name: page_size
+      in: query
+      description: The number of recored of each page.
+      required: false
+      schema:
+        type: string
   schemas:
     Customer:
       type: object
@@ -221,17 +251,42 @@ components:
       properties:
         id:
           type: number
-        cron:
-          type: string
-        time_zone:
-          type: string
-        customer_id:
+        periodic_task:
+          type: object
+          properties:
+            minute:
+              type: string
+            hour:
+              type: string
+            day_of_week:
+              type: string
+            day_of_month:
+              type: string
+            month_of_year:
+              type: string
+        customer:
+          type: number
+        task_type:
           type: string
       example:
         id: 354
-        cron: '0 2 * * *'
-        time_zone: 'UTC'
-        customer_id: 41
+        periodic_task:
+          minute: '0'
+          hour: '2'
+          day_of_week: '*'
+          day_of_month: '*'
+          month_of_year: '*'
+        customer: 2
+        task_type: 'watchman'
+    PaginationCount:
+      type: number
+      example: 4
+    PaginationNext:
+      type: string
+      example: 'http://localhost:8000/api/schedule?page=2&page_size=1'
+    PaginationPrevious:
+      type: string
+      example: null
   requestBodies:
     CustomerBody:
       description: A JSON object containing customer information.
@@ -262,18 +317,30 @@ components:
           schema:
             type: object
             properties:
-              cron:
+              periodic_task:
                 description: The cron string of the schedule.
-                type: string
-              time_zone:
-                description: The zime zone for cron to run in.
-                type: string
-              customer_id:
-                description: A foreign key to a customer to be scheduled.
+                type: object
+                properties:
+                  minute:
+                    type: string
+                  hour:
+                    type: string
+                  day_of_week:
+                    type: string
+                  day_of_month:
+                    type: string
+                  month_of_year:
+                    type: string
+              customer:
+                description: The ID of the customer associated with the scedule.
+                type: number
+              task_type:
+                description: The type of task to be scheduled.
                 type: string
             required:
-              - cron
-              - customer_id
+              - periodic_task
+              - customer
+              - task_type
   responses:
     204NoContent:
       description: The request completed successfully and has no response body.
