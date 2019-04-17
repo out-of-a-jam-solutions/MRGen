@@ -91,6 +91,29 @@ class ScheduleCreateTest(test.APITestCase):
         self.assertEqual(task.task, 'reporter.tasks_repairshopr.update_client')
         self.assertEqual(ast.literal_eval(task.args)[0], self.customer.repairshopr_id)
 
+    def test_schedule_create_periodic_task_invalid_type(self):
+        """
+        Tests that nothing is not created when an invalid type is given.
+        """
+        # request
+        request_body = {
+            'periodic_task': {
+                'minute': '0',
+                'hour': '2',
+                'day_of_week': '*',
+                'day_of_month': '*',
+                'month_of_year': '*',
+            },
+            'customer': self.customer.id,
+            'task_type': 'invalid'
+        }
+        self.client.post(reverse(self.view_name), request_body, format='json')
+        # test database
+        schedule = models.Schedule.objects.first()
+        task = PeriodicTask.objects.first()
+        self.assertEqual(schedule, None)
+        self.assertEqual(task, None)
+
     def test_schedule_create_crontab(self):
         """
         Tests that a crontab is created for the schedule.

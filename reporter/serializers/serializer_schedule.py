@@ -1,5 +1,5 @@
 from django_celery_beat.models import CrontabSchedule, PeriodicTask
-from rest_framework import serializers, status
+from rest_framework import serializers
 
 from reporter import models
 
@@ -9,13 +9,13 @@ class PeriodicTaskField(serializers.Field):
         # s = super(PeriodicTaskField, self).get_value(dictionary)
         return dictionary
 
-    def to_representation(self, obj):
+    def to_representation(self, value):
         return {
-            'minute': obj.crontab.minute,
-            'hour': obj.crontab.hour,
-            'day_of_week': obj.crontab.day_of_week,
-            'day_of_month': obj.crontab.day_of_month,
-            'month_of_year': obj.crontab.month_of_year
+            'minute': value.crontab.minute,
+            'hour': value.crontab.hour,
+            'day_of_week': value.crontab.day_of_week,
+            'day_of_month': value.crontab.day_of_month,
+            'month_of_year': value.crontab.month_of_year
         }
 
     def to_internal_value(self, data):
@@ -23,9 +23,9 @@ class PeriodicTaskField(serializers.Field):
         try:
             customer = models.Customer.objects.get(pk=data['customer'])
         except KeyError:
-            raise serializers.ValidationError({'customer': 'This field is required'}, status.HTTP_400_BAD_REQUEST)
+            raise serializers.ValidationError({'customer': 'This field is required'})
         except models.Customer.DoesNotExist:
-            raise serializers.ValidationError({'customer': 'This field must be a valid customer id'}, status.HTTP_404_NOT_FOUND)
+            raise serializers.ValidationError({'customer': 'This field must be a valid customer id'})
         # create the task name
         task_name = '{} {}'.format(customer.name, data['task_type'])
         # get or create the cron schedule
@@ -40,6 +40,8 @@ class PeriodicTaskField(serializers.Field):
         elif data['task_type'] == 'repairshopr':
             task_type = 'reporter.tasks_repairshopr.update_client'
             task_args = [customer.repairshopr_id]
+        else:
+            raise serializers.ValidationError({'task_type': 'This field must be either "watchman" or "repairshopr"'})
         # prepare the periodic
         task = PeriodicTask(crontab=cron,
                             name=task_name,
