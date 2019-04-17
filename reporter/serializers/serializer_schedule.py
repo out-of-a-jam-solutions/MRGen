@@ -33,11 +33,18 @@ class PeriodicTaskField(serializers.Field):
         # check if a periodic task with the same name already exists
         if PeriodicTask.objects.filter(name=task_name).exists():
             raise serializers.ValidationError('A periodic task with this name already exists')
+        # choose the task name
+        if data['task_type'] == 'watchman':
+            task_type = 'reporter.tasks_watchman.update_client'
+            task_args = [customer.watchman_group_id]
+        elif data['task_type'] == 'repairshopr':
+            task_type = 'reporter.tasks_repairshopr.update_client'
+            task_args = [customer.repairshopr_id]
         # prepare the periodic
         task = PeriodicTask(crontab=cron,
                             name=task_name,
-                            task='reporter.tasks_watchman.update_client',
-                            args=[customer.watchman_group_id])
+                            task=task_type,
+                            args=task_args)
         return task
 
 

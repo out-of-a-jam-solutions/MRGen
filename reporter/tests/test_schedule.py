@@ -45,7 +45,7 @@ class ScheduleCreateTest(test.APITestCase):
 
     def test_schedule_create_periodic_task_watchman(self):
         """
-        Tests that a periodic task is created for the schedule.
+        Tests that a Watchman periodic task is created for the schedule.
         """
         # request
         request_body = {
@@ -66,6 +66,30 @@ class ScheduleCreateTest(test.APITestCase):
         self.assertEqual(task.crontab, cron)
         self.assertEqual(task.task, 'reporter.tasks_watchman.update_client')
         self.assertEqual(ast.literal_eval(task.args)[0], self.customer.watchman_group_id)
+
+    def test_schedule_create_periodic_task_repairshopr(self):
+        """
+        Tests that a RepairShopr periodic task is created for the schedule.
+        """
+        # request
+        request_body = {
+            'periodic_task': {
+                'minute': '0',
+                'hour': '2',
+                'day_of_week': '*',
+                'day_of_month': '*',
+                'month_of_year': '*',
+            },
+            'customer': self.customer.id,
+            'task_type': 'repairshopr'
+        }
+        self.client.post(reverse(self.view_name), request_body, format='json')
+        # test database
+        task = PeriodicTask.objects.first()
+        cron = CrontabSchedule.objects.first()
+        self.assertEqual(task.crontab, cron)
+        self.assertEqual(task.task, 'reporter.tasks_repairshopr.update_client')
+        self.assertEqual(ast.literal_eval(task.args)[0], self.customer.repairshopr_id)
 
     def test_schedule_create_crontab(self):
         """
