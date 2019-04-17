@@ -1,12 +1,7 @@
-import pytz
-import re
-
-from django.utils import timezone
 from django_celery_beat.models import CrontabSchedule, PeriodicTask
 from rest_framework import serializers, status
 
 from reporter import models
-from reporter.serializers import CustomerSerializer
 
 
 class PeriodicTaskField(serializers.Field):
@@ -39,7 +34,10 @@ class PeriodicTaskField(serializers.Field):
         if PeriodicTask.objects.filter(name=task_name).exists():
             raise serializers.ValidationError('A periodic task with this name already exists')
         # prepare the periodic
-        task = PeriodicTask(crontab=cron, name=task_name, task='reporter.tasks_watchman.update_client')
+        task = PeriodicTask(crontab=cron,
+                            name=task_name,
+                            task='reporter.tasks_watchman.update_client',
+                            args=[customer.watchman_group_id])
         return task
 
 

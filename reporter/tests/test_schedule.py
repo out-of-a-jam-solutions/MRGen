@@ -1,8 +1,7 @@
-import json
+import ast
 
 from django.contrib.auth.models import User
 from django_celery_beat.models import CrontabSchedule, PeriodicTask
-from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework import test
 
@@ -43,6 +42,30 @@ class ScheduleCreateTest(test.APITestCase):
         self.assertTrue(models.Schedule.objects.exists())
         schedule = models.Schedule.objects.first()
         self.assertEqual(schedule.customer_id, request_body['customer'])
+
+    def test_schedule_create_periodic_task_watchman(self):
+        """
+        Tests that a periodic task is created for the schedule.
+        """
+        # request
+        request_body = {
+            'periodic_task': {
+                'minute': '0',
+                'hour': '2',
+                'day_of_week': '*',
+                'day_of_month': '*',
+                'month_of_year': '*',
+            },
+            'customer': self.customer.id,
+            'task_type': 'watchman'
+        }
+        self.client.post(reverse(self.view_name), request_body, format='json')
+        # test database
+        task = PeriodicTask.objects.first()
+        cron = CrontabSchedule.objects.first()
+        self.assertEqual(task.crontab, cron)
+        self.assertEqual(task.task, 'reporter.tasks_watchman.update_client')
+        self.assertEqual(ast.literal_eval(task.args)[0], self.customer.watchman_group_id)
 
     def test_schedule_create_crontab(self):
         """
