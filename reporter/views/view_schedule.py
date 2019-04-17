@@ -18,3 +18,7 @@ class ScheduleRDView(generics.RetrieveDestroyAPIView):
 
     def get_queryset(self):
         return models.Schedule.objects.all()
+
+    def perform_destroy(self, instance):
+        instance.periodic_task.delete()
+        return super(ScheduleRDView, self).perform_destroy(instance)

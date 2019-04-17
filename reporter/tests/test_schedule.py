@@ -385,3 +385,87 @@ class ScheduleRetrieveTest(test.APITestCase):
         response = self.client.get(reverse(self.view_name, args=[1]))
         # test response
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class ScheduleDestroyTest(test.APITestCase):
+    def setUp(self):
+        # create test user
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(username=self.username, password=self.password)
+        self.client.login(username=self.username, password=self.password)
+        # retrieve the view
+        self.lc_view_name = 'reporter:schedule-lc'
+        self.view_name = 'reporter:schedule-rd'
+        # add customer to database
+        models.Customer(name='customer 1', watchman_group_id='g_1111111', repairshopr_id='1111111').save()
+        self.customer = models.Customer.objects.first()
+
+    def test_schedule_destroy_status_code(self):
+        """
+        Tests that deleting a schedule returns a 204 NO CONTENT.
+        """
+        # create schedules
+        request_body = {
+            'periodic_task': {
+                'minute': '0',
+                'hour': '2',
+                'day_of_week': '*',
+                'day_of_month': '*',
+                'month_of_year': '*',
+            },
+            'customer': self.customer.id,
+            'task_type': 'watchman'
+        }
+        response = self.client.post(reverse(self.lc_view_name), request_body, format='json')
+        response_body = json.loads(response.content.decode('utf-8'))
+        # request
+        response = self.client.delete(reverse(self.view_name, args=[response_body['pk']]))
+        # test response
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_schedule_destroy_schedule(self):
+        """
+        Tests that a schedule is destroyed.
+        """
+        # create schedules
+        request_body = {
+            'periodic_task': {
+                'minute': '0',
+                'hour': '2',
+                'day_of_week': '*',
+                'day_of_month': '*',
+                'month_of_year': '*',
+            },
+            'customer': self.customer.id,
+            'task_type': 'watchman'
+        }
+        response = self.client.post(reverse(self.lc_view_name), request_body, format='json')
+        response_body = json.loads(response.content.decode('utf-8'))
+        # request
+        self.client.delete(reverse(self.view_name, args=[response_body['pk']]))
+        # test database
+        self.assertFalse(models.Schedule.objects.exists())
+
+    def test_schedule_destroy_periodic_task(self):
+        """
+        Tests that a periodic task associated with a schedule is destroyed.
+        """
+        # create schedules
+        request_body = {
+            'periodic_task': {
+                'minute': '0',
+                'hour': '2',
+                'day_of_week': '*',
+                'day_of_month': '*',
+                'month_of_year': '*',
+            },
+            'customer': self.customer.id,
+            'task_type': 'watchman'
+        }
+        response = self.client.post(reverse(self.lc_view_name), request_body, format='json')
+        response_body = json.loads(response.content.decode('utf-8'))
+        # request
+        self.client.delete(reverse(self.view_name, args=[response_body['pk']]))
+        # test database
+        self.assertFalse(PeriodicTask.objects.exists())
