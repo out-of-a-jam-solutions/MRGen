@@ -65,7 +65,7 @@ WSGI_APPLICATION = 'MRGen.wsgi.application'
 
 
 # Database
-if os.getenv('DJAGNO_RDS') == 'prod':
+if os.getenv('DJANGO_RDS') == 'prod':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
