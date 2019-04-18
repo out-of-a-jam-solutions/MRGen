@@ -17,6 +17,7 @@ python-dotenv = "*"
 djangorestframework = "*"
 django-celery-beat = "*"
 django-celery-results = "*"
+mysqlclient = "*"
 
 [requires]
 python_version = "3.7"
