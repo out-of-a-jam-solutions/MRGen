@@ -3,9 +3,9 @@ from django_celery_beat.models import PeriodicTask
 
 
 class Customer(models.Model):
-    name = models.TextField()
-    watchman_group_id = models.TextField(unique=True, null=True)
-    repairshopr_id = models.TextField(unique=True, null=True)
+    name = models.CharField(max_length=100)
+    watchman_group_id = models.CharField(max_length=100, unique=True, null=True)
+    repairshopr_id = models.CharField(max_length=100, unique=True, null=True)
 
     class Meta:
         ordering = ['id']
@@ -29,12 +29,12 @@ class WatchmanComputer(models.Model):
                                           to_field='watchman_group_id',
                                           db_column='watchman_group_id',
                                           on_delete=models.CASCADE)
-    computer_id = models.TextField(unique=True)
+    computer_id = models.CharField(max_length=100, unique=True)
     date_reported = models.DateField(auto_now_add=True)
     date_last_reported = models.DateField(auto_now_add=True)
-    name = models.TextField()
+    name = models.CharField(max_length=100)
     os_type = models.CharField(max_length=7)
-    os_version = models.TextField()
+    os_version = models.CharField(max_length=100)
     ram_gb = models.FloatField()
     hdd_capacity_gb = models.FloatField()
     hdd_usage_gb = models.FloatField()
@@ -52,12 +52,12 @@ class WatchmanWarning(models.Model):
                                     to_field='computer_id',
                                     db_column='computer_id',
                                     on_delete=models.CASCADE)
-    warning_id = models.TextField()
+    warning_id = models.CharField(max_length=100)
     date_reported = models.DateField(auto_now_add=True)
     date_last_checked = models.DateField(auto_now_add=True)
     date_resolved = models.DateField(null=True)
-    name = models.TextField()
-    details = models.TextField()
+    name = models.CharField(max_length=100)
+    details = models.CharField(max_length=100)
 
     class Meta:
         ordering = ['id']
