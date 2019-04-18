@@ -4,12 +4,12 @@ python:
   - '3.7'
 env:
   - DJANGO_ENV=dev
-  - DJANGO_RDS=prod
-  - RDS_HOSTNAME=127.0.0.1
-  - RDS_PORT=3306
-  - RDS_DB_NAME=mrgen
-  - RDS_USERNAME=travis
-  - RDS_PASSWORD=
+    DJANGO_RDS=prod
+    RDS_HOSTNAME=127.0.0.1
+    RDS_PORT=3306
+    RDS_DB_NAME=mrgen
+    RDS_USERNAME=travis
+    RDS_PASSWORD=
 services:
   - mysql
 install:
