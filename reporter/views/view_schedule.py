@@ -21,4 +21,4 @@ class ScheduleRDView(generics.RetrieveDestroyAPIView):
 
     def perform_destroy(self, instance):
         instance.periodic_task.delete()
-        return super(ScheduleRDView, self).perform_destroy(instance)
+        return super(ScheduleRDView, self).perform_destroy(instance)  # pylint: disable=no-member
