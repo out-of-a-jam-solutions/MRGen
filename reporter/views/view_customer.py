@@ -19,14 +19,11 @@ class Forward(views.APIView):
 class CustomerLCView(generics.ListCreateAPIView):
     lookup_field = 'pk'
     serializer_class = serializers.CustomerSerializer
-
-    def get_queryset(self):
-        return models.Customer.objects.all()
+    queryset = models.Customer.objects.all()
+    filterset_fields = ('id', 'name', 'watchman_group_id', 'repairshopr_id')
 
 
 class CustomerRUDView(generics.RetrieveUpdateDestroyAPIView):  # pylint: disable=too-many-ancestors
     lookup_field = 'pk'
     serializer_class = serializers.CustomerSerializer
-
-    def get_queryset(self):
-        return models.Customer.objects.all()
+    queryset = models.Customer.objects.all()
