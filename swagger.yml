@@ -27,14 +27,18 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Customer'
-                  count:
-                    $ref: '#/components/schemas/PaginationCount'
-                  next:
+                  page:
+                    $ref: '#/components/schemas/PaginationPage'
+                  page_count:
+                    $ref: '#/components/schemas/PaginationPageCount'
+                  page_size:
+                    $ref: '#/components/schemas/PaginationPageSize'
+                  page_next:
                     $ref: '#/components/schemas/PaginationNext'
-                  previous:
+                  page_previous:
                     $ref: '#/components/schemas/PaginationPrevious'
-        '404':
-          $ref: '#/components/responses/404NotFound'
+                  results_count:
+                    $ref: '#/components/schemas/PaginationResultsCount'
     post:
       summary: Create a customer
       tags:
@@ -122,12 +126,18 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Schedule'
-                  count:
-                    $ref: '#/components/schemas/PaginationCount'
-                  next:
+                  page:
+                    $ref: '#/components/schemas/PaginationPage'
+                  page_count:
+                    $ref: '#/components/schemas/PaginationPageCount'
+                  page_size:
+                    $ref: '#/components/schemas/PaginationPageSize'
+                  page_next:
                     $ref: '#/components/schemas/PaginationNext'
-                  previous:
+                  page_previous:
                     $ref: '#/components/schemas/PaginationPrevious'
+                  results_count:
+                    $ref: '#/components/schemas/PaginationResultsCount'
     post:
       summary: Create a schedule
       tags:
@@ -278,15 +288,24 @@ components:
           month_of_year: '*'
         customer: 2
         task_type: 'watchman'
-    PaginationCount:
+    PaginationPage:
       type: number
-      example: 4
+      example: 1
+    PaginationPageCount:
+      type: number
+      example: 2
+    PaginationPageSize:
+      type: number
+      example: 10
     PaginationNext:
       type: string
       example: 'http://localhost:8000/api/schedule?page=2&page_size=1'
     PaginationPrevious:
       type: string
       example: null
+    PaginationResultsCount:
+      type: number
+      example: 17
   requestBodies:
     CustomerBody:
       description: A JSON object containing customer information.

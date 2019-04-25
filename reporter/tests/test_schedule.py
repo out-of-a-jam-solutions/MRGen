@@ -152,14 +152,16 @@ class ScheduleListTest(test.APITestCase):
         response = self.client.get(reverse(self.view_name), {'page_size': '1'})
         repsonse_body = json.loads(response.content.decode('utf-8'))
         # test response
+        self.assertIn('page', repsonse_body)
+        self.assertEqual(repsonse_body['page'], 1)
         self.assertIn('page_count', repsonse_body)
         self.assertEqual(repsonse_body['page_count'], 2)
-        self.assertIn('result_count', repsonse_body)
-        self.assertEqual(repsonse_body['result_count'], 2)
-        self.assertIn('current_page', repsonse_body)
-        self.assertEqual(repsonse_body['current_page'], 1)
-        self.assertIn('next', repsonse_body)
-        self.assertIn('previous', repsonse_body)
+        self.assertIn('page_size', repsonse_body)
+        self.assertEqual(repsonse_body['page_size'], 1)
+        self.assertIn('page_next', repsonse_body)
+        self.assertIn('page_previous', repsonse_body)
+        self.assertIn('results_count', repsonse_body)
+        self.assertEqual(repsonse_body['results_count'], 2)
 
 
 class ScheduleCreateTest(test.APITestCase):
