@@ -16,7 +16,8 @@ class StandardResultsSetPagination(pagination.PageNumberPagination):
         return response.Response({
             'next': self.get_next_link(),
             'previous': self.get_previous_link(),
-            'count': self.page.paginator.count,
+            'result_count': self.page.paginator.count,
             'page_count': page_count,
+            'current_page': self.page.number,
             'results': data
         })
