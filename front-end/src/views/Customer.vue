@@ -1,3 +1,44 @@
+<script>
+import { mapState } from "vuex";
+import CustomerInfo from "@/components/CustomerInfo.vue";
+
+export default {
+  // component setup
+  name: "customer",
+  components: {
+    CustomerInfo
+  },
+
+  // lifecycle hooks
+  mounted: function() {
+    this.$store.dispatch("loadCustomers", [this.CUSTOMERS_PER_PAGE]);
+  },
+
+  // component data
+  computed: {
+    // set the vuex state
+    ...mapState(["customers"]),
+    // getter and setter for current customer page
+    currentPage: {
+      get() {
+        return this.customers.page;
+      },
+      set(pageNumber) {
+        this.$store.dispatch("loadCustomers", [
+          this.CUSTOMERS_PER_PAGE,
+          pageNumber
+        ]);
+      }
+    }
+  },
+  data: function() {
+    return {
+      CUSTOMERS_PER_PAGE: 10
+    };
+  }
+};
+</script>
+
 <template>
   <div class="row">
     <div class="col-4">
@@ -7,7 +48,6 @@
         v-model="currentPage"
         :total-rows="customers.results_count"
         :per-page="customers.page_size"
-        @input="changePage()"
         align="fill"
         size="sm"
       ></b-pagination>
@@ -29,36 +69,6 @@
     </div>
   </div>
 </template>
-
-<script>
-import { mapState } from "vuex";
-import CustomerInfo from "@/components/CustomerInfo.vue";
-
-export default {
-  name: "customer",
-  components: {
-    CustomerInfo
-  },
-  mounted() {
-    this.$store.dispatch("loadCustomers", [this.CUSTOMERS_PER_PAGE]);
-  },
-  computed: mapState(["customers"]),
-  methods: {
-    changePage: function() {
-      this.$store.dispatch("loadCustomers", [
-        this.CUSTOMERS_PER_PAGE,
-        this.currentPage
-      ]);
-    }
-  },
-  data: function() {
-    return {
-      CUSTOMERS_PER_PAGE: 10,
-      currentPage: 1
-    };
-  }
-};
-</script>
 
 <style scoped>
 .no-focus:focus {
