@@ -38,7 +38,13 @@ export default {
   },
   methods: {
     selectCustomer(customerId) {
-      this.$store.dispatch('selectCustomer', customerId);
+      this.$store.dispatch("selectCustomer", customerId);
+    },
+    customerActive(customerId) {
+      if (!this.selectedCustomer || customerId !== this.selectedCustomer.pk) {
+        return false;
+      }
+      return true;
     }
   }
 };
@@ -61,7 +67,7 @@ export default {
         <b-list-group-item
           v-for="customer in customers.results"
           :key="customer.pk"
-          :active="customer.pk === selectedCustomer.pk"
+          :active="customerActive(customer.pk)"
           @click="selectCustomer(customer.pk)"
           class="no-focus"
           button
