@@ -124,7 +124,7 @@ class ScheduleListTest(test.APITestCase):
         Tests that a paginated list request includes the proper metdata.
         """
         # create schedules
-        request_body = {
+        request_body_1 = {
             'periodic_task': {
                 'minute': '0',
                 'hour': '2',
@@ -135,14 +135,29 @@ class ScheduleListTest(test.APITestCase):
             'customer': self.customer.id,
             'task_type': 'watchman'
         }
-        self.client.post(reverse(self.view_name), request_body, format='json')
+        request_body_2 = {
+            'periodic_task': {
+                'minute': '0',
+                'hour': '2',
+                'day_of_week': '*',
+                'day_of_month': '*',
+                'month_of_year': '*',
+            },
+            'customer': self.customer.id,
+            'task_type': 'repairshopr'
+        }
+        self.client.post(reverse(self.view_name), request_body_1, format='json')
+        self.client.post(reverse(self.view_name), request_body_2, format='json')
         # request
-        response = self.client.get(reverse(self.view_name))
+        response = self.client.get(reverse(self.view_name), {'page_size': '1'})
         repsonse_body = json.loads(response.content.decode('utf-8'))
         # test response
-        self.assertIn('count', repsonse_body)
         self.assertIn('page_count', repsonse_body)
-        self.assertEqual(repsonse_body['page_count'], 1)
+        self.assertEqual(repsonse_body['page_count'], 2)
+        self.assertIn('result_count', repsonse_body)
+        self.assertEqual(repsonse_body['result_count'], 2)
+        self.assertIn('current_page', repsonse_body)
+        self.assertEqual(repsonse_body['current_page'], 1)
         self.assertIn('next', repsonse_body)
         self.assertIn('previous', repsonse_body)
 
