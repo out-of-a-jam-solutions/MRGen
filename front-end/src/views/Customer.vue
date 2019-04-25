@@ -1,21 +1,17 @@
 <template>
-  <div>
-    <!-- customer list -->
-    <div class="col-3">
-      <!-- next customer page -->
-      <b-button
-        @click="nextPage()"
-        :disabled="!customers.next"
-      >
-        Next Page
-      </b-button>
-      <!-- previous customer page -->
-      <b-button
-        @click="previousPage()"
-        :disabled="!customers.previous"
-      >
-        Previous Page
-      </b-button>
+  <div class="row">
+    <div class="col-4">
+      <!-- customer pagination bar -->
+      <b-pagination
+        v-if="customers.page_count > 1"
+        v-model="currentPage"
+        :total-rows="customers.results_count"
+        :per-page="customers.page_size"
+        @input="changePage()"
+        align="fill"
+        size="sm"
+      ></b-pagination>
+      <!-- customer list -->
       <b-list-group>
         <b-list-group-item
           v-for="customer in customers.results"
@@ -36,31 +32,30 @@
 
 <script>
 import { mapState } from "vuex";
-import Customer from "@/components/Customer.vue";
 import CustomerInfo from "@/components/CustomerInfo.vue";
 
 export default {
   name: "customer",
   components: {
-    Customer,
     CustomerInfo
   },
   mounted() {
-    const CUSTOMERS_PER_PAGE = 10;
-    this.$store.dispatch("loadCustomers", [CUSTOMERS_PER_PAGE]);
+    this.$store.dispatch("loadCustomers", [this.CUSTOMERS_PER_PAGE]);
   },
   computed: mapState(["customers"]),
-  props: {
-    nextDisabled: Boolean,
-    previousDisabled: Boolean
-  },
   methods: {
-    nextPage: function() {
-      this.$store.dispatch("nextPageCustomers");
-    },
-    previousPage: function() {
-      this.$store.dispatch("previousPageCustomers");
+    changePage: function() {
+      this.$store.dispatch("loadCustomers", [
+        this.CUSTOMERS_PER_PAGE,
+        this.currentPage
+      ]);
     }
+  },
+  data: function() {
+    return {
+      CUSTOMERS_PER_PAGE: 10,
+      currentPage: 1
+    };
   }
 };
 </script>

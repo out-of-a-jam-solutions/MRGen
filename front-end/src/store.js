@@ -24,34 +24,13 @@ export default new Vuex.Store({
           page_size: itemsPerPage
         }
       };
+      // request the customers from the server
       axios
         .get("http://localhost:8000/api/customer", parameters)
         .then(r => r.data)
         .then(customers => {
           commit("SET_CUSTOMERS", customers);
         });
-    },
-    nextPageCustomers({ commit, state }) {
-      // if a next page exists, get it
-      if (state.customers.next) {
-        axios
-          .get(state.customers.next)
-          .then(r => r.data)
-          .then(customers => {
-            commit("SET_CUSTOMERS", customers);
-          });
-      }
-    },
-    previousPageCustomers({ commit, state }) {
-      // if a previous page exists, get it
-      if (state.customers.previous) {
-        axios
-          .get(state.customers.previous)
-          .then(r => r.data)
-          .then(customers => {
-            commit("SET_CUSTOMERS", customers);
-          });
-      }
     }
   }
 });

@@ -15,10 +15,10 @@ class StandardResultsSetPagination(pagination.PageNumberPagination):
         # build the request response
         return response.Response({
             'results': data,
+            'results_count': self.page.paginator.count,
             'page': self.page.number,
             'page_count': page_count,
             'page_size': self.page.paginator.per_page,
             'page_next': self.get_next_link(),
-            'page_previous': self.get_previous_link(),
-            'results_count': self.page.paginator.count
+            'page_previous': self.get_previous_link()
         })
