@@ -14,10 +14,11 @@ class StandardResultsSetPagination(pagination.PageNumberPagination):
         page_count = math.ceil(self.page.paginator.count / self.page.paginator.per_page)
         # build the request response
         return response.Response({
-            'next': self.get_next_link(),
-            'previous': self.get_previous_link(),
-            'result_count': self.page.paginator.count,
+            'results': data,
+            'page': self.page.number,
             'page_count': page_count,
-            'current_page': self.page.number,
-            'results': data
+            'page_size': self.page.paginator.per_page,
+            'page_next': self.get_next_link(),
+            'page_previous': self.get_previous_link(),
+            'results_count': self.page.paginator.count
         })
