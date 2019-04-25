@@ -8,11 +8,15 @@ Vue.use(VueAxios, axios);
 
 export default new Vuex.Store({
   state: {
-    customers: {}
+    customers: {},
+    selectedCustomer: null
   },
   mutations: {
     SET_CUSTOMERS(state, customers) {
       state.customers = customers;
+    },
+    SET_CURRENT_CUSTOMER(state, customer) {
+      state.selectedCustomer = customer;
     }
   },
   actions: {
@@ -31,6 +35,16 @@ export default new Vuex.Store({
         .then(customers => {
           commit("SET_CUSTOMERS", customers);
         });
+    },
+    selectCustomer({ commit, state }, customerId) {
+      // attempt to load the customer
+      const customer = state.customers.results.find(c => c.pk === customerId);
+      // check if the customer is loaded
+      if (customer === null) {
+        return;
+      }
+      // select the customer
+      commit("SET_CURRENT_CUSTOMER", customer);
     }
   }
 });

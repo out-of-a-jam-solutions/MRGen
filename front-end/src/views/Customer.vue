@@ -17,7 +17,7 @@ export default {
   // component data
   computed: {
     // set the vuex state
-    ...mapState(["customers"]),
+    ...mapState(["customers", "selectedCustomer"]),
     // getter and setter for current customer page
     currentPage: {
       get() {
@@ -35,6 +35,11 @@ export default {
     return {
       CUSTOMERS_PER_PAGE: 10
     };
+  },
+  methods: {
+    selectCustomer(customerId) {
+      this.$store.dispatch('selectCustomer', customerId);
+    }
   }
 };
 </script>
@@ -55,9 +60,11 @@ export default {
       <b-list-group>
         <b-list-group-item
           v-for="customer in customers.results"
-          :key="customer.id"
-          button
+          :key="customer.pk"
+          :active="customer.pk === selectedCustomer.pk"
+          @click="selectCustomer(customer.pk)"
           class="no-focus"
+          button
         >
           {{ customer.name }}
         </b-list-group-item>
