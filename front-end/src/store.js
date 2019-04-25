@@ -8,7 +8,7 @@ Vue.use(VueAxios, axios);
 
 export default new Vuex.Store({
   state: {
-    customers: []
+    customers: {}
   },
   mutations: {
     SET_CUSTOMERS(state, customers) {
@@ -16,13 +16,42 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    loadCustomers({ commit }) {
+    loadCustomers({ commit }, [itemsPerPage, startingPage = 1]) {
+      // construct the pagination query parameters for the request
+      const parameters = {
+        params: {
+          page: startingPage,
+          page_size: itemsPerPage
+        }
+      };
       axios
-        .get("http://localhost:8000/api/customer")
-        .then(r => r.data.results)
+        .get("http://localhost:8000/api/customer", parameters)
+        .then(r => r.data)
         .then(customers => {
           commit("SET_CUSTOMERS", customers);
         });
+    },
+    nextPageCustomers({ commit, state }) {
+      // if a next page exists, get it
+      if (state.customers.next) {
+        axios
+          .get(state.customers.next)
+          .then(r => r.data)
+          .then(customers => {
+            commit("SET_CUSTOMERS", customers);
+          });
+      }
+    },
+    previousPageCustomers({ commit, state }) {
+      // if a previous page exists, get it
+      if (state.customers.previous) {
+        axios
+          .get(state.customers.previous)
+          .then(r => r.data)
+          .then(customers => {
+            commit("SET_CUSTOMERS", customers);
+          });
+      }
     }
   }
 });
