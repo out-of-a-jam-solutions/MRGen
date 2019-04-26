@@ -19,6 +19,7 @@ django-celery-beat = "*"
 django-celery-results = "*"
 mysqlclient = "*"
 django-cors-headers = "*"
+django-filter = "*"
 
 [requires]
 python_version = "3.7"

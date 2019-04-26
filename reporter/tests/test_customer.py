@@ -37,6 +37,78 @@ class CustomerLCTest(test.APITestCase):
                 'repairshopr_id': customer.repairshopr_id
             }, response_body['results'])
 
+    def test_customer_list_filter_id(self):
+        # add customers to database
+        customer = models.Customer(name='customer 1', watchman_group_id='g_1111111', repairshopr_id='1111111')
+        customer.save()
+        models.Customer(name='customer 2', watchman_group_id='g_2222222', repairshopr_id='2222222').save()
+        # request
+        response = self.client.get(reverse(self.view_name), {'id': customer.id})
+        response_body = json.loads(response.content.decode('utf-8'))
+        # test response
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response_body['results']), 1)
+        self.assertIn({
+                'pk': customer.id,
+                'name': customer.name,
+                'watchman_group_id': customer.watchman_group_id,
+                'repairshopr_id': customer.repairshopr_id
+        }, response_body['results'])
+
+    def test_customer_list_filter_name(self):
+        # add customers to database
+        customer = models.Customer(name='customer 1', watchman_group_id='g_1111111', repairshopr_id='1111111')
+        customer.save()
+        models.Customer(name='customer 2', watchman_group_id='g_2222222', repairshopr_id='2222222').save()
+        # request
+        response = self.client.get(reverse(self.view_name), {'name': customer.name})
+        response_body = json.loads(response.content.decode('utf-8'))
+        # test response
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response_body['results']), 1)
+        self.assertIn({
+                'pk': customer.id,
+                'name': customer.name,
+                'watchman_group_id': customer.watchman_group_id,
+                'repairshopr_id': customer.repairshopr_id
+        }, response_body['results'])
+
+    def test_customer_list_filter_watchman_group_id(self):
+        # add customers to database
+        customer = models.Customer(name='customer 1', watchman_group_id='g_1111111', repairshopr_id='1111111')
+        customer.save()
+        models.Customer(name='customer 2', watchman_group_id='g_2222222', repairshopr_id='2222222').save()
+        # request
+        response = self.client.get(reverse(self.view_name), {'watchman_group_id': customer.watchman_group_id})
+        response_body = json.loads(response.content.decode('utf-8'))
+        # test response
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response_body['results']), 1)
+        self.assertIn({
+                'pk': customer.id,
+                'name': customer.name,
+                'watchman_group_id': customer.watchman_group_id,
+                'repairshopr_id': customer.repairshopr_id
+        }, response_body['results'])
+
+    def test_customer_list_filter_repairshopr_id(self):
+        # add customers to database
+        customer = models.Customer(name='customer 1', watchman_group_id='g_1111111', repairshopr_id='1111111')
+        customer.save()
+        models.Customer(name='customer 2', watchman_group_id='g_2222222', repairshopr_id='2222222').save()
+        # request
+        response = self.client.get(reverse(self.view_name), {'repairshopr_id': customer.repairshopr_id})
+        response_body = json.loads(response.content.decode('utf-8'))
+        # test response
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response_body['results']), 1)
+        self.assertIn({
+                'pk': customer.id,
+                'name': customer.name,
+                'watchman_group_id': customer.watchman_group_id,
+                'repairshopr_id': customer.repairshopr_id
+        }, response_body['results'])
+
     def test_customer_create(self):
         # request
         request_body = {

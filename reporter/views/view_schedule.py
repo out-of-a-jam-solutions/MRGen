@@ -7,17 +7,14 @@ from reporter import serializers
 class ScheduleLCView(generics.ListCreateAPIView):
     lookup_field = 'pk'
     serializer_class = serializers.ScheduleSerializer
-
-    def get_queryset(self):
-        return models.Schedule.objects.all()
+    queryset = models.Schedule.objects.all()
+    filterset_fields = ('id', 'customer', 'task_type')
 
 
 class ScheduleRDView(generics.RetrieveDestroyAPIView):
     lookup_field = 'pk'
     serializer_class = serializers.ScheduleSerializer
-
-    def get_queryset(self):
-        return models.Schedule.objects.all()
+    queryset = models.Schedule.objects.all()
 
     def perform_destroy(self, instance):
         instance.periodic_task.delete()
