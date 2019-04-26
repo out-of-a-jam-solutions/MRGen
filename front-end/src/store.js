@@ -9,7 +9,10 @@ Vue.use(VueAxios, axios);
 export default new Vuex.Store({
   state: {
     customers: {},
-    selectedCustomer: null
+    selectedCustomer: null,
+    schedules: {},
+    DEFAULT_CUSTOMERS_PER_PAGE: 10,
+    DEFAULT_SCHEDULES_PER_PAGE: 10
   },
   mutations: {
     SET_CUSTOMERS(state, customers) {
@@ -17,15 +20,18 @@ export default new Vuex.Store({
     },
     SET_CURRENT_CUSTOMER(state, customer) {
       state.selectedCustomer = customer;
+    },
+    SET_SCHEDULES(state, schedules) {
+      state.schedules = schedules;
     }
   },
   actions: {
-    loadCustomers({ commit }, [itemsPerPage, startingPage = 1]) {
+    loadCustomers({ commit, state }, startingPage = 1) {
       // construct the pagination query parameters for the request
       const parameters = {
         params: {
           page: startingPage,
-          page_size: itemsPerPage
+          page_size: state.DEFAULT_CUSTOMERS_PER_PAGE
         }
       };
       // request the customers from the server
@@ -36,7 +42,7 @@ export default new Vuex.Store({
           commit("SET_CUSTOMERS", customers);
         });
     },
-    selectCustomer({ commit, state }, customerId) {
+    selectCustomer({ commit, state, dispatch }, customerId) {
       // attempt to load the customer
       const customer = state.customers.results.find(c => c.pk === customerId);
       // check if the customer is loaded
@@ -45,6 +51,26 @@ export default new Vuex.Store({
       }
       // select the customer
       commit("SET_CURRENT_CUSTOMER", customer);
+      // load the customers schedules
+      dispatch("loadSchedules", [customerId]);
+    },
+    loadSchedules({ commit, state }, [customerId, startingPage = 1]) {
+      console.log("LOAD SCHEDULES");
+      // construct the pagination query parameters for the request
+      const parameters = {
+        params: {
+          page: startingPage,
+          page_size: state.DEFAULT_SCHEDULES_PER_PAGE,
+          customer: customerId
+        }
+      };
+      // request the schedules from the server
+      axios
+        .get("http://localhost:8000/api/schedule", parameters)
+        .then(r => r.data)
+        .then(schedules => {
+          commit("SET_SCHEDULES", schedules);
+        });
     }
   }
 });

@@ -11,10 +11,16 @@ export default {
 
   // lifecycle hooks
   mounted: function() {
-    this.$store.dispatch("loadCustomers", [this.CUSTOMERS_PER_PAGE]);
+    this.$store.dispatch("loadCustomers");
   },
 
   // component data
+  data: function() {
+    return {
+      CUSTOMERS_PER_PAGE: 10,
+      SCHEDULES_PER_PAGE: 5
+    };
+  },
   computed: {
     // set the vuex state
     ...mapState(["customers", "selectedCustomer"]),
@@ -24,17 +30,9 @@ export default {
         return this.customers.page;
       },
       set(pageNumber) {
-        this.$store.dispatch("loadCustomers", [
-          this.CUSTOMERS_PER_PAGE,
-          pageNumber
-        ]);
+        this.$store.dispatch("loadCustomers", pageNumber);
       }
     }
-  },
-  data: function() {
-    return {
-      CUSTOMERS_PER_PAGE: 10
-    };
   },
   methods: {
     selectCustomer(customerId) {
