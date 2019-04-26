@@ -15,7 +15,9 @@ export default {
 
 <template>
   <b-list-group-item>
-    {{ schedule }}
+    Task Type: {{ schedule.task_type }}
+    <br/>
+    Run schedule: {{ schedule.periodic_task }}
   </b-list-group-item>
 </template>
 

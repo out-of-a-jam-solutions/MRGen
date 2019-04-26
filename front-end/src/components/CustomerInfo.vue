@@ -16,11 +16,6 @@ export default {
     };
   },
   computed: mapState(["selectedCustomer", "schedules"]),
-  methods: {
-    subTitle(pk) {
-      return "ID: " + pk;
-    }
-  }
 };
 </script>
 
@@ -28,10 +23,18 @@ export default {
   <div v-if="selectedCustomer">
     <b-card
       :title="selectedCustomer.name"
-      :sub-title="subTitle(selectedCustomer.pk)"
     >
-      <b-card-text>Schedules</b-card-text>
+      <!-- customer information -->
+      <h5 class="mt-3">Customer Information</h5>
+      <b-card-text>
+        MRGen ID: {{ selectedCustomer.pk }}
+        <br/>
+        Watchman ID: {{ selectedCustomer.watchman_group_id }}
+        <br/>
+        RepairShopr ID: {{ selectedCustomer.repairshopr_id }}
+      </b-card-text>
       <!-- schedules -->
+      <h5>Schedules</h5>
       <b-list-group>
         <Schedule
           v-for="schedule in schedules.results"

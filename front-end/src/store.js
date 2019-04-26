@@ -55,7 +55,6 @@ export default new Vuex.Store({
       dispatch("loadSchedules", [customerId]);
     },
     loadSchedules({ commit, state }, [customerId, startingPage = 1]) {
-      console.log("LOAD SCHEDULES");
       // construct the pagination query parameters for the request
       const parameters = {
         params: {
