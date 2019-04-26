@@ -163,6 +163,121 @@ class ScheduleListTest(test.APITestCase):
         self.assertIn('results_count', repsonse_body)
         self.assertEqual(repsonse_body['results_count'], 2)
 
+    def test_schedule_list_filter_id(self):
+        """
+        Tests that schedules are listed if they match the id filter parameter.
+        """
+        # create schedules
+        request_body_1 = {
+            'periodic_task': {
+                'minute': '0',
+                'hour': '2',
+                'day_of_week': '*',
+                'day_of_month': '*',
+                'month_of_year': '*',
+            },
+            'customer': self.customer.id,
+            'task_type': 'watchman'
+        }
+        request_body_2 = {
+            'periodic_task': {
+                'minute': '0',
+                'hour': '2',
+                'day_of_week': '*',
+                'day_of_month': '*',
+                'month_of_year': '*',
+            },
+            'customer': self.customer.id,
+            'task_type': 'repairshopr'
+        }
+        response = self.client.post(reverse(self.view_name), request_body_1, format='json')
+        response_body = json.loads(response.content.decode('utf-8'))
+        self.client.post(reverse(self.view_name), request_body_2, format='json')
+        # request
+        response = self.client.get(reverse(self.view_name), {'id': response_body['pk']})
+        response_body = json.loads(response.content.decode('utf-8'))
+        # test response
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response_body['results']), 1)
+        self.assertDictContainsSubset(request_body_1, response_body['results'][0])
+
+    def test_schedule_list_filter_customer(self):
+        """
+        Tests that schedules are listed if they match the id filter parameter.
+        """
+        customer = models.Customer(name='customer 2', watchman_group_id='g_2222222', repairshopr_id='2222222')
+        customer.save()
+        # create schedules
+        request_body_1 = {
+            'periodic_task': {
+                'minute': '0',
+                'hour': '2',
+                'day_of_week': '*',
+                'day_of_month': '*',
+                'month_of_year': '*',
+            },
+            'customer': self.customer.id,
+            'task_type': 'watchman'
+        }
+        request_body_2 = {
+            'periodic_task': {
+                'minute': '0',
+                'hour': '2',
+                'day_of_week': '*',
+                'day_of_month': '*',
+                'month_of_year': '*',
+            },
+            'customer': customer.id,
+            'task_type': 'repairshopr'
+        }
+        response = self.client.post(reverse(self.view_name), request_body_1, format='json')
+        response_body = json.loads(response.content.decode('utf-8'))
+        self.client.post(reverse(self.view_name), request_body_2, format='json')
+        # request
+        response = self.client.get(reverse(self.view_name), {'customer': response_body['customer']})
+        response_body = json.loads(response.content.decode('utf-8'))
+        # test response
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response_body['results']), 1)
+        self.assertDictContainsSubset(request_body_1, response_body['results'][0])
+
+    def test_schedule_list_filter_task_type(self):
+        """
+        Tests that schedules are listed if they match the id filter parameter.
+        """
+        # create schedules
+        request_body_1 = {
+            'periodic_task': {
+                'minute': '0',
+                'hour': '2',
+                'day_of_week': '*',
+                'day_of_month': '*',
+                'month_of_year': '*',
+            },
+            'customer': self.customer.id,
+            'task_type': 'watchman'
+        }
+        request_body_2 = {
+            'periodic_task': {
+                'minute': '0',
+                'hour': '2',
+                'day_of_week': '*',
+                'day_of_month': '*',
+                'month_of_year': '*',
+            },
+            'customer': self.customer.id,
+            'task_type': 'repairshopr'
+        }
+        response = self.client.post(reverse(self.view_name), request_body_1, format='json')
+        response_body = json.loads(response.content.decode('utf-8'))
+        self.client.post(reverse(self.view_name), request_body_2, format='json')
+        # request
+        response = self.client.get(reverse(self.view_name), {'task_type': response_body['task_type']})
+        response_body = json.loads(response.content.decode('utf-8'))
+        # test response
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response_body['results']), 1)
+        self.assertDictContainsSubset(request_body_1, response_body['results'][0])
 
 class ScheduleCreateTest(test.APITestCase):
     def setUp(self):
