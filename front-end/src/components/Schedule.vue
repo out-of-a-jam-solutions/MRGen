@@ -1,4 +1,6 @@
 <script>
+import cronstrue from 'cronstrue';
+
 export default {
   // component setup
   name: "Schedule",
@@ -9,6 +11,16 @@ export default {
       type: Object,
       required: true
     }
+  },
+  methods: {
+    parseCron(task) {
+      const cronstring = task.minute + " " +
+                         task.hour + " " +
+                         task.day_of_week + " " +
+                         task.day_of_month + " " +
+                         task.month_of_year
+      return cronstrue.toString(cronstring, { verbose: true });
+    }
   }
 };
 </script>
@@ -17,7 +29,7 @@ export default {
   <b-list-group-item>
     Task Type: {{ schedule.task_type }}
     <br/>
-    Run schedule: {{ schedule.periodic_task }}
+    Run schedule: {{ parseCron(schedule.periodic_task) }}
   </b-list-group-item>
 </template>
 
