@@ -1,6 +1,6 @@
 <script>
-import cronstrue from 'cronstrue';
-import { mapState } from 'vuex';
+import cronstrue from "cronstrue";
+import { mapState } from "vuex";
 
 export default {
   // component setup
@@ -16,15 +16,23 @@ export default {
   computed: mapState(["schedules"]),
   methods: {
     parseCron(task) {
-      const cronstring = task.minute + " " +
-                         task.hour + " " +
-                         task.day_of_week + " " +
-                         task.day_of_month + " " +
-                         task.month_of_year
+      const cronstring =
+        task.minute +
+        " " +
+        task.hour +
+        " " +
+        task.day_of_week +
+        " " +
+        task.day_of_month +
+        " " +
+        task.month_of_year;
       return cronstrue.toString(cronstring, { verbose: true });
     },
     deleteSchedule() {
-      this.$store.dispatch('deleteSchedule', [this.schedule.pk, this.schedules.page])
+      this.$store.dispatch("deleteSchedule", [
+        this.schedule.pk,
+        this.schedules.page
+      ]);
     }
   }
 };
@@ -36,7 +44,7 @@ export default {
       <!-- schedule info -->
       <div class="col">
         Task Type: {{ schedule.task_type }}
-        <br/>
+        <br />
         Run schedule: {{ parseCron(schedule.periodic_task) }}
       </div>
       <!-- buttons -->

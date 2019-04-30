@@ -13,7 +13,10 @@ export default {
   computed: mapState(["customers", "selectedCustomer", "schedules"]),
   methods: {
     deleteSelectedCustomer() {
-      this.$store.dispatch('deleteCustomer', [this.selectedCustomer.pk, this.customers.page]);
+      this.$store.dispatch("deleteCustomer", [
+        this.selectedCustomer.pk,
+        this.customers.page
+      ]);
     }
   }
 };
@@ -21,16 +24,14 @@ export default {
 
 <template>
   <div v-if="selectedCustomer">
-    <b-card
-      :title="selectedCustomer.name"
-    >
+    <b-card :title="selectedCustomer.name">
       <!-- customer information -->
       <h5 class="mt-3">Customer Information</h5>
       <b-card-text>
         MRGen ID: {{ selectedCustomer.pk }}
-        <br/>
+        <br />
         Watchman ID: {{ selectedCustomer.watchman_group_id }}
-        <br/>
+        <br />
         RepairShopr ID: {{ selectedCustomer.repairshopr_id }}
       </b-card-text>
       <!-- schedules -->
@@ -43,19 +44,11 @@ export default {
         ></Schedule>
       </b-list-group>
       <!-- footer -->
-      <em
-        slot="footer"
-      >
-        <b-button
-          variant="primary"
-          class="mr-2"
-        >
+      <em slot="footer">
+        <b-button variant="primary" class="mr-2">
           Update customer
         </b-button>
-        <b-button
-          variant="primary"
-          class="mr-2"
-        >
+        <b-button variant="primary" class="mr-2">
           Update schedules
         </b-button>
         <b-button
