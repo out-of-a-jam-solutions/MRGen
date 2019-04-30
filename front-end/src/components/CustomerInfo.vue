@@ -10,12 +10,12 @@ export default {
   },
 
   // component data
-  data: function() {
-    return {
-      SCHEDULES_PER_PAGE: 10
-    };
-  },
-  computed: mapState(["selectedCustomer", "schedules"]),
+  computed: mapState(["customers", "selectedCustomer", "schedules"]),
+  methods: {
+    deleteSelectedCustomer() {
+      this.$store.dispatch('deleteCustomer', [this.selectedCustomer.pk, this.customers.page]);
+    }
+  }
 };
 </script>
 
@@ -42,6 +42,30 @@ export default {
           :schedule="schedule"
         ></Schedule>
       </b-list-group>
+      <!-- footer -->
+      <em
+        slot="footer"
+      >
+        <b-button
+          variant="primary"
+          class="mr-2"
+        >
+          Update customer
+        </b-button>
+        <b-button
+          variant="primary"
+          class="mr-2"
+        >
+          Update schedules
+        </b-button>
+        <b-button
+          @click="deleteSelectedCustomer()"
+          variant="danger"
+          class="mr-2"
+        >
+          Remove customer
+        </b-button>
+      </em>
     </b-card>
   </div>
 </template>

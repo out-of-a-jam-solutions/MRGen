@@ -70,6 +70,16 @@ export default new Vuex.Store({
         .then(schedules => {
           commit("SET_SCHEDULES", schedules);
         });
+    },
+    deleteCustomer({ dispatch }, [customerId, startingPage]) {
+      // delete the schedule from the server
+      axios
+        .delete("http://localhost:8000/api/customer/" + customerId)
+        .then(r => r.data)
+        .then(() => {
+          // load in the non-deleted customers from the backend
+          dispatch("loadCustomers", [customerId, startingPage]);
+        });
     }
   }
 });
