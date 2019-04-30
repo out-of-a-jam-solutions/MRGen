@@ -71,6 +71,23 @@ export default new Vuex.Store({
           commit("SET_SCHEDULES", schedules);
         });
     },
+    createSchedule(
+      { dispatch },
+      [customerId, taskType, periodicTask, startingPage]
+    ) {
+      const body = {
+        customer: customerId,
+        taskType: taskType,
+        periodicTask: periodicTask
+      };
+      axios
+        .post("http://localhost:8000/api/schedule", body)
+        .then(r => r.data)
+        .then(() => {
+          // load in the customers from the back-end
+          dispatch("loadCustomers", startingPage);
+        });
+    },
     deleteCustomer({ dispatch }, [customerId, startingPage]) {
       // delete the customer from the server
       axios
@@ -78,7 +95,7 @@ export default new Vuex.Store({
         .then(r => r.data)
         .then(() => {
           // load in the non-deleted customers from the back-end
-          dispatch("loadCustomers", [customerId, startingPage]);
+          dispatch("loadCustomers", startingPage);
         });
     },
     deleteSchedule({ dispatch }, [scheduleId, startingPage]) {
@@ -87,8 +104,8 @@ export default new Vuex.Store({
         .delete("http://localhost:8000/api/schedule/" + scheduleId)
         .then(r => r.data)
         .then(() => {
-          // load in the non-deleted schedules from the back-end
-          dispatch("loadSchedules", [scheduleId, startingPage]);
+          // load in the non-deleted schedules from the back-end for the current customer
+          dispatch("loadSchedules", [this.selectCustomer.pk, startingPage]);
         });
     }
   }
