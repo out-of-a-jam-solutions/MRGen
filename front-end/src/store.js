@@ -72,13 +72,23 @@ export default new Vuex.Store({
         });
     },
     deleteCustomer({ dispatch }, [customerId, startingPage]) {
-      // delete the schedule from the server
+      // delete the customer from the server
       axios
         .delete("http://localhost:8000/api/customer/" + customerId)
         .then(r => r.data)
         .then(() => {
-          // load in the non-deleted customers from the backend
+          // load in the non-deleted customers from the back-end
           dispatch("loadCustomers", [customerId, startingPage]);
+        });
+    },
+    deleteSchedule({ dispatch }, [scheduleId, startingPage]) {
+      // delete the schedule from the server
+      axios
+        .delete("http://localhost:8000/api/schedule/" + scheduleId)
+        .then(r => r.data)
+        .then(() => {
+          // load in the non-deleted schedules from the back-end
+          dispatch("loadSchedules", [scheduleId, startingPage]);
         });
     }
   }

@@ -1,5 +1,6 @@
 <script>
 import cronstrue from 'cronstrue';
+import { mapState } from 'vuex';
 
 export default {
   // component setup
@@ -12,6 +13,7 @@ export default {
       required: true
     }
   },
+  computed: mapState(["schedules"]),
   methods: {
     parseCron(task) {
       const cronstring = task.minute + " " +
@@ -20,6 +22,9 @@ export default {
                          task.day_of_month + " " +
                          task.month_of_year
       return cronstrue.toString(cronstring, { verbose: true });
+    },
+    deleteSchedule() {
+      this.$store.dispatch('deleteSchedule', [this.schedule.pk, this.schedules.page])
     }
   }
 };
@@ -27,9 +32,24 @@ export default {
 
 <template>
   <b-list-group-item>
-    Task Type: {{ schedule.task_type }}
-    <br/>
-    Run schedule: {{ parseCron(schedule.periodic_task) }}
+    <div class="row">
+      <!-- schedule info -->
+      <div class="col">
+        Task Type: {{ schedule.task_type }}
+        <br/>
+        Run schedule: {{ parseCron(schedule.periodic_task) }}
+      </div>
+      <!-- buttons -->
+      <div class="col-2">
+        <b-button
+          @click="deleteSchedule()"
+          variant="danger"
+          class="align-middle"
+        >
+          Delete
+        </b-button>
+      </div>
+    </div>
   </b-list-group-item>
 </template>
 
