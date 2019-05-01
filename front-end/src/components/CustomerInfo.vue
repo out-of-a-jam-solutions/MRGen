@@ -1,17 +1,18 @@
 <script>
 import { mapState } from "vuex";
-import Schedule from "@/components/Schedule.vue";
 
 export default {
   // component setup
   name: "CustomerInfo",
-  components: {
-    Schedule
-  },
 
   // component data
   computed: {
-    ...mapState(["customers", "selectedCustomer", "schedules", "DEFAULT_SERVICES"]),
+    ...mapState([
+      "customers",
+      "selectedCustomer",
+      "schedules",
+      "DEFAULT_SERVICES"
+    ]),
     selectedServices: {
       get: function() {
         return this.schedules.results.map(x => x.task_type);
@@ -26,7 +27,10 @@ export default {
         // check for additions
         for (const service of newServices) {
           if (!this.selectedServices.includes(service)) {
-            this.$store.dispatch("createSchedule", [this.selectedCustomer.pk, service]);
+            this.$store.dispatch("createSchedule", [
+              this.selectedCustomer.pk,
+              service
+            ]);
           }
         }
       }
@@ -39,8 +43,9 @@ export default {
         return "RepairShopr";
       } else if (service === "watchman") {
         return "Watchman Monitoring";
+      }
       // default fallback
-      } else {
+      else {
         return service.charAt(0).toUpperCase() + service.slice(1);
       }
     },
@@ -74,10 +79,7 @@ export default {
       <h5>Services</h5>
       <b-form>
         <b-form-group>
-          <b-form-checkbox-group
-            v-model="selectedServices"
-            stacked
-          >
+          <b-form-checkbox-group v-model="selectedServices" stacked>
             <b-form-checkbox
               v-for="service of DEFAULT_SERVICES"
               :key="service"

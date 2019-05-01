@@ -75,7 +75,10 @@ export default new Vuex.Store({
           commit("SET_CUSTOMERS", customers);
         });
     },
-    createCustomer({ dispatch, state }, [name, watchmanId, repairshoprId]) {
+    createCustomer(
+      { commit, dispatch, state },
+      [name, watchmanId, repairshoprId, select = false]
+    ) {
       // create the request body
       const body = {
         name: name,
@@ -83,12 +86,15 @@ export default new Vuex.Store({
         repairshopr_id: repairshoprId
       };
       // send the POST request
-      axios
+      return axios
         .post("http://localhost:8000/api/customer", body)
         .then(r => r.data)
-        .then(() => {
+        .then(customer => {
           // load in customers
           dispatch("loadCustomers", state.customers.results.page);
+          if (select) {
+            commit("SET_CURRENT_CUSTOMER", customer);
+          }
         });
     },
     deleteCustomer({ dispatch }, [customerId, startingPage]) {

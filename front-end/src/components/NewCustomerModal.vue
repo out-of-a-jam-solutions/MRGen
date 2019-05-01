@@ -15,7 +15,8 @@ export default {
       form: {
         name: "",
         watchmanId: null,
-        repairshoprId: null
+        repairshoprId: null,
+        defaultSchedules: ["true"]
       },
       nameState: null
     };
@@ -25,17 +26,17 @@ export default {
       // prevent modal from closing
       bvModalEvt.preventDefault();
       // submit the form if submit is true or else keep the modal open
-      if (this.validateForm()) {
-        this.submitForm();
-      } else {
+      if (!this.validateForm()) {
         return;
       }
-      // hide the modal manually
-      this.$nextTick(() => {
-        this.$refs.modal.hide();
+      this.submitForm().then(() => {
+        // hide the modal manually
+        this.$nextTick(() => {
+          this.$refs.modal.hide();
+        });
+        // modal close cleanup
+        this.modalClosed();
       });
-      // modal close cleanup
-      this.modalClosed();
     },
     modalClosed() {
       // mark the modal as closed
@@ -44,19 +45,43 @@ export default {
       this.resetForm();
     },
     submitForm() {
-      // set the watchman id and repairshopr id to null if they are blank
-      if (this.form.watchmanId === "") {
-        this.form.watchmanId = null;
-      }
-      if (this.form.repairshoprId === "") {
-        this.form.repairshoprId = null;
-      }
-      // send the request to create the customer
-      this.$store.dispatch("createCustomer", [
-        this.form.name,
-        this.form.watchmanId,
-        this.form.repairshoprId
-      ]);
+      return new Promise(resolve => {
+        // set the watchman id and repairshopr id to null if they are blank
+        if (this.form.watchmanId === "") {
+          this.form.watchmanId = null;
+        }
+        if (this.form.repairshoprId === "") {
+          this.form.repairshoprId = null;
+        }
+        // send the request to create the customer
+        this.$store
+          .dispatch("createCustomer", [
+            this.form.name,
+            this.form.watchmanId,
+            this.form.repairshoprId,
+            true
+          ])
+          .then(() => {
+            // create the default schedules if appropriate
+            if (this.form.defaultSchedules.length !== 0) {
+              // create the watchman schedule
+              if (this.form.watchmanId !== null) {
+                this.$store.dispatch("createSchedule", [
+                  this.selectedCustomer.pk,
+                  "watchman"
+                ]);
+              }
+              // create the repairshopr schedule
+              if (this.form.repairshoprId !== null) {
+                this.$store.dispatch("createSchedule", [
+                  this.selectedCustomer.pk,
+                  "repairshopr"
+                ]);
+              }
+            }
+            resolve();
+          });
+      });
     },
     validateForm() {
       // check if the form is valid
@@ -70,13 +95,14 @@ export default {
       this.form = {
         name: "",
         watchmanId: null,
-        repairshoprId: null
+        repairshoprId: null,
+        defaultSchedules: ["true"]
       };
       // reset the state
       this.nameState = null;
     }
   },
-  computed: mapState(["newCustomerModalOpen"]),
+  computed: mapState(["selectedCustomer", "newCustomerModalOpen"]),
   watch: {
     newCustomerModalOpen(newValue) {
       // open the modal if the open value is set true
@@ -131,6 +157,11 @@ export default {
           >
           </b-form-input>
         </b-form-group>
+        <b-form-checkbox-group v-model="form.defaultSchedules">
+          <b-form-checkbox value="true">
+            Start monitoring services
+          </b-form-checkbox>
+        </b-form-checkbox-group>
       </b-form>
     </b-modal>
   </div>
