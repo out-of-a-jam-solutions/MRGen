@@ -77,15 +77,15 @@ export default new Vuex.Store({
     ) {
       const body = {
         customer: customerId,
-        taskType: taskType,
-        periodicTask: periodicTask
+        task_type: taskType,
+        periodic_task: periodicTask
       };
       axios
         .post("http://localhost:8000/api/schedule", body)
         .then(r => r.data)
         .then(() => {
           // load in the customers from the back-end
-          dispatch("loadCustomers", startingPage);
+          dispatch("loadSchedules", [customerId, startingPage]);
         });
     },
     deleteCustomer({ dispatch }, [customerId, startingPage]) {

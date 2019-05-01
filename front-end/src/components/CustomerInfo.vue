@@ -15,7 +15,7 @@ export default {
       form: {
         services: [],
         defaultCron: ["default-cron"],
-        crontab: "0 2 * * *"
+        taskRunTime: "02:00"
       }
     };
   },
@@ -41,31 +41,38 @@ export default {
     submitForm() {
       // exit when the form isn't valid
       if (!this.validateForm()) {
-        return
+        return false;
       }
-      // submit the form
-      console.log("SUBMIT");
-      // hide the modal manually
-      this.$nextTick(() => {
-        this.$refs.modal.hide()
-      });
+      // parse the time form field
+      const taskTime = this.form.taskRunTime.split(":");
+      const hour = parseInt(taskTime[0]).toString()
+      const minute = parseInt(taskTime[1]).toString()
+      // submit the schedules
+      for (const service of this.form.services) {
+        const task = {
+	        minute: minute,
+	        hour: hour,
+	        day_of_week: "*",
+	        day_of_month: "*",
+	        month_of_year: "*"
+        }
+        this.$store.dispatch("createSchedule", [this.selectedCustomer.pk, service, task, this.schedules.page])
+      }
+      return true;
     },
     validateForm() {
-      console.log("CHECK VALIDITY");
       return true;
     },
     resetForm() {
       this.form = {
         services: [],
         defaultCron: ["default-cron"],
-        crontab: "0 2 * * *"
+        taskRunTime: "02:00"
       };
     },
     toggleDefaultCron() {
       if (this.form.defaultCron.length === 0) {
-        this.form.crontab = "0 2 * * *";
-      } else {
-        this.form.crontab = "";
+        this.form.taskRunTime = "02:00";
       }
     },
 
@@ -74,7 +81,13 @@ export default {
       // prevent modal from closing
       bvModalEvt.preventDefault()
       // trigger submit handler
-      this.submitForm()
+      if (!this.submitForm()) {
+        return;
+      }
+      // hide the modal manually
+      this.$nextTick(() => {
+        this.$refs.modal.hide()
+      });
     }
   }
 };
@@ -149,23 +162,6 @@ export default {
             </b-form-invalid-feedback>
           </b-form-checkbox-group>
         </b-form-group>
-        <!-- watchman id -->
-        <b-form-group label="Service IDs">
-          <b-form-input
-            v-if="form.services.includes('watchman')"
-            placeholder="Enter the customer's Watchman ID"
-            class="mb-2"
-            required
-          >
-          </b-form-input>
-          <b-form-input
-            v-if="form.services.includes('repairshopr')"
-            placeholder="Enter the customer's RepairShopr ID"
-            class="mb-2"
-            required
-          >
-          </b-form-input>
-        </b-form-group>
         <b-form-group label="Schedule">
           <b-form-checkbox-group v-model="form.defaultCron" class="mb-2">
             <b-form-checkbox @change="toggleDefaultCron()" value="default-cron">
@@ -173,9 +169,10 @@ export default {
             </b-form-checkbox>
           </b-form-checkbox-group>
           <b-form-input
-            v-model="form.crontab"
+            v-model="form.taskRunTime"
             :disabled="form.defaultCron.length > 0"
-            placeholder="Enter a form.crontab schedule"
+            :type="'time'"
+            placeholder="What time should the task run"
             id="cron-schedule"
             required
           >
