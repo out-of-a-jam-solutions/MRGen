@@ -8,9 +8,13 @@ Vue.use(VueAxios, axios);
 
 export default new Vuex.Store({
   state: {
+    // customers
     customers: {},
     selectedCustomer: null,
+    newCustomerModalOpen: false,
+    // schedules
     schedules: {},
+    // defaults
     DEFAULT_CUSTOMERS_PER_PAGE: 10,
     DEFAULT_SCHEDULES_PER_PAGE: 10
   },
@@ -21,11 +25,15 @@ export default new Vuex.Store({
     SET_CURRENT_CUSTOMER(state, customer) {
       state.selectedCustomer = customer;
     },
+    SET_NEW_CUSTOMER_MODAL_OPEN(state, open) {
+      state.newCustomerModalOpen = open;
+    },
     SET_SCHEDULES(state, schedules) {
       state.schedules = schedules;
     }
   },
   actions: {
+    // customers
     loadCustomers({ commit, state }, startingPage = 1) {
       // construct the pagination query parameters for the request
       const parameters = {
@@ -54,6 +62,31 @@ export default new Vuex.Store({
       // load the customers schedules
       dispatch("loadSchedules", [customerId]);
     },
+    deleteCustomer({ dispatch }, [customerId, startingPage]) {
+      // delete the customer from the server
+      axios
+        .delete("http://localhost:8000/api/customer/" + customerId)
+        .then(r => r.data)
+        .then(() => {
+          // load in the non-deleted customers from the back-end
+          dispatch("loadCustomers", startingPage);
+        });
+    },
+    deleteSelectedCustomer({ dispatch, state }) {
+      dispatch("deleteCustomer", [
+        state.selectedCustomer.pk,
+        state.customers.page
+      ]);
+    },
+    toggleNewCustomerModal({ commit, state }, open = null) {
+      if (open === true || open === false) {
+        commit("SET_NEW_CUSTOMER_MODAL_OPEN", open);
+      } else {
+        commit("SET_NEW_CUSTOMER_MODAL_OPEN", !state.newCustomerModalOpen);
+      }
+    },
+
+    // schedules
     loadSchedules({ commit, state }, [customerId, startingPage = 1]) {
       // construct the pagination query parameters for the request
       const parameters = {
@@ -87,22 +120,6 @@ export default new Vuex.Store({
           // load in the customers from the back-end
           dispatch("loadSchedules", [customerId, startingPage]);
         });
-    },
-    deleteCustomer({ dispatch }, [customerId, startingPage]) {
-      // delete the customer from the server
-      axios
-        .delete("http://localhost:8000/api/customer/" + customerId)
-        .then(r => r.data)
-        .then(() => {
-          // load in the non-deleted customers from the back-end
-          dispatch("loadCustomers", startingPage);
-        });
-    },
-    deleteSelectedCustomer({ dispatch, state }) {
-      dispatch("deleteCustomer", [
-        state.selectedCustomer.pk,
-        state.customers.page
-      ]);
     },
     deleteSchedule({ dispatch, state }, [scheduleId, startingPage]) {
       // delete the schedule from the server

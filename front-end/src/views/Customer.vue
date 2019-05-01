@@ -1,12 +1,14 @@
 <script>
 import { mapState } from "vuex";
 import CustomerInfo from "@/components/CustomerInfo.vue";
+import NewCustomerModal from "@/components/NewCustomerModal.vue";
 
 export default {
   // component setup
   name: "customer",
   components: {
-    CustomerInfo
+    CustomerInfo,
+    NewCustomerModal
   },
 
   // lifecycle hooks
@@ -39,13 +41,16 @@ export default {
       this.$store.dispatch("selectCustomer", customerId);
     },
     deleteSelectedCustomer() {
-      this.$store.dispatch('deleteSelectedCustomer')
+      this.$store.dispatch("deleteSelectedCustomer");
     },
     customerActive(customerId) {
       if (!this.selectedCustomer || customerId !== this.selectedCustomer.pk) {
         return false;
       }
       return true;
+    },
+    openNewCustomerModal() {
+      this.$store.dispatch("toggleNewCustomerModal", true);
     }
   }
 };
@@ -62,16 +67,24 @@ export default {
           <b-form-input placeholder="Search customers..."></b-form-input>
           <!-- search buttons -->
           <b-input-group-append>
-            <b-button variant="primary"><font-awesome-icon icon="search" /></b-button>
-            <b-button variant="secondary"><font-awesome-icon icon="user-plus" /></b-button>
+            <b-button variant="primary">
+              <font-awesome-icon icon="search" />
+            </b-button>
+            <b-button @click="openNewCustomerModal()" variant="secondary">
+              <font-awesome-icon icon="user-plus" />
+            </b-button>
           </b-input-group-append>
         </b-input-group>
       </div>
       <!-- customer options -->
       <div class="col">
         <b-button-group>
-          <b-button variant="primary"><font-awesome-icon icon="calendar-plus" /></b-button>
-          <b-button @click="deleteSelectedCustomer()" variant="danger"><font-awesome-icon icon="user-minus" /></b-button>
+          <b-button variant="primary">
+            <font-awesome-icon icon="calendar-plus" />
+          </b-button>
+          <b-button @click="deleteSelectedCustomer()" variant="danger">
+            <font-awesome-icon icon="user-minus" />
+          </b-button>
         </b-button-group>
       </div>
     </div>
@@ -106,6 +119,9 @@ export default {
         <CustomerInfo></CustomerInfo>
       </div>
     </div>
+
+    <!-- modals -->
+    <NewCustomerModal></NewCustomerModal>
   </div>
 </template>
 
