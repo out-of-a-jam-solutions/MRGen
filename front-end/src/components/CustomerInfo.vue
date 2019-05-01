@@ -45,18 +45,23 @@ export default {
       }
       // parse the time form field
       const taskTime = this.form.taskRunTime.split(":");
-      const hour = parseInt(taskTime[0]).toString()
-      const minute = parseInt(taskTime[1]).toString()
+      const hour = parseInt(taskTime[0]).toString();
+      const minute = parseInt(taskTime[1]).toString();
       // submit the schedules
       for (const service of this.form.services) {
         const task = {
-	        minute: minute,
-	        hour: hour,
-	        day_of_week: "*",
-	        day_of_month: "*",
-	        month_of_year: "*"
-        }
-        this.$store.dispatch("createSchedule", [this.selectedCustomer.pk, service, task, this.schedules.page])
+          minute: minute,
+          hour: hour,
+          day_of_week: "*",
+          day_of_month: "*",
+          month_of_year: "*"
+        };
+        this.$store.dispatch("createSchedule", [
+          this.selectedCustomer.pk,
+          service,
+          task,
+          this.schedules.page
+        ]);
       }
       return true;
     },
@@ -79,14 +84,14 @@ export default {
     // modal methods
     handlePressOk(bvModalEvt) {
       // prevent modal from closing
-      bvModalEvt.preventDefault()
+      bvModalEvt.preventDefault();
       // trigger submit handler
       if (!this.submitForm()) {
         return;
       }
       // hide the modal manually
       this.$nextTick(() => {
-        this.$refs.modal.hide()
+        this.$refs.modal.hide();
       });
     }
   }
