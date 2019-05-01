@@ -98,6 +98,12 @@ export default new Vuex.Store({
           dispatch("loadCustomers", startingPage);
         });
     },
+    deleteSelectedCustomer({ dispatch, state }) {
+      dispatch("deleteCustomer", [
+        state.selectedCustomer.pk,
+        state.customers.page
+      ]);
+    },
     deleteSchedule({ dispatch, state }, [scheduleId, startingPage]) {
       // delete the schedule from the server
       axios

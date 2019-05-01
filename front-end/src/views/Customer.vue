@@ -38,6 +38,9 @@ export default {
     selectCustomer(customerId) {
       this.$store.dispatch("selectCustomer", customerId);
     },
+    deleteSelectedCustomer() {
+      this.$store.dispatch('deleteSelectedCustomer')
+    },
     customerActive(customerId) {
       if (!this.selectedCustomer || customerId !== this.selectedCustomer.pk) {
         return false;
@@ -49,34 +52,59 @@ export default {
 </script>
 
 <template>
-  <div class="row">
-    <div class="col-4">
-      <!-- customer pagination bar -->
-      <b-pagination
-        v-if="customers.page_count > 1"
-        v-model="currentPage"
-        :total-rows="customers.results_count"
-        :per-page="customers.page_size"
-        align="fill"
-        size="sm"
-      ></b-pagination>
-      <!-- customer list -->
-      <b-list-group>
-        <b-list-group-item
-          v-for="customer in customers.results"
-          :key="customer.pk"
-          :active="customerActive(customer.pk)"
-          @click="selectCustomer(customer.pk)"
-          class="no-focus"
-          button
-        >
-          {{ customer.name }}
-        </b-list-group-item>
-      </b-list-group>
+  <div>
+    <!-- header row -->
+    <div class="row mb-3">
+      <!-- search bar -->
+      <div class="col-4">
+        <b-input-group>
+          <!-- search area -->
+          <b-form-input placeholder="Search customers..."></b-form-input>
+          <!-- search buttons -->
+          <b-input-group-append>
+            <b-button variant="primary"><font-awesome-icon icon="search" /></b-button>
+            <b-button variant="secondary"><font-awesome-icon icon="user-plus" /></b-button>
+          </b-input-group-append>
+        </b-input-group>
+      </div>
+      <!-- customer options -->
+      <div class="col">
+        <b-button-group>
+          <b-button variant="primary"><font-awesome-icon icon="calendar-plus" /></b-button>
+          <b-button @click="deleteSelectedCustomer()" variant="danger"><font-awesome-icon icon="user-minus" /></b-button>
+        </b-button-group>
+      </div>
     </div>
-    <!-- customer information -->
-    <div class="col">
-      <CustomerInfo></CustomerInfo>
+    <!-- information row -->
+    <div class="row">
+      <div class="col-4">
+        <!-- customer pagination bar -->
+        <b-pagination
+          v-if="customers.page_count > 1"
+          v-model="currentPage"
+          :total-rows="customers.results_count"
+          :per-page="customers.page_size"
+          align="fill"
+          size="sm"
+        ></b-pagination>
+        <!-- customer list -->
+        <b-list-group>
+          <b-list-group-item
+            v-for="customer in customers.results"
+            :key="customer.pk"
+            :active="customerActive(customer.pk)"
+            @click="selectCustomer(customer.pk)"
+            class="no-focus"
+            button
+          >
+            {{ customer.name }}
+          </b-list-group-item>
+        </b-list-group>
+      </div>
+      <!-- customer information -->
+      <div class="col">
+        <CustomerInfo></CustomerInfo>
+      </div>
     </div>
   </div>
 </template>

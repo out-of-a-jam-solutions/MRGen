@@ -54,7 +54,7 @@ export default {
           variant="danger"
           class="align-middle"
         >
-          Delete
+          <font-awesome-icon icon="calendar-minus" />
         </b-button>
       </div>
     </div>

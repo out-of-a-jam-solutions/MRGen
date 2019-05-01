@@ -29,14 +29,6 @@ export default {
     }
   },
   methods: {
-    // component methods
-    deleteSelectedCustomer() {
-      this.$store.dispatch("deleteCustomer", [
-        this.selectedCustomer.pk,
-        this.customers.page
-      ]);
-    },
-
     // form methods
     submitForm() {
       // exit when the form isn't valid
@@ -122,10 +114,6 @@ export default {
       </b-list-group>
       <!-- footer -->
       <em slot="footer">
-        <!-- edit the customer -->
-        <b-button variant="primary" class="mr-2">
-          Update customer
-        </b-button>
         <!-- create new schedule -->
         <b-button
           @click="$bvModal.show('schedule-modal')"
@@ -133,14 +121,6 @@ export default {
           class="mr-2"
         >
           Add schedules
-        </b-button>
-        <!-- delete the customer -->
-        <b-button
-          @click="deleteSelectedCustomer()"
-          variant="danger"
-          class="mr-2"
-        >
-          Remove customer
         </b-button>
       </em>
     </b-card>
