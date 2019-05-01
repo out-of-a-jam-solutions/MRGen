@@ -34,6 +34,18 @@ export default new Vuex.Store({
   },
   actions: {
     // customers
+    selectCustomer({ commit, state, dispatch }, customerId) {
+      // attempt to load the customer
+      const customer = state.customers.results.find(c => c.pk === customerId);
+      // check if the customer is loaded
+      if (customer === null) {
+        return;
+      }
+      // select the customer
+      commit("SET_CURRENT_CUSTOMER", customer);
+      // load the customers schedules
+      dispatch("loadSchedules", [customerId]);
+    },
     loadCustomers({ commit, state }, startingPage = 1) {
       // construct the pagination query parameters for the request
       const parameters = {
@@ -50,17 +62,21 @@ export default new Vuex.Store({
           commit("SET_CUSTOMERS", customers);
         });
     },
-    selectCustomer({ commit, state, dispatch }, customerId) {
-      // attempt to load the customer
-      const customer = state.customers.results.find(c => c.pk === customerId);
-      // check if the customer is loaded
-      if (customer === null) {
-        return;
-      }
-      // select the customer
-      commit("SET_CURRENT_CUSTOMER", customer);
-      // load the customers schedules
-      dispatch("loadSchedules", [customerId]);
+    createCustomer({ dispatch, state }, [name, watchmanId, repairshoprId]) {
+      // create the request body
+      const body = {
+        name: name,
+        watchman_group_id: watchmanId,
+        repairshopr_id: repairshoprId
+      };
+      // send the POST request
+      axios
+        .post("http://localhost:8000/api/customer", body)
+        .then(r => r.data)
+        .then(() => {
+          // load in customers
+          dispatch("loadCustomers", state.customers.results.page);
+        });
     },
     deleteCustomer({ dispatch }, [customerId, startingPage]) {
       // delete the customer from the server
