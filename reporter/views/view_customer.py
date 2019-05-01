@@ -23,7 +23,7 @@ class CustomerLCView(generics.ListCreateAPIView):
     filterset_fields = ('id', 'name', 'watchman_group_id', 'repairshopr_id')
 
 
-class CustomerRUDView(generics.RetrieveUpdateDestroyAPIView):  # pylint: disable=too-many-ancestors
+class CustomerRDView(generics.RetrieveDestroyAPIView):  # pylint: disable=too-many-ancestors
     lookup_field = 'pk'
     serializer_class = serializers.CustomerSerializer
     queryset = models.Customer.objects.all()
