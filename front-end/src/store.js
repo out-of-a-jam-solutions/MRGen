@@ -9,14 +9,27 @@ Vue.use(VueAxios, axios);
 export default new Vuex.Store({
   state: {
     // customers
-    customers: {},
+    customers: {
+      results: []
+    },
     selectedCustomer: null,
     newCustomerModalOpen: false,
     // schedules
-    schedules: {},
+    schedules: {
+      results: []
+    },
+    newScheduleModalOpen: false,
     // defaults
     DEFAULT_CUSTOMERS_PER_PAGE: 10,
-    DEFAULT_SCHEDULES_PER_PAGE: 10
+    DEFAULT_SCHEDULES_PER_PAGE: 10,
+    DEFAULT_SERVICES: ["watchman", "repairshopr"],
+    DEFAULT_PERIODIC_TASK: {
+      minute: "0",
+      hour: "2",
+      day_of_week: "*",
+      day_of_month: "*",
+      month_of_year: "*"
+    }
   },
   mutations: {
     SET_CUSTOMERS(state, customers) {
@@ -121,9 +134,12 @@ export default new Vuex.Store({
         });
     },
     createSchedule(
-      { dispatch },
-      [customerId, taskType, periodicTask, startingPage]
+      { dispatch, state },
+      [customerId, taskType, periodicTask = null]
     ) {
+      if (periodicTask === null) {
+        periodicTask = state.DEFAULT_PERIODIC_TASK;
+      }
       const body = {
         customer: customerId,
         task_type: taskType,
@@ -134,10 +150,13 @@ export default new Vuex.Store({
         .then(r => r.data)
         .then(() => {
           // load in the customers from the back-end
-          dispatch("loadSchedules", [customerId, startingPage]);
+          dispatch("loadSchedules", [customerId, state.schedules.page]);
         });
     },
-    deleteSchedule({ dispatch, state }, [scheduleId, startingPage]) {
+    deleteSchedule({ dispatch, state }, [scheduleId, startingPage = null]) {
+      if (startingPage === null) {
+        startingPage = state.schedules.page;
+      }
       // delete the schedule from the server
       axios
         .delete("http://localhost:8000/api/schedule/" + scheduleId)

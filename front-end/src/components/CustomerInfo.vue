@@ -10,81 +10,48 @@ export default {
   },
 
   // component data
-  data() {
-    return {
-      form: {
-        services: [],
-        defaultCron: ["default-cron"],
-        taskRunTime: "02:00"
-      }
-    };
-  },
   computed: {
-    // component methods
-    ...mapState(["customers", "selectedCustomer", "schedules"]),
-
-    // modal methods
-    checkServicesValid() {
-      return this.form.services.length >= 1;
+    ...mapState(["customers", "selectedCustomer", "schedules", "DEFAULT_SERVICES"]),
+    selectedServices: {
+      get: function() {
+        return this.schedules.results.map(x => x.task_type);
+      },
+      set: function(newServices) {
+        // check for deletions
+        for (const service of this.selectedServices) {
+          if (!newServices.includes(service)) {
+            this.deleteScheduleByTaskType(service);
+          }
+        }
+        // check for additions
+        for (const service of newServices) {
+          if (!this.selectedServices.includes(service)) {
+            this.$store.dispatch("createSchedule", [this.selectedCustomer.pk, service]);
+          }
+        }
+      }
     }
   },
   methods: {
-    // form methods
-    submitForm() {
-      // exit when the form isn't valid
-      if (!this.validateForm()) {
-        return false;
-      }
-      // parse the time form field
-      const taskTime = this.form.taskRunTime.split(":");
-      const hour = parseInt(taskTime[0]).toString();
-      const minute = parseInt(taskTime[1]).toString();
-      // submit the schedules
-      for (const service of this.form.services) {
-        const task = {
-          minute: minute,
-          hour: hour,
-          day_of_week: "*",
-          day_of_month: "*",
-          month_of_year: "*"
-        };
-        this.$store.dispatch("createSchedule", [
-          this.selectedCustomer.pk,
-          service,
-          task,
-          this.schedules.page
-        ]);
-      }
-      return true;
-    },
-    validateForm() {
-      return true;
-    },
-    resetForm() {
-      this.form = {
-        services: [],
-        defaultCron: ["default-cron"],
-        taskRunTime: "02:00"
-      };
-    },
-    toggleDefaultCron() {
-      if (this.form.defaultCron.length === 0) {
-        this.form.taskRunTime = "02:00";
+    getServiceName(service) {
+      // correctly create known services
+      if (service === "repairshopr") {
+        return "RepairShopr";
+      } else if (service === "watchman") {
+        return "Watchman Monitoring";
+      // default fallback
+      } else {
+        return service.charAt(0).toUpperCase() + service.slice(1);
       }
     },
-
-    // modal methods
-    handlePressOk(bvModalEvt) {
-      // prevent modal from closing
-      bvModalEvt.preventDefault();
-      // trigger submit handler
-      if (!this.submitForm()) {
-        return;
+    deleteScheduleByTaskType(taskType) {
+      // delete all schedules where the task type matches
+      for (const schedule of this.schedules.results) {
+        if (schedule.task_type === taskType) {
+          // make a request to delete the task
+          this.$store.dispatch("deleteSchedule", [schedule.pk]);
+        }
       }
-      // hide the modal manually
-      this.$nextTick(() => {
-        this.$refs.modal.hide();
-      });
     }
   }
 };
@@ -103,68 +70,25 @@ export default {
         <br />
         RepairShopr ID: {{ selectedCustomer.repairshopr_id }}
       </b-card-text>
-      <!-- schedules -->
-      <h5>Schedules</h5>
-      <b-list-group>
-        <Schedule
-          v-for="schedule in schedules.results"
-          :key="schedule.pk"
-          :schedule="schedule"
-        ></Schedule>
-      </b-list-group>
-      <!-- footer -->
-      <em slot="footer">
-        <!-- create new schedule -->
-        <b-button
-          @click="$bvModal.show('schedule-modal')"
-          variant="primary"
-          class="mr-2"
-        >
-          Add schedules
-        </b-button>
-      </em>
-    </b-card>
-
-    <!-- schedule modal -->
-    <b-modal
-      @show="resetForm"
-      @hidden="resetForm"
-      @ok="handlePressOk"
-      ref="modal"
-      title="Add Schedules"
-      id="schedule-modal"
-    >
-      <b-form @submit.stop.prevent>
-        <!-- service selector -->
-        <b-form-group label="Select services" label-for="service-selector">
-          <b-form-checkbox-group id="service-selector" v-model="form.services">
-            <!-- checkboxes -->
-            <b-form-checkbox value="watchman">Watchman</b-form-checkbox>
-            <b-form-checkbox value="repairshopr">RepairShopr</b-form-checkbox>
-            <!-- validator feedback -->
-            <b-form-invalid-feedback :state="checkServicesValid">
-              Please select at least one
-            </b-form-invalid-feedback>
-          </b-form-checkbox-group>
-        </b-form-group>
-        <b-form-group label="Schedule">
-          <b-form-checkbox-group v-model="form.defaultCron" class="mb-2">
-            <b-form-checkbox @change="toggleDefaultCron()" value="default-cron">
-              Use default schedule
+      <!-- services -->
+      <h5>Services</h5>
+      <b-form>
+        <b-form-group>
+          <b-form-checkbox-group
+            v-model="selectedServices"
+            stacked
+          >
+            <b-form-checkbox
+              v-for="service of DEFAULT_SERVICES"
+              :key="service"
+              :value="service"
+            >
+              {{ getServiceName(service) }}
             </b-form-checkbox>
           </b-form-checkbox-group>
-          <b-form-input
-            v-model="form.taskRunTime"
-            :disabled="form.defaultCron.length > 0"
-            :type="'time'"
-            placeholder="What time should the task run"
-            id="cron-schedule"
-            required
-          >
-          </b-form-input>
         </b-form-group>
       </b-form>
-    </b-modal>
+    </b-card>
   </div>
 </template>
 

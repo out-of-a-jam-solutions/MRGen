@@ -51,6 +51,9 @@ export default {
     },
     openNewCustomerModal() {
       this.$store.dispatch("toggleNewCustomerModal", true);
+    },
+    openNewScheduleModal() {
+      this.$store.dispatch("toggleNewScheduleModal", true);
     }
   }
 };
@@ -70,17 +73,14 @@ export default {
             <b-button variant="primary">
               <font-awesome-icon icon="search" />
             </b-button>
-            <b-button @click="openNewCustomerModal()" variant="secondary">
-              <font-awesome-icon icon="user-plus" />
-            </b-button>
           </b-input-group-append>
         </b-input-group>
       </div>
       <!-- customer options -->
       <div class="col">
         <b-button-group>
-          <b-button variant="primary">
-            <font-awesome-icon icon="calendar-plus" />
+          <b-button @click="openNewCustomerModal()" variant="primary">
+            <font-awesome-icon icon="user-plus" />
           </b-button>
           <b-button @click="deleteSelectedCustomer()" variant="danger">
             <font-awesome-icon icon="user-minus" />
@@ -104,9 +104,9 @@ export default {
         <b-list-group>
           <b-list-group-item
             v-for="customer in customers.results"
+            @click="selectCustomer(customer.pk)"
             :key="customer.pk"
             :active="customerActive(customer.pk)"
-            @click="selectCustomer(customer.pk)"
             class="no-focus"
             button
           >
