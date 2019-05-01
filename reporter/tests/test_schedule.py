@@ -67,7 +67,6 @@ class ScheduleListTest(test.APITestCase):
         self.client.post(reverse(self.view_name), request_body, format='json')
         # request
         response = self.client.get(reverse(self.view_name))
-        response_body = json.loads(response.content.decode('utf-8'))
         # test response
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
