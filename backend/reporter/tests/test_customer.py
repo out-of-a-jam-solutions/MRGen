@@ -1,6 +1,7 @@
 import json
 
 from django.contrib.auth.models import User
+from django_celery_beat.models import PeriodicTask
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework import test
@@ -164,3 +165,47 @@ class CustomerRDTest(test.APITestCase):
         self.assertNotIn(self.customer, customers)
         # test response
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_customer_delete_associated_schedules(self):
+        """
+        Tests that deleting a customer also deletes any associated schedules.
+        """
+        # create schedule
+        request_body = {
+            'periodic_task': {
+                'minute': '0',
+                'hour': '2',
+                'day_of_week': '*',
+                'day_of_month': '*',
+                'month_of_year': '*',
+            },
+            'customer': self.customer.id,
+            'task_type': 'watchman'
+        }
+        self.client.post(reverse('reporter:schedule-lc'), request_body, format='json')
+        # request
+        self.client.delete(reverse(self.view_name, args=[self.customer.id]))
+        # test database
+        self.assertFalse(models.Schedule.objects.exists())
+
+    def test_customer_delete_associated_periodic_tasks(self):
+        """
+        Tests that deleting a customer also deletes any associated periodic tasks.
+        """
+        # create schedule
+        request_body = {
+            'periodic_task': {
+                'minute': '0',
+                'hour': '2',
+                'day_of_week': '*',
+                'day_of_month': '*',
+                'month_of_year': '*',
+            },
+            'customer': self.customer.id,
+            'task_type': 'watchman'
+        }
+        self.client.post(reverse('reporter:schedule-lc'), request_body, format='json')
+        # request
+        self.client.delete(reverse(self.view_name, args=[self.customer.id]))
+        # test database
+        self.assertFalse(PeriodicTask.objects.exists())

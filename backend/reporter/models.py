@@ -15,9 +15,9 @@ class Schedule(models.Model):
     customer = models.ForeignKey(Customer,
                                  db_column='customer_id',
                                  on_delete=models.CASCADE)
-    periodic_task = models.ForeignKey(PeriodicTask,
-                                      db_column='periodic_task_id',
-                                      on_delete=models.CASCADE)
+    periodic_task = models.OneToOneField(PeriodicTask,
+                                         db_column='periodic_task_id',
+                                         on_delete=models.CASCADE)
     task_type = models.CharField(max_length=25)
 
     class Meta:
