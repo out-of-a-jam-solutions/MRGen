@@ -1,0 +1,331 @@
+openapi: 3.0.2
+servers:
+  - url: 'https://mrgen.outofajam.net/api'
+  - url: 'http://localhost:8000/api'
+info:
+  version: "1.0"
+  title: MRGen API
+  description: The API for MRGen. This includes endpoints to create customers, reports, and reporting schedules.
+paths:
+  '/customer':
+    get:
+      summary: List customers
+      tags:
+        - customer
+      parameters:
+        - $ref: '#/components/parameters/page_query'
+        - $ref: '#/components/parameters/page_size_query'
+      responses:
+        '200':
+          description: The customers were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Customer'
+                  page:
+                    $ref: '#/components/schemas/PaginationPage'
+                  page_count:
+                    $ref: '#/components/schemas/PaginationPageCount'
+                  page_size:
+                    $ref: '#/components/schemas/PaginationPageSize'
+                  page_next:
+                    $ref: '#/components/schemas/PaginationNext'
+                  page_previous:
+                    $ref: '#/components/schemas/PaginationPrevious'
+                  results_count:
+                    $ref: '#/components/schemas/PaginationResultsCount'
+    post:
+      summary: Create a customer
+      tags:
+        - customer
+      responses:
+        '201':
+          description: The customer was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+      requestBody:
+        $ref: '#/components/requestBodies/CustomerBody'
+  '/customer/{customer_id}':
+    get:
+      summary: Read a customer
+      tags:
+        - customer
+      parameters:
+        - $ref: '#/components/parameters/customer_id'
+      responses:
+        '200':
+          description: The customer was read successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+    delete:
+      summary: Delete a customer
+      tags:
+        - customer
+      parameters:
+        - $ref: '#/components/parameters/customer_id'
+      responses:
+        '204':
+          $ref: '#/components/responses/204NoContent'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+  '/schedule':
+    get:
+      summary: List schedules
+      tags:
+        - schedule
+      parameters:
+        - $ref: '#/components/parameters/page_query'
+        - $ref: '#/components/parameters/page_size_query'
+      responses:
+        '200':
+          description: The schedules were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Schedule'
+                  page:
+                    $ref: '#/components/schemas/PaginationPage'
+                  page_count:
+                    $ref: '#/components/schemas/PaginationPageCount'
+                  page_size:
+                    $ref: '#/components/schemas/PaginationPageSize'
+                  page_next:
+                    $ref: '#/components/schemas/PaginationNext'
+                  page_previous:
+                    $ref: '#/components/schemas/PaginationPrevious'
+                  results_count:
+                    $ref: '#/components/schemas/PaginationResultsCount'
+    post:
+      summary: Create a schedule
+      tags:
+        - schedule
+      responses:
+        '201':
+          description: The schedule was created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+        '400':
+          $ref: '#/components/responses/400BadRequest'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '422':
+          $ref: '#/components/responses/422UnprocessableEntity'
+      requestBody:
+        $ref: '#/components/requestBodies/ScheduleBody'
+  '/schedule/{schedule_id}':
+    get:
+      summary: Read a schedule
+      tags:
+        - schedule
+      parameters:
+        - $ref: '#/components/parameters/schedule_id'
+      responses:
+        '200':
+          description: The schedule was read successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+    delete:
+      summary: Delete a schedule
+      tags:
+        - schedule
+      parameters:
+        - $ref: '#/components/parameters/schedule_id'
+      responses:
+        '204':
+          $ref: '#/components/responses/204NoContent'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+components:
+  parameters:
+    customer_id:
+      name: customer_id
+      in: path
+      description: The ID of the customer to work with.
+      required: true
+      schema:
+        type: string
+    schedule_id:
+      name: schedule_id
+      in: path
+      description: The ID of the schedule to work with.
+      required: true
+      schema:
+        type: string
+    page_query:
+      name: page
+      in: query
+      description: The page number to work with.
+      required: false
+      schema:
+        type: string
+    page_size_query:
+      name: page_size
+      in: query
+      description: The number of recored of each page.
+      required: false
+      schema:
+        type: string
+  schemas:
+    Customer:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        watchman_group_id:
+          type: string
+        repairshopr_id:
+          type: string
+      example:
+        id: 275
+        name: 'MSFLC'
+        watchman_group_id: 'g_1234567'
+        repairshopr_id: '1234567'
+    Schedule:
+      type: object
+      properties:
+        id:
+          type: number
+        periodic_task:
+          type: object
+          properties:
+            minute:
+              type: string
+            hour:
+              type: string
+            day_of_week:
+              type: string
+            day_of_month:
+              type: string
+            month_of_year:
+              type: string
+        customer:
+          type: number
+        task_type:
+          type: string
+      example:
+        id: 354
+        periodic_task:
+          minute: '0'
+          hour: '2'
+          day_of_week: '*'
+          day_of_month: '*'
+          month_of_year: '*'
+        customer: 2
+        task_type: 'watchman'
+    PaginationPage:
+      type: number
+      example: 1
+    PaginationPageCount:
+      type: number
+      example: 2
+    PaginationPageSize:
+      type: number
+      example: 10
+    PaginationNext:
+      type: string
+      example: 'http://localhost:8000/api/schedule?page=2&page_size=1'
+    PaginationPrevious:
+      type: string
+      example: null
+    PaginationResultsCount:
+      type: number
+      example: 17
+  requestBodies:
+    CustomerBody:
+      description: A JSON object containing customer information.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                description: The name of the customer.
+                type: string
+              watchman_group_id:
+                description: The customer's Watchman Monitoring group ID.
+                type: string
+              repairshopr_id:
+                description: The customer's RepairShopr ID.
+                type: string
+            required:
+              - name
+              - watchman_group_id
+              - repairshopr_id
+    ScheduleBody:
+      description: A JSON object containing schedule information.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              periodic_task:
+                description: The cron string of the schedule.
+                type: object
+                properties:
+                  minute:
+                    type: string
+                  hour:
+                    type: string
+                  day_of_week:
+                    type: string
+                  day_of_month:
+                    type: string
+                  month_of_year:
+                    type: string
+              customer:
+                description: The ID of the customer associated with the scedule.
+                type: number
+              task_type:
+                description: The type of task to be scheduled.
+                type: string
+            required:
+              - periodic_task
+              - customer
+              - task_type
+  responses:
+    204NoContent:
+      description: The request completed successfully and has no response body.
+    400BadRequest:
+      description: The request could not be understood by the server.
+    401NotAuthenticated:
+      description: This action requires authentication.
+    403Forbidden:
+      description: This action requires authorization or is not allowed.
+    404NotFound:
+      description: The resource could not be found.
+    422UnprocessableEntity:
+      description: The request was understood but the data was rejected.

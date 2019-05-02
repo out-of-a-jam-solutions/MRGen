@@ -6,6 +6,7 @@ verify_ssl = true
 [dev-packages]
 pylint = "*"
 pylint-django = "*"
+rope = "*"
 
 [packages]
 django = "~=2.2"
@@ -16,6 +17,8 @@ python-dotenv = "*"
 djangorestframework = "*"
 django-celery-beat = "*"
 django-celery-results = "*"
+mysqlclient = "*"
+django-filter = "*"
 
 [requires]
 python_version = "3.7"
