@@ -3,7 +3,7 @@ from rest_framework import views
 from rest_framework import generics
 from rest_framework import response
 
-from reporter import models, serializers, tasks_watchman
+from backend.reporter import models, serializers, tasks_watchman
 
 
 class Forward(views.APIView):
@@ -23,7 +23,7 @@ class CustomerLCView(generics.ListCreateAPIView):
     filterset_fields = ('id', 'name', 'watchman_group_id', 'repairshopr_id')
 
 
-class CustomerRUDView(generics.RetrieveUpdateDestroyAPIView):  # pylint: disable=too-many-ancestors
+class CustomerRDView(generics.RetrieveDestroyAPIView):  # pylint: disable=too-many-ancestors
     lookup_field = 'pk'
     serializer_class = serializers.CustomerSerializer
     queryset = models.Customer.objects.all()

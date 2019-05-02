@@ -1,7 +1,6 @@
 from rest_framework import generics
 
-from reporter import models
-from reporter import serializers
+from backend.reporter import models, serializers
 
 
 class ScheduleLCView(generics.ListCreateAPIView):
