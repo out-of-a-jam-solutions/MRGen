@@ -72,27 +72,6 @@ paths:
                 $ref: '#/components/schemas/Customer'
         '404':
           $ref: '#/components/responses/404NotFound'
-    put:
-      summary: Update a customer
-      tags:
-        - customer
-      parameters:
-        - $ref: '#/components/parameters/customer_id'
-      responses:
-        '200':
-          description: The customer was updated successfully.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Customer'
-        '400':
-          $ref: '#/components/responses/400BadRequest'
-        '403':
-          $ref: '#/components/responses/403Forbidden'
-        '404':
-          $ref: '#/components/responses/404NotFound'
-      requestBody:
-        $ref: '#/components/requestBodies/CustomerBody'
     delete:
       summary: Delete a customer
       tags:
@@ -173,29 +152,6 @@ paths:
                 $ref: '#/components/schemas/Schedule'
         '404':
           $ref: '#/components/responses/404NotFound'
-    put:
-      summary: Update a schedule
-      tags:
-        - schedule
-      parameters:
-        - $ref: '#/components/parameters/schedule_id'
-      responses:
-        '200':
-          description: The schedule was updated successfully.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Schedule'
-        '400':
-          $ref: '#/components/responses/400BadRequest'
-        '403':
-          $ref: '#/components/responses/403Forbidden'
-        '404':
-          $ref: '#/components/responses/404NotFound'
-        '422':
-          $ref: '#/components/responses/422UnprocessableEntity'
-      requestBody:
-        $ref: '#/components/requestBodies/CustomerBody'
     delete:
       summary: Delete a schedule
       tags:

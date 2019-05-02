@@ -28,6 +28,20 @@ class PeriodicTaskField(serializers.Field):
             raise serializers.ValidationError({'customer': 'This field is required'})
         except models.Customer.DoesNotExist:
             raise serializers.ValidationError({'customer': 'This field must be a valid customer id'})
+        # create the appropriate task type, either watchman or repairshopr
+        if data['task_type'] == 'watchman':
+            task_type = 'backend.reporter.tasks_watchman.update_client'
+            task_args = [customer.watchman_group_id]
+        elif data['task_type'] == 'repairshopr':
+            task_type = 'backend.reporter.tasks_repairshopr.update_client'
+            task_args = [customer.repairshopr_id]
+        else:
+            raise serializers.ValidationError({'task_type': 'This field must be either "watchman" or "repairshopr"'})
+        # check that the customer has the appropriate service id for the specified task type
+        if data['task_type'] == 'watchman' and customer.watchman_group_id is None:
+            raise serializers.ValidationError({'task_type': 'The specified customer does not have a Watchman ID defined'})
+        if data['task_type'] == 'repairshopr' and customer.repairshopr_id is None:
+            raise serializers.ValidationError({'task_type': 'The specified customer does not have a RepairShopr ID defined'})
         # create the task name
         task_name = '{} {}'.format(customer.name, data['task_type'])
         # validate the cron data
@@ -42,16 +56,7 @@ class PeriodicTaskField(serializers.Field):
         # check if a periodic task with the same name already exists
         if PeriodicTask.objects.filter(name=task_name).exists():
             raise serializers.ValidationError('A periodic task with this name already exists')
-        # create the appropriate task type, either watchman or repairshopr
-        if data['task_type'] == 'watchman':
-            task_type = 'backend.reporter.tasks_watchman.update_client'
-            task_args = [customer.watchman_group_id]
-        elif data['task_type'] == 'repairshopr':
-            task_type = 'backend.reporter.tasks_repairshopr.update_client'
-            task_args = [customer.repairshopr_id]
-        else:
-            raise serializers.ValidationError({'task_type': 'This field must be either "watchman" or "repairshopr"'})
-        # prepare the periodic
+        # prepare the periodic task
         task = PeriodicTask(crontab=cron,
                             name=task_name,
                             task=task_type,
