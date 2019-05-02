@@ -1,5 +1,5 @@
 from django.contrib import admin
-from reporter import models
+from backend.reporter import models
 
 admin.site.register(models.Customer)
 admin.site.register(models.WatchmanComputer)

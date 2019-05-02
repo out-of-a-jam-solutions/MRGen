@@ -7,7 +7,7 @@ from rest_framework.reverse import reverse
 from rest_framework import status
 from rest_framework import test
 
-from reporter import models
+from backend.reporter import models
 
 
 class ScheduleListTest(test.APITestCase):
@@ -354,7 +354,7 @@ class ScheduleCreateTest(test.APITestCase):
         task = PeriodicTask.objects.first()
         cron = CrontabSchedule.objects.first()
         self.assertEqual(task.crontab, cron)
-        self.assertEqual(task.task, 'reporter.tasks_watchman.update_client')
+        self.assertEqual(task.task, 'backend.reporter.tasks_watchman.update_client')
         self.assertEqual(ast.literal_eval(task.args)[0], self.customer.watchman_group_id)
 
     def test_schedule_create_periodic_task_repairshopr(self):
@@ -378,7 +378,7 @@ class ScheduleCreateTest(test.APITestCase):
         task = PeriodicTask.objects.first()
         cron = CrontabSchedule.objects.first()
         self.assertEqual(task.crontab, cron)
-        self.assertEqual(task.task, 'reporter.tasks_repairshopr.update_client')
+        self.assertEqual(task.task, 'backend.reporter.tasks_repairshopr.update_client')
         self.assertEqual(ast.literal_eval(task.args)[0], self.customer.repairshopr_id)
 
     def test_schedule_create_periodic_task_invalid_type(self):

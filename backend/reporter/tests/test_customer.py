@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework import test
 
-from reporter import models
+from backend.reporter import models
 
 
 class CustomerLCTest(test.APITestCase):

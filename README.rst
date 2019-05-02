@@ -29,13 +29,13 @@ Local Setup
 
 ::
 
-  $ pipenv run celery -A MRGen worker -l info
+  $ pipenv run celery -A backend worker -l info
 
 6. Start the Beat process
 
 ::
 
-  $ pipenv run celery -A MRGen beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+  $ pipenv run celery -A backend beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
 
 .. |Build Status| image:: https://travis-ci.org/out-of-a-jam-solutions/MRGen.svg?branch=develop
     :target: https://travis-ci.org/out-of-a-jam-solutions/MRGen

@@ -2,7 +2,7 @@
 # jan 13, 2019
 
 from django.conf.urls import url
-from reporter import views
+from backend.reporter import views
 
 
 urlpatterns = [
