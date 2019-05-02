@@ -406,6 +406,56 @@ class ScheduleCreateTest(test.APITestCase):
         # test response
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_schedule_create_periodic_task_no_customer_watchman(self):
+        """
+        Tests that a Watchman periodic task is not created if the customer has no Watchman ID.
+        """
+        # set customer's watchman ID to None
+        self.customer.watchman_group_id = None
+        self.customer.save()
+        # request
+        request_body = {
+            'periodic_task': {
+                'minute': '0',
+                'hour': '2',
+                'day_of_week': '*',
+                'day_of_month': '*',
+                'month_of_year': '*',
+            },
+            'customer': self.customer.id,
+            'task_type': 'watchman'
+        }
+        response = self.client.post(reverse(self.view_name), request_body, format='json')
+        # test database
+        self.assertFalse(PeriodicTask.objects.exists())
+        # test response
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_schedule_create_periodic_task_no_customer_repairshopr(self):
+        """
+        Tests that a RepairShopr periodic task is not created if the customer has no RepairShopr ID.
+        """
+        # set customer's watchman ID to None
+        self.customer.repairshopr_id = None
+        self.customer.save()
+        # request
+        request_body = {
+            'periodic_task': {
+                'minute': '0',
+                'hour': '2',
+                'day_of_week': '*',
+                'day_of_month': '*',
+                'month_of_year': '*',
+            },
+            'customer': self.customer.id,
+            'task_type': 'repairshopr'
+        }
+        response = self.client.post(reverse(self.view_name), request_body, format='json')
+        # test database
+        self.assertFalse(PeriodicTask.objects.exists())
+        # test response
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_schedule_create_crontab(self):
         """
         Tests that a crontab is created for the schedule.
