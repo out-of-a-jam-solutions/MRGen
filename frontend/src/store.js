@@ -57,9 +57,13 @@ export default new Vuex.Store({
       // select the customer
       commit("SET_CURRENT_CUSTOMER", customer);
       // load the customers schedules
-      dispatch("loadSchedules", [customerId]);
+      dispatch("loadSchedules", customerId);
     },
-    loadCustomers({ commit, state }, startingPage = 1) {
+    loadCustomers({ commit, state }, startingPage = null) {
+      // keep the current page number if no page is given
+      if (startingPage === null) {
+        startingPage = state.customers.page;
+      }
       // construct the pagination query parameters for the request
       const parameters = {
         params: {
@@ -97,7 +101,11 @@ export default new Vuex.Store({
           }
         });
     },
-    deleteCustomer({ dispatch }, [customerId, startingPage]) {
+    deleteCustomer({ dispatch, state }, [customerId, startingPage = null]) {
+      // keep the current page number if no page is given
+      if (startingPage === null) {
+        startingPage = state.customers.page;
+      }
       // delete the customer from the server
       axios
         .delete("http://localhost:8000/api/customer/" + customerId)
@@ -108,10 +116,7 @@ export default new Vuex.Store({
         });
     },
     deleteSelectedCustomer({ dispatch, state }) {
-      dispatch("deleteCustomer", [
-        state.selectedCustomer.pk,
-        state.customers.page
-      ]);
+      dispatch("deleteCustomer", [state.selectedCustomer.pk]);
     },
     toggleNewCustomerModal({ commit, state }, open = null) {
       if (open || open === false) {
@@ -122,11 +127,12 @@ export default new Vuex.Store({
     },
 
     // schedules
-    loadSchedules({ commit, state }, [customerId, startingPage = 1]) {
+    loadSchedules({ commit, state }, customerId) {
       // construct the pagination query parameters for the request
       const parameters = {
         params: {
-          page: startingPage,
+          // pagination for schedules will be removed, always use the first page
+          page: 1,
           page_size: state.DEFAULT_SCHEDULES_PER_PAGE,
           customer: customerId
         }
@@ -143,33 +149,33 @@ export default new Vuex.Store({
       { dispatch, state },
       [customerId, taskType, periodicTask = null]
     ) {
+      // use the default periodic task if none is given
       if (periodicTask === null) {
         periodicTask = state.DEFAULT_PERIODIC_TASK;
       }
+      // request query params
       const body = {
         customer: customerId,
         task_type: taskType,
         periodic_task: periodicTask
       };
+      // request to create new schedule
       axios
         .post("http://localhost:8000/api/schedule", body)
         .then(r => r.data)
         .then(() => {
           // load in the customers from the back-end
-          dispatch("loadSchedules", [customerId, state.schedules.page]);
+          dispatch("loadSchedules", customerId);
         });
     },
-    deleteSchedule({ dispatch, state }, [scheduleId, startingPage = null]) {
-      if (startingPage === null) {
-        startingPage = state.schedules.page;
-      }
+    deleteSchedule({ dispatch, state }, scheduleId) {
       // delete the schedule from the server
       axios
         .delete("http://localhost:8000/api/schedule/" + scheduleId)
         .then(r => r.data)
         .then(() => {
           // load in the non-deleted schedules from the back-end for the current customer
-          dispatch("loadSchedules", [state.selectedCustomer.pk, startingPage]);
+          dispatch("loadSchedules", state.selectedCustomer.pk);
         });
     }
   }

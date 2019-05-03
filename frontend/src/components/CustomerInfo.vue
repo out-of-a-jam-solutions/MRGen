@@ -54,7 +54,7 @@ export default {
       for (const schedule of this.schedules.results) {
         if (schedule.task_type === taskType) {
           // make a request to delete the task
-          this.$store.dispatch("deleteSchedule", [schedule.pk]);
+          this.$store.dispatch("deleteSchedule", schedule.pk);
         }
       }
     }
