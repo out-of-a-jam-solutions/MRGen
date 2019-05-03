@@ -73,7 +73,7 @@ export default new Vuex.Store({
       };
       // request the customers from the server
       axios
-        .get("http://localhost:8000/api/customer", parameters)
+        .get(`${process.env.VUE_APP_API_URL}/customer`, parameters)
         .then(r => r.data)
         .then(customers => {
           commit("SET_CUSTOMERS", customers);
@@ -91,7 +91,7 @@ export default new Vuex.Store({
       };
       // send the POST request
       return axios
-        .post("http://localhost:8000/api/customer", body)
+        .post(`${process.env.VUE_APP_API_URL}/customer`, body)
         .then(r => r.data)
         .then(customer => {
           // load in customers
@@ -108,7 +108,7 @@ export default new Vuex.Store({
       }
       // delete the customer from the server
       axios
-        .delete("http://localhost:8000/api/customer/" + customerId)
+        .delete(`${process.env.VUE_APP_API_URL}/customer/${customerId}`)
         .then(r => r.data)
         .then(() => {
           // load in the non-deleted customers from the back-end
@@ -139,7 +139,7 @@ export default new Vuex.Store({
       };
       // request the schedules from the server
       axios
-        .get("http://localhost:8000/api/schedule", parameters)
+        .get(`${process.env.VUE_APP_API_URL}/schedule`, parameters)
         .then(r => r.data)
         .then(schedules => {
           commit("SET_SCHEDULES", schedules);
@@ -161,7 +161,7 @@ export default new Vuex.Store({
       };
       // request to create new schedule
       axios
-        .post("http://localhost:8000/api/schedule", body)
+        .post(`${process.env.VUE_APP_API_URL}/schedule`, body)
         .then(r => r.data)
         .then(() => {
           // load in the customers from the back-end
@@ -171,7 +171,7 @@ export default new Vuex.Store({
     deleteSchedule({ dispatch, state }, scheduleId) {
       // delete the schedule from the server
       axios
-        .delete("http://localhost:8000/api/schedule/" + scheduleId)
+        .delete(`${process.env.VUE_APP_API_URL}/schedule/${scheduleId}`)
         .then(r => r.data)
         .then(() => {
           // load in the non-deleted schedules from the back-end for the current customer
