@@ -30,6 +30,14 @@ Django Setup
 
   $ pipenv install
 
+Sometimes installing the mysqlclient dependency will raise an error, use the
+following commands to get past this.
+
+::
+
+  $ export LDFLAGS="-L/usr/local/opt/openssl/lib"
+  $ export CPPFLAGS="-I/usr/local/opt/openssl/include"
+
 2. Migrate the database
 
 ::

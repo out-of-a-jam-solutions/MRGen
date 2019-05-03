@@ -10,7 +10,7 @@ from celery import shared_task
 from celery.task import chord
 from rest_framework import status
 
-from backend.reporter import api_urls, models
+from reporter import api_urls, models
 
 
 @shared_task

@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'corsheaders',
     'django_filters',
-    'backend.reporter',
+    'reporter',
 ]
 
 MIDDLEWARE = [
@@ -46,7 +46,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'backend.urls'
+ROOT_URLCONF = 'MRGen.urls'
 
 TEMPLATES = [
     {
@@ -64,7 +64,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'backend.wsgi.application'
+WSGI_APPLICATION = 'MRGen.wsgi.application'
 
 
 # Database
@@ -136,7 +136,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 # DJANGO REST FRAMEWORK
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'backend.pagination.StandardResultsSetPagination',
+    'DEFAULT_PAGINATION_CLASS': 'MRGen.pagination.StandardResultsSetPagination',
     'PAGE_SIZE': 20,
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',

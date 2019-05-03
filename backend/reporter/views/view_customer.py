@@ -3,7 +3,7 @@ from rest_framework import views
 from rest_framework import generics
 from rest_framework import response
 
-from backend.reporter import models, serializers, tasks_watchman
+from reporter import models, serializers, tasks_watchman
 
 
 class Forward(views.APIView):

@@ -3,7 +3,7 @@ import re
 from django_celery_beat.models import CrontabSchedule, PeriodicTask
 from rest_framework import serializers
 
-from backend.reporter import models
+from reporter import models
 
 
 class PeriodicTaskField(serializers.Field):
@@ -30,10 +30,10 @@ class PeriodicTaskField(serializers.Field):
             raise serializers.ValidationError({'customer': 'This field must be a valid customer id'})
         # create the appropriate task type, either watchman or repairshopr
         if data['task_type'] == 'watchman':
-            task_type = 'backend.reporter.tasks_watchman.update_client'
+            task_type = 'reporter.tasks_watchman.update_client'
             task_args = [customer.watchman_group_id]
         elif data['task_type'] == 'repairshopr':
-            task_type = 'backend.reporter.tasks_repairshopr.update_client'
+            task_type = 'reporter.tasks_repairshopr.update_client'
             task_args = [customer.repairshopr_id]
         else:
             raise serializers.ValidationError({'task_type': 'This field must be either "watchman" or "repairshopr"'})
