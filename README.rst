@@ -4,7 +4,10 @@ MRGen
 |Codacy Quality Badge|
 
 MRGen is a monitoring and reporting tool. It is used to keep historical records
-based on Watchman Monitoring and RepairShopr services.
+based on Watchman Monitoring and RepairShopr services. It also generates
+reports for clients based on this historical data.
+
+Developed and maintained by `Sheldon Woodward <https://github.com/sheldonkwoodward>`_ for `Out of a Jam Solutions <http://www.outofajam.net/>`_. 
 
 Local Setup
 -----------
