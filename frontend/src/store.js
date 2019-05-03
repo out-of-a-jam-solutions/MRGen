@@ -114,7 +114,7 @@ export default new Vuex.Store({
       ]);
     },
     toggleNewCustomerModal({ commit, state }, open = null) {
-      if (open === true || open === false) {
+      if (open || open === false) {
         commit("SET_NEW_CUSTOMER_MODAL_OPEN", open);
       } else {
         commit("SET_NEW_CUSTOMER_MODAL_OPEN", !state.newCustomerModalOpen);

@@ -106,7 +106,7 @@ export default {
   watch: {
     newCustomerModalOpen(newValue) {
       // open the modal if the open value is set true
-      if (newValue === true) {
+      if (newValue) {
         this.$bvModal.show("new-customer-modal");
       }
     }
