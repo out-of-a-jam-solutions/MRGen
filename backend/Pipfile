@@ -20,6 +20,7 @@ django-celery-results = "*"
 mysqlclient = "*"
 django-cors-headers = "*"
 django-filter = "*"
+uwsgi = "*"
 
 [requires]
 python_version = "3.7"
