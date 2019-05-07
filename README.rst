@@ -18,9 +18,30 @@ project and follow the steps to setup the front-end and back-end.
 
 Environment Variables
 ^^^^^^^^^^^^^^^^^^^^^
-Before starting the development servers, you must setup a ``.env`` file in the
-project root. Copy the ``.env.sample`` file and modify the key value pairs to
-configure your environment.
+Environment variables are handled differently in devlopment and production. For
+development, you can copy the ``.env.sample`` file in the ``backend/`` folder
+and rename it to ``.env``. The environment variables that Django needs will be
+set by Pipenv.
+
+For the Django dev server, the only required environemnt variables are:
+
+- ``DJANGO_ENV`` - Set to ``prod`` for production or ``dev`` to run in debug mode
+- ``DJANGO_RDS`` - Set to ``prod`` to use MySQL or ``dev`` to use SQLite
+- ``WATCHMAN_API_KEY`` - The Watchman Monitoring API key
+- ``REPAIRSHOPR_API_KEY`` - The RepairShopr API key
+
+If you set ``DJANGO_RDS`` to ``prod`` then you will need to specify MySQL
+connection details with the follwing environemt variables if they are not
+the default values.
+
+- ``RDS_HOSTNAME`` - ``127.0.0.1`` - The MySQL server hostname
+- ``RDS_PORT`` - ``3306`` - The MySQL server port
+- ``RDS_DB_NAME`` - ``mrgen`` - The MySQL server database name
+- ``RDS_USERNAME`` - ``root`` - The MySQL server user
+- ``RDS_PASSWORD1`` - ``password`` - The MySQL server user's password
+
+See the environment variables section below in the deployment
+section for details on production environment variables.
 
 Django Setup
 ^^^^^^^^^^^^
@@ -93,6 +114,54 @@ Local Server Access
 The development Django server is available by default at http://localhost:8000. The admin panel is available on ``/admin`` and the API is available on ``/api``
 
 The development Vue web server is available be default at http://localhost:8080. The project is served on the root domain.
+
+Deployment
+----------
+Following are steps to setup the production deployment environemt. First clone
+the project and follow the steps to deploy the application.
+
+Environment Variables
+^^^^^^^^^^^^^^^^^^^^^
+Environemnt variables for production deployment should be defined in a ``.env``
+in the project root. Docker Compose will use this centralized ``.env`` file to
+distribute the proper configuration to each part of the application.
+
+The only environment variables that must be set are:
+
+- ``DJANGO_SECRET_KEY`` - The secret key to prevent CSRF
+- ``DJANGO_HOST_DOMAIN`` - The domain name the site is running on
+- ``RDS_PASSWORD`` - The password to use for the MySQL database
+- ``WATCHMAN_API_KEY`` - The Watchman Monitoring API key
+- ``REPAIRSHOPR_API_KEY`` - The RepairShopr API key
+
+Optionally, these other environemnt variables can be set but provide no real
+use excpet for custom setups or debugging:
+
+- ``IMAGE_TAG`` - ``latest`` - The tag for the MRGen Docker image
+- ``DJANGO_ENV`` - ``prod`` - Either ``prod`` for production or anything else for non-production
+- ``DJANGO_RDS`` - ``prod`` - Either ``prod`` for MySQL or anything else SQLite
+- ``RDS_DB_NAME`` - ``mrgen`` - The MRGen database name
+- ``RDS_USERNAME`` - ``mrgen`` - The database's non-root superuser
+
+
+Docker Compose
+^^^^^^^^^^^^^^
+After setting up the ``.env`` file, the container can be deployed with the
+following command:
+
+::
+
+  $ docker-compose up -d
+
+Migrations and Static Files
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Before the application is ready to be used, the database must be migrated. You
+can run the migrations with the following command:
+
+::
+
+  $ docker-compose exec backend python manage.py migrate
+
 
 .. |Build Status| image:: https://travis-ci.org/out-of-a-jam-solutions/MRGen.svg?branch=develop
     :target: https://travis-ci.org/out-of-a-jam-solutions/MRGen

@@ -76,7 +76,7 @@ if os.getenv('DJANGO_RDS') == 'prod':
             'USER': os.getenv('RDS_USERNAME', 'root'),
             'PASSWORD': os.getenv('RDS_PASSWORD', 'root'),
             'HOST': os.getenv('RDS_HOSTNAME', '127.0.0.1'),
-            'PORT': os.getenv('RDS_PORT', 3306),
+            'PORT': 3306,
             'OPTIONS': {
                 'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
             },
@@ -126,10 +126,9 @@ USE_L10N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.1/howto/static-files/
-
+# STATIC FILES
 STATIC_URL = '/static/'
+STATIC_ROOT = os.getenv('DJANGO_STATIC_DIR')
 
 # DJANGO CORS HEADERS
 CORS_ORIGIN_ALLOW_ALL = True

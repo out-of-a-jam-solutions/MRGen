@@ -14,6 +14,9 @@ RUN apk add mariadb-dev pcre pcre-dev libxml2 xmlsec-dev && \
     adduser -S mrgen
 # cd into the new user's home directory
 WORKDIR /home/mrgen
+# create the webroot with Django's static file directory
+RUN mkdir -p webroot/static
+ENV DJANGO_STATIC_DIR /home/mrgen/webroot/static/
 
 #####################
 ### BACKEND SETUP ###
@@ -22,15 +25,15 @@ WORKDIR /home/mrgen
 RUN mkdir backend
 WORKDIR /home/mrgen/backend
 # copy necessary Django files and directories
-COPY backend/uwsgi.ini uwsgi.ini
+COPY backend/manage.py manage.py
 COPY backend/Pipfile Pipfile
 COPY backend/Pipfile.lock Pipfile.lock
+COPY backend/uwsgi.ini uwsgi.ini
 COPY backend/MRGen MRGen
 COPY backend/reporter reporter
-# install the dependencies
-RUN pipenv install --system --deploy
-# set the Django environment to production
-ENV DJANGO_ENV=prod
+# install the dependencies and collect the static files
+RUN pipenv install --system --deploy && \
+    python manage.py collectstatic --noinput
 
 ######################
 ### FRONTEND SETUP ###
@@ -50,8 +53,8 @@ COPY frontend/src src
 # compile the frontend
 RUN npm install && \
     npm run build --mode=production
-# copy the compiled frontend files to Django's static directory
-RUN mv dist /home/mrgen/static
+# copy the compiled frontend files to the webroot
+RUN mv dist /home/mrgen/webroot/mrgen
 # remove the non-compiled frontend files
 WORKDIR /home/mrgen
 RUN rm -rf frontend
