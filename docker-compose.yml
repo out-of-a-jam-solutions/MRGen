@@ -1,6 +1,15 @@
 version: "3.5"
 
 services:
+  redis:
+    image: redis:alpine
+    container_name: mrgen_redis
+    restart: always
+    expose:
+      - 6379
+    networks:
+      - backend
+
   mysql:
     image: mysql:8.0
     container_name: mrgen_mysql
@@ -25,6 +34,8 @@ services:
     restart: always
     expose:
       - 8000
+    ports:
+      - 8000:8000
     volumes:
       - webroot:/home/mrgen/webroot
     networks:
@@ -32,6 +43,7 @@ services:
       - frontend
     depends_on:
       - mysql
+      - redis
     environment:
       DJANGO_ENV: ${DJANGO_ENV:-prod}
       DJANGO_RDS: ${DJANGO_RDS:-prod}
@@ -41,6 +53,7 @@ services:
       RDS_DB_NAME: ${RDS_DB_NAME:-mrgen}
       RDS_USERNAME: ${RDS_USERNAME:-mrgen}
       RDS_PASSWORD:
+      REDIS_HOSTNAME: redis
       WATCHMAN_API_KEY:
       REPAIRSHOPR_API_KEY:
 

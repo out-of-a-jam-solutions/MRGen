@@ -162,6 +162,9 @@ can run the migrations with the following command:
 
   $ docker-compose exec backend python manage.py migrate
 
+If you already have an existing database, this command does not need to be run
+again unless the MRGen database configuration has changed.
+
 
 .. |Build Status| image:: https://travis-ci.org/out-of-a-jam-solutions/MRGen.svg?branch=develop
     :target: https://travis-ci.org/out-of-a-jam-solutions/MRGen
