@@ -2,9 +2,9 @@
 ### GENERAL SETUP ###
 #####################
 # base image
-FROM python:3.7-alpine3.9
+FROM python:3.7-alpine
 # labels
-LABEL maintainer=contact@sheldonw.com
+LABEL maintainer contact@sheldonw.com
 # install build dependencies and create new user
 RUN apk add mariadb-dev pcre pcre-dev libxml2 xmlsec-dev && \
     apk add --no-cache --virtual .build-deps gcc libc-dev linux-headers libffi-dev libxslt-dev nodejs-npm && \

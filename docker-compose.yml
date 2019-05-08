@@ -10,6 +10,28 @@ services:
     networks:
       - backend
 
+  celery:
+    image: ooaj/celery-mrgen:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: celery.Dockerfile
+    container_name: mrgen_celery
+    restart: always
+    networks:
+      - backend
+    depends_on:
+      - redis
+      - mrgen
+      - mysql
+    environment:
+      DJANGO_ENV: ${DJANGO_ENV:-prod}
+      DJANGO_RDS: ${DJANGO_RDS:-prod}
+      RDS_HOSTNAME: mysql
+      RDS_DB_NAME: ${RDS_DB_NAME:-mrgen}
+      RDS_USERNAME: ${RDS_USERNAME:-mrgen}
+      RDS_PASSWORD:
+      REDIS_HOSTNAME: redis
+
   mysql:
     image: mysql:8.0
     container_name: mrgen_mysql
@@ -27,10 +49,12 @@ services:
       MYSQL_PASSWORD: ${RDS_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${RDS_PASSWORD}
 
-  backend:
-    image: "aswwu/saml:${IMAGE_TAG:-latest}"
-    build: .
-    container_name: mrgen_server
+  mrgen:
+    image: ooaj/mrgen:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: mrgen.Dockerfile
+    container_name: mrgen_mrgen
     restart: always
     expose:
       - 8000

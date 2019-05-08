@@ -40,6 +40,10 @@ the default values.
 - ``RDS_USERNAME`` - ``root`` - The MySQL server user
 - ``RDS_PASSWORD1`` - ``password`` - The MySQL server user's password
 
+Also, you can speicify the host that Redis runs on if necessarry:
+
+- ``REDIS_HOSTNAME`` - ``localhost`` - The Redis server hostname
+
 See the environment variables section below in the deployment
 section for details on production environment variables.
 
@@ -75,13 +79,13 @@ following commands to get past this.
 
 ::
 
-  $ pipenv run celery -A backend worker -l info
+  $ pipenv run celery -A MRGen worker -l info
 
 5. Start the Beat process
 
 ::
 
-  $ pipenv run celery -A backend beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+  $ pipenv run celery -A MRGen beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
 
 6. Start the Django server
 
@@ -160,7 +164,7 @@ can run the migrations with the following command:
 
 ::
 
-  $ docker-compose exec backend python manage.py migrate
+  $ docker-compose exec MRGen python manage.py migrate
 
 If you already have an existing database, this command does not need to be run
 again unless the MRGen database configuration has changed.
