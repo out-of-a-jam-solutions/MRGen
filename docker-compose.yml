@@ -12,10 +12,11 @@ services:
 
   celery:
     image: ooaj/celery-mrgen:${IMAGE_TAG:-latest}
+    container_name: mrgen_celery
+    command: worker -l info
     build:
       context: .
       dockerfile: celery.Dockerfile
-    container_name: mrgen_celery
     restart: always
     networks:
       - backend
@@ -32,11 +33,32 @@ services:
       RDS_PASSWORD:
       REDIS_HOSTNAME: redis
 
+  beat:
+    image: ooaj/celery-mrgen:${IMAGE_TAG:-latest}
+    container_name: mrgen_beat
+    command: beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    build:
+      context: .
+      dockerfile: celery.Dockerfile
+    restart: always
+    networks:
+      - backend
+    depends_on:
+      - celery
+      - mrgen
+    environment:
+      DJANGO_ENV: ${DJANGO_ENV:-prod}
+      DJANGO_RDS: ${DJANGO_RDS:-prod}
+      RDS_HOSTNAME: mysql
+      RDS_DB_NAME: ${RDS_DB_NAME:-mrgen}
+      RDS_USERNAME: ${RDS_USERNAME:-mrgen}
+      RDS_PASSWORD:
+      REDIS_HOSTNAME: redis
+
   mysql:
-    image: mysql:8.0
+    image: mysql:5.7
     container_name: mrgen_mysql
     restart: always
-    command: --default-authentication-plugin=mysql_native_password
     expose:
       - 3306
     volumes:
@@ -51,10 +73,10 @@ services:
 
   mrgen:
     image: ooaj/mrgen:${IMAGE_TAG:-latest}
+    container_name: mrgen_mrgen
     build:
       context: .
       dockerfile: mrgen.Dockerfile
-    container_name: mrgen_mrgen
     restart: always
     expose:
       - 8000

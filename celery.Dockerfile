@@ -1,5 +1,5 @@
 # base image
-FROM python:3.7-alpine
+FROM python:3.6-alpine
 # lablels
 LABEL maintainer contact@sheldonw.com
 # install pipenv and create the celery user
@@ -23,4 +23,4 @@ RUN apk del .build-deps
 # change to the non-privileged user
 USER celery
 # launch the application
-CMD ["celery", "-A", "MRGen", "worker", "-l", "info"]
+ENTRYPOINT ["celery", "-A", "MRGen"]
