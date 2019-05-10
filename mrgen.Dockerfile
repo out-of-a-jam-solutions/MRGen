@@ -8,8 +8,7 @@ LABEL maintainer contact@sheldonw.com
 # install build dependencies and create new user
 RUN apk add mariadb-dev pcre pcre-dev libxml2 xmlsec-dev && \
     apk add --no-cache --virtual .build-deps gcc libc-dev linux-headers libffi-dev libxslt-dev nodejs-npm && \
-    pip install pipenv && \
-    pip install uwsgi && \
+    pip install pipenv==2018.11.26 && \
     set -e && \
     adduser -S mrgen
 # cd into the new user's home directory

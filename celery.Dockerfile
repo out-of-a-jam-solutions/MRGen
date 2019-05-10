@@ -5,7 +5,7 @@ LABEL maintainer contact@sheldonw.com
 # install pipenv and create the celery user
 RUN apk add mariadb-dev pcre pcre-dev libxml2 xmlsec-dev && \
     apk add --no-cache --virtual .build-deps gcc libc-dev linux-headers libffi-dev libxslt-dev nodejs-npm && \
-    pip install pipenv && \
+    pip install pipenv==2018.11.26 && \
     adduser -S celery
 # cd into the user's home directory
 WORKDIR /home/celery
