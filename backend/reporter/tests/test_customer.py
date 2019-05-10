@@ -186,7 +186,7 @@ class CustomerRDTest(test.APITestCase):
         # request
         self.client.delete(reverse(self.view_name, args=[self.customer.id]))
         # test database
-        self.assertFalse(models.Schedule.objects.exists())
+        self.assertFalse(models.ServiceSchedule.objects.exists())
 
     def test_customer_delete_associated_periodic_tasks(self):
         """

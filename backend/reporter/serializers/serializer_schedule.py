@@ -69,7 +69,7 @@ class ScheduleSerializer(serializers.ModelSerializer):
     task_type = serializers.ChoiceField(('watchman', 'repairshopr'))
 
     class Meta:
-        model = models.Schedule
+        model = models.ServiceSchedule
         fields = (
             'pk',
             'periodic_task',

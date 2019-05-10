@@ -32,6 +32,8 @@ services:
       RDS_USERNAME: ${RDS_USERNAME:-mrgen}
       RDS_PASSWORD:
       REDIS_HOSTNAME: redis
+      WATCHMAN_API_KEY:
+      REPAIRSHOPR_API_KEY:
 
   beat:
     image: ooaj/celery-mrgen:${IMAGE_TAG:-latest}
@@ -100,8 +102,6 @@ services:
       RDS_USERNAME: ${RDS_USERNAME:-mrgen}
       RDS_PASSWORD:
       REDIS_HOSTNAME: redis
-      WATCHMAN_API_KEY:
-      REPAIRSHOPR_API_KEY:
 
 volumes:
   mysql:

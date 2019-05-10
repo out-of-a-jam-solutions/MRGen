@@ -329,8 +329,8 @@ class ScheduleCreateTest(test.APITestCase):
         }
         self.client.post(reverse(self.view_name), request_body, format='json')
         # test database
-        self.assertTrue(models.Schedule.objects.exists())
-        schedule = models.Schedule.objects.first()
+        self.assertTrue(models.ServiceSchedule.objects.exists())
+        schedule = models.ServiceSchedule.objects.first()
         self.assertEqual(schedule.customer_id, request_body['customer'])
 
     def test_schedule_create_periodic_task_watchman(self):
@@ -399,7 +399,7 @@ class ScheduleCreateTest(test.APITestCase):
         }
         response = self.client.post(reverse(self.view_name), request_body, format='json')
         # test database
-        schedule = models.Schedule.objects.first()
+        schedule = models.ServiceSchedule.objects.first()
         task = PeriodicTask.objects.first()
         self.assertEqual(schedule, None)
         self.assertEqual(task, None)
@@ -502,7 +502,7 @@ class ScheduleCreateTest(test.APITestCase):
         }
         response = self.client.post(reverse(self.view_name), request_body, format='json')
         # test database
-        schedule = models.Schedule.objects.first()
+        schedule = models.ServiceSchedule.objects.first()
         task = PeriodicTask.objects.first()
         cron = CrontabSchedule.objects.first()
         self.assertEqual(schedule, None)
@@ -641,7 +641,7 @@ class ScheduleDestroyTest(test.APITestCase):
         # request
         self.client.delete(reverse(self.view_name, args=[response_body['pk']]))
         # test database
-        self.assertFalse(models.Schedule.objects.exists())
+        self.assertFalse(models.ServiceSchedule.objects.exists())
 
     def test_schedule_destroy_periodic_task(self):
         """
