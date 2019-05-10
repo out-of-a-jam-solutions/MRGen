@@ -1,0 +1,25 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+pylint-django = "*"
+rope = "*"
+
+[packages]
+django = "~=2.2"
+redis = "~=3.2"
+celery = "~=4.3"
+requests = "~=2.21"
+djangorestframework = "~=3.9"
+django-celery-beat = "~=1.4"
+django-celery-results = "~=1.0"
+mysqlclient = "~=1.4"
+django-cors-headers = "~=2.5"
+django-filter = "~=2.1"
+uwsgi = "~=2.0"
+
+[requires]
+python_version = "3.7"

@@ -11,7 +11,7 @@ class Customer(models.Model):
         ordering = ['id']
 
 
-class Schedule(models.Model):
+class ServiceSchedule(models.Model):
     customer = models.ForeignKey(Customer,
                                  db_column='customer_id',
                                  on_delete=models.CASCADE)

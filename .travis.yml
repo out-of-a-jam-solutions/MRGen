@@ -13,6 +13,7 @@ env:
 services:
   - mysql
 install:
+  - cd backend
   - pip install pipenv
   - pipenv install
 script:

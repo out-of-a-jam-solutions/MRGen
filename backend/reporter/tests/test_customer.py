@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework import test
 
-from backend.reporter import models
+from reporter import models
 
 
 class CustomerLCTest(test.APITestCase):
@@ -186,7 +186,7 @@ class CustomerRDTest(test.APITestCase):
         # request
         self.client.delete(reverse(self.view_name, args=[self.customer.id]))
         # test database
-        self.assertFalse(models.Schedule.objects.exists())
+        self.assertFalse(models.ServiceSchedule.objects.exists())
 
     def test_customer_delete_associated_periodic_tasks(self):
         """

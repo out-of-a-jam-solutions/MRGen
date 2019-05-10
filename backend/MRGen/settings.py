@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'corsheaders',
     'django_filters',
-    'backend.reporter',
+    'reporter',
 ]
 
 MIDDLEWARE = [
@@ -46,7 +46,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'backend.urls'
+ROOT_URLCONF = 'MRGen.urls'
 
 TEMPLATES = [
     {
@@ -64,7 +64,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'backend.wsgi.application'
+WSGI_APPLICATION = 'MRGen.wsgi.application'
 
 
 # Database
@@ -76,7 +76,7 @@ if os.getenv('DJANGO_RDS') == 'prod':
             'USER': os.getenv('RDS_USERNAME', 'root'),
             'PASSWORD': os.getenv('RDS_PASSWORD', 'root'),
             'HOST': os.getenv('RDS_HOSTNAME', '127.0.0.1'),
-            'PORT': os.getenv('RDS_PORT', 3306),
+            'PORT': 3306,
             'OPTIONS': {
                 'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
             },
@@ -126,17 +126,16 @@ USE_L10N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.1/howto/static-files/
-
+# STATIC FILES
 STATIC_URL = '/static/'
+STATIC_ROOT = os.getenv('DJANGO_STATIC_DIR')
 
 # DJANGO CORS HEADERS
 CORS_ORIGIN_ALLOW_ALL = True
 
 # DJANGO REST FRAMEWORK
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'backend.pagination.StandardResultsSetPagination',
+    'DEFAULT_PAGINATION_CLASS': 'MRGen.pagination.StandardResultsSetPagination',
     'PAGE_SIZE': 20,
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
@@ -144,7 +143,7 @@ REST_FRAMEWORK = {
 }
 
 # CELERY
-BROKER_URL = 'redis://localhost:6379'
+CELERY_BROKER_URL = 'redis://' + os.getenv('REDIS_HOSTNAME', 'localhost') + ':6379'
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'

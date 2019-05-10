@@ -1,9 +1,10 @@
+import json
 import re
 
 from django_celery_beat.models import CrontabSchedule, PeriodicTask
 from rest_framework import serializers
 
-from backend.reporter import models
+from reporter import models
 
 
 class PeriodicTaskField(serializers.Field):
@@ -30,13 +31,15 @@ class PeriodicTaskField(serializers.Field):
             raise serializers.ValidationError({'customer': 'This field must be a valid customer id'})
         # create the appropriate task type, either watchman or repairshopr
         if data['task_type'] == 'watchman':
-            task_type = 'backend.reporter.tasks_watchman.update_client'
+            task_type = 'reporter.tasks_watchman.update_client'
             task_args = [customer.watchman_group_id]
         elif data['task_type'] == 'repairshopr':
-            task_type = 'backend.reporter.tasks_repairshopr.update_client'
+            task_type = 'reporter.tasks_repairshopr.update_client'
             task_args = [customer.repairshopr_id]
         else:
             raise serializers.ValidationError({'task_type': 'This field must be either "watchman" or "repairshopr"'})
+        # json format the task args
+        task_args = json.dumps(task_args)
         # check that the customer has the appropriate service id for the specified task type
         if data['task_type'] == 'watchman' and customer.watchman_group_id is None:
             raise serializers.ValidationError({'task_type': 'The specified customer does not have a Watchman ID defined'})
@@ -50,7 +53,7 @@ class PeriodicTaskField(serializers.Field):
                 not re.fullmatch(r'[0-6]|\*', data['periodic_task']['day_of_week']) or \
                 not re.fullmatch(r'[1-9]|[1-2][0-9]|3[0-1]|\*', data['periodic_task']['day_of_month']) or \
                 not re.fullmatch(r'[1-9]|1[0-2]|\*', data['periodic_task']['month_of_year']):
-            raise serializers.ValidationError({'periodic_tas': 'Cron parameters are not valid'})
+            raise serializers.ValidationError({'periodic_task': 'Cron parameters are not valid'})
         # get or create the cron schedule
         cron, _ = CrontabSchedule.objects.get_or_create(**data['periodic_task'])
         # check if a periodic task with the same name already exists
@@ -69,7 +72,7 @@ class ScheduleSerializer(serializers.ModelSerializer):
     task_type = serializers.ChoiceField(('watchman', 'repairshopr'))
 
     class Meta:
-        model = models.Schedule
+        model = models.ServiceSchedule
         fields = (
             'pk',
             'periodic_task',

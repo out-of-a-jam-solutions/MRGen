@@ -1,0 +1,116 @@
+version: "3.5"
+
+services:
+  redis:
+    image: redis:5.0-alpine
+    container_name: mrgen_redis
+    restart: always
+    expose:
+      - 6379
+    networks:
+      - backend
+
+  celery:
+    image: ooaj/celery-mrgen:${IMAGE_TAG:-latest}
+    container_name: mrgen_celery
+    command: worker -l info
+    build:
+      context: .
+      dockerfile: celery.Dockerfile
+    restart: always
+    networks:
+      - backend
+    depends_on:
+      - redis
+      - mrgen
+      - mysql
+    environment:
+      DJANGO_ENV: ${DJANGO_ENV:-prod}
+      DJANGO_RDS: ${DJANGO_RDS:-prod}
+      RDS_HOSTNAME: mysql
+      RDS_DB_NAME: ${RDS_DB_NAME:-mrgen}
+      RDS_USERNAME: ${RDS_USERNAME:-mrgen}
+      RDS_PASSWORD:
+      REDIS_HOSTNAME: redis
+      WATCHMAN_API_KEY:
+      REPAIRSHOPR_API_KEY:
+
+  beat:
+    image: ooaj/celery-mrgen:${IMAGE_TAG:-latest}
+    container_name: mrgen_beat
+    command: beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    build:
+      context: .
+      dockerfile: celery.Dockerfile
+    restart: always
+    networks:
+      - backend
+    depends_on:
+      - celery
+      - mrgen
+    environment:
+      DJANGO_ENV: ${DJANGO_ENV:-prod}
+      DJANGO_RDS: ${DJANGO_RDS:-prod}
+      RDS_HOSTNAME: mysql
+      RDS_DB_NAME: ${RDS_DB_NAME:-mrgen}
+      RDS_USERNAME: ${RDS_USERNAME:-mrgen}
+      RDS_PASSWORD:
+      REDIS_HOSTNAME: redis
+
+  mysql:
+    image: mysql:5.7
+    container_name: mrgen_mysql
+    restart: always
+    expose:
+      - 3306
+    volumes:
+      - mysql:/var/lib/mysql
+    networks:
+      - backend
+    environment:
+      MYSQL_DATABASE: ${RDS_DB_NAME:-mrgen}
+      MYSQL_USER: ${RDS_USERNAME:-mrgen}
+      MYSQL_PASSWORD: ${RDS_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${RDS_PASSWORD}
+
+  mrgen:
+    image: ooaj/mrgen:${IMAGE_TAG:-latest}
+    container_name: mrgen_mrgen
+    build:
+      context: .
+      dockerfile: mrgen.Dockerfile
+    restart: always
+    expose:
+      - 8000
+    ports:
+      - 8000:8000
+    volumes:
+      - webroot:/home/mrgen/webroot
+    networks:
+      - backend
+      - frontend
+    depends_on:
+      - mysql
+      - redis
+    environment:
+      DJANGO_ENV: ${DJANGO_ENV:-prod}
+      DJANGO_RDS: ${DJANGO_RDS:-prod}
+      DJANGO_SECRET_KEY:
+      DJANGO_HOST_DOMAIN:
+      RDS_HOSTNAME: mysql
+      RDS_DB_NAME: ${RDS_DB_NAME:-mrgen}
+      RDS_USERNAME: ${RDS_USERNAME:-mrgen}
+      RDS_PASSWORD:
+      REDIS_HOSTNAME: redis
+
+volumes:
+  mysql:
+    name: mrgen_mysql
+  webroot:
+    name: mrgen_webroot
+
+networks:
+  frontend:
+    name: mrgen_frontend
+  backend:
+    name: mrgen_backend

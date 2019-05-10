@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from backend.reporter import models
+from reporter import models
 
 
 class CustomerSerializer(serializers.ModelSerializer):
