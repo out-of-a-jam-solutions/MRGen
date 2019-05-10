@@ -355,7 +355,7 @@ class ScheduleCreateTest(test.APITestCase):
         cron = CrontabSchedule.objects.first()
         self.assertEqual(task.crontab, cron)
         self.assertEqual(task.task, 'reporter.tasks_watchman.update_client')
-        self.assertEqual(ast.literal_eval(task.args)[0], self.customer.watchman_group_id)
+        self.assertEqual(task.args, f'["{self.customer.watchman_group_id}"]')
 
     def test_schedule_create_periodic_task_repairshopr(self):
         """
@@ -379,7 +379,7 @@ class ScheduleCreateTest(test.APITestCase):
         cron = CrontabSchedule.objects.first()
         self.assertEqual(task.crontab, cron)
         self.assertEqual(task.task, 'reporter.tasks_repairshopr.update_client')
-        self.assertEqual(ast.literal_eval(task.args)[0], self.customer.repairshopr_id)
+        self.assertEqual(task.args, f'["{self.customer.repairshopr_id}"]')
 
     def test_schedule_create_periodic_task_invalid_type(self):
         """
