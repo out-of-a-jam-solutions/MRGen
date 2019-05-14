@@ -13,6 +13,9 @@ paths:
       tags:
         - customer
       parameters:
+        - $ref: '#/components/parameters/customer_name_query'
+        - $ref: '#/components/parameters/customer_watchman_query'
+        - $ref: '#/components/parameters/customer_repairshopr_query'
         - $ref: '#/components/parameters/page_query'
         - $ref: '#/components/parameters/page_size_query'
       responses:
@@ -91,6 +94,8 @@ paths:
       tags:
         - schedule
       parameters:
+        - $ref: '#/components/parameters/schedule_customer_query'
+        - $ref: '#/components/parameters/schedule_task_type_query'
         - $ref: '#/components/parameters/page_query'
         - $ref: '#/components/parameters/page_size_query'
       responses:
@@ -171,6 +176,7 @@ paths:
       tags:
         - report
       parameters:
+        - $ref: '#/components/parameters/report_customer_query'
         - $ref: '#/components/parameters/page_query'
         - $ref: '#/components/parameters/page_size_query'
       responses:
@@ -281,6 +287,48 @@ components:
       in: path
       description: The ID of the report to work with.
       required: true
+      schema:
+        type: string
+    customer_name_query:
+      name: name
+      in: query
+      description: The customer name to filter by
+      required: false
+      schema:
+        type: string
+    customer_watchman_query:
+      name: watchman_group_id
+      in: query
+      description: The watchman ID to filter by
+      required: false
+      schema:
+        type: string
+    customer_repairshopr_query:
+      name: repairshopr_id
+      in: query
+      description: The RepairShopr ID to filter by
+      required: false
+      schema:
+        type: string
+    schedule_customer_query:
+      name: customer
+      in: query
+      description: The customer name to filter by
+      required: false
+      schema:
+        type: string
+    schedule_task_type_query:
+      name: task_type
+      in: query
+      description: The task type to filter by
+      required: false
+      schema:
+        type: string
+    report_customer_query:
+      name: customer
+      in: query
+      description: The customer ID to filter by
+      required: false
       schema:
         type: string
     page_query:
