@@ -35,6 +35,168 @@ class ReportCreateTest(test.APITestCase):
         # test response
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+    def test_report_customer(self):
+        """
+        Tests that the customer field was set properly in the Report object.
+        """
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.Report.objects.first().customer_id, request_body['customer'])
+
+    def test_report_customer_bad(self):
+        """
+        Tests the response's status code for 400 BAD REQUEST given an invalid customer ID.
+        """
+        # request
+        request_body = {
+            'customer':  -1,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        response = self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertFalse(models.Report.objects.exists())
+        self.assertFalse(models.SubTimeReport.objects.exists())
+        self.assertFalse(models.ComputerReport.objects.exists())
+        # test response
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_report_start_date(self):
+        """
+        Tests that the start date field was set properly in the Report object.
+        """
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.Report.objects.first().start_date.strftime('%Y-%m-%d'), request_body['start_date'])
+
+    def test_report_start_date_bad(self):
+        """
+        Tests the response's status code for 400 BAD REQUEST given an invalid start date.
+        """
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': 'bad',
+            'end_date': '2019-01-31'
+        }
+        response = self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertFalse(models.Report.objects.exists())
+        self.assertFalse(models.SubTimeReport.objects.exists())
+        self.assertFalse(models.ComputerReport.objects.exists())
+        # test response
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_report_start_date_future(self):
+        """
+        Tests the response's status code for 400 BAD REQUEST given a start date in the future.
+        """
+        # create the bad start date
+        start_date = datetime.now() + timedelta(days=7)
+        start_date = start_date.date().strftime('%Y-%m-%d')
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': start_date,
+            'end_date': '2019-01-31'
+        }
+        response = self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertFalse(models.Report.objects.exists())
+        self.assertFalse(models.SubTimeReport.objects.exists())
+        self.assertFalse(models.ComputerReport.objects.exists())
+        # test response
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_report_end_date(self):
+        """
+        Tests that the end date field was set properly in the Report object.
+        """
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.Report.objects.first().end_date.strftime('%Y-%m-%d'), request_body['end_date'])
+
+    def test_report_end_date_bad(self):
+        """
+        Tests the response's status code for 400 BAD REQUEST given an invalid start date.
+        """
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': 'bad'
+        }
+        response = self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertFalse(models.Report.objects.exists())
+        self.assertFalse(models.SubTimeReport.objects.exists())
+        self.assertFalse(models.ComputerReport.objects.exists())
+        # test response
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_report_end_date_future(self):
+        """
+        Tests the response's status code for 400 BAD REQUEST given an end date in the future.
+        """
+        # create the bad start date
+        end_date = datetime.now() + timedelta(days=7)
+        end_date = end_date.date().strftime('%Y-%m-%d')
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': end_date
+        }
+        response = self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertFalse(models.Report.objects.exists())
+        self.assertFalse(models.SubTimeReport.objects.exists())
+        self.assertFalse(models.ComputerReport.objects.exists())
+        # test response
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_report_start_date_after_end_date(self):
+        """
+        Tests the response's status code for 400 BAD REQUEST given a start date that is after the end date.
+        """
+        # create the bad start and end date
+        end_date = date(2019, 1, 1).strftime('%Y-%m-%d')
+        start_date = date(2019, 1, 2).strftime('%Y-%m-%d')
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': start_date,
+            'end_date': end_date
+        }
+        response = self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertFalse(models.Report.objects.exists())
+        self.assertFalse(models.SubTimeReport.objects.exists())
+        self.assertFalse(models.ComputerReport.objects.exists())
+        # test response
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertTrue(models.Report.objects.exists())
+
     def test_report_object(self):
         """
         Tests that a Report object was created.
@@ -45,9 +207,6 @@ class ReportCreateTest(test.APITestCase):
             'start_date': '2019-01-01',
             'end_date': '2019-01-31'
         }
-        self.client.post(reverse(self.view_name), request_body)
-        # test database
-        self.assertTrue(models.Report.objects.exists())
 
     def test_report_object_customer(self):
         """
@@ -269,165 +428,6 @@ class ReportCreateTest(test.APITestCase):
         self.client.post(reverse(self.view_name), request_body)
         # test database
         self.assertEqual(models.Report.objects.first().num_linux_os, 2)
-
-    def test_report_customer(self):
-        """
-        Tests that the customer field was set properly in the Report object.
-        """
-        # request
-        request_body = {
-            'customer':  self.customer.id,
-            'start_date': '2019-01-01',
-            'end_date': '2019-01-31'
-        }
-        self.client.post(reverse(self.view_name), request_body)
-        # test database
-        self.assertEqual(models.Report.objects.first().customer_id, request_body['customer'])
-
-    def test_report_customer_bad(self):
-        """
-        Tests the response's status code for 400 BAD REQUEST given an invalid customer ID.
-        """
-        # request
-        request_body = {
-            'customer':  -1,
-            'start_date': '2019-01-01',
-            'end_date': '2019-01-31'
-        }
-        response = self.client.post(reverse(self.view_name), request_body)
-        # test database
-        self.assertFalse(models.Report.objects.exists())
-        self.assertFalse(models.SubTimeReport.objects.exists())
-        self.assertFalse(models.ComputerReport.objects.exists())
-        # test response
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_report_start_date(self):
-        """
-        Tests that the start date field was set properly in the Report object.
-        """
-        # request
-        request_body = {
-            'customer':  self.customer.id,
-            'start_date': '2019-01-01',
-            'end_date': '2019-01-31'
-        }
-        self.client.post(reverse(self.view_name), request_body)
-        # test database
-        self.assertEqual(models.Report.objects.first().start_date.strftime('%Y-%m-%d'), request_body['start_date'])
-
-    def test_report_start_date_bad(self):
-        """
-        Tests the response's status code for 400 BAD REQUEST given an invalid start date.
-        """
-        # request
-        request_body = {
-            'customer':  self.customer.id,
-            'start_date': 'bad',
-            'end_date': '2019-01-31'
-        }
-        response = self.client.post(reverse(self.view_name), request_body)
-        # test database
-        self.assertFalse(models.Report.objects.exists())
-        self.assertFalse(models.SubTimeReport.objects.exists())
-        self.assertFalse(models.ComputerReport.objects.exists())
-        # test response
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_report_start_date_future(self):
-        """
-        Tests the response's status code for 400 BAD REQUEST given a start date in the future.
-        """
-        # create the bad start date
-        start_date = datetime.now() + timedelta(days=7)
-        start_date = start_date.date().strftime('%Y-%m-%d')
-        # request
-        request_body = {
-            'customer':  self.customer.id,
-            'start_date': start_date,
-            'end_date': '2019-01-31'
-        }
-        response = self.client.post(reverse(self.view_name), request_body)
-        # test database
-        self.assertFalse(models.Report.objects.exists())
-        self.assertFalse(models.SubTimeReport.objects.exists())
-        self.assertFalse(models.ComputerReport.objects.exists())
-        # test response
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_report_end_date(self):
-        """
-        Tests that the end date field was set properly in the Report object.
-        """
-        # request
-        request_body = {
-            'customer':  self.customer.id,
-            'start_date': '2019-01-01',
-            'end_date': '2019-01-31'
-        }
-        self.client.post(reverse(self.view_name), request_body)
-        # test database
-        self.assertEqual(models.Report.objects.first().end_date.strftime('%Y-%m-%d'), request_body['end_date'])
-
-    def test_report_end_date_bad(self):
-        """
-        Tests the response's status code for 400 BAD REQUEST given an invalid start date.
-        """
-        # request
-        request_body = {
-            'customer':  self.customer.id,
-            'start_date': '2019-01-01',
-            'end_date': 'bad'
-        }
-        response = self.client.post(reverse(self.view_name), request_body)
-        # test database
-        self.assertFalse(models.Report.objects.exists())
-        self.assertFalse(models.SubTimeReport.objects.exists())
-        self.assertFalse(models.ComputerReport.objects.exists())
-        # test response
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_report_end_date_future(self):
-        """
-        Tests the response's status code for 400 BAD REQUEST given an end date in the future.
-        """
-        # create the bad start date
-        end_date = datetime.now() + timedelta(days=7)
-        end_date = end_date.date().strftime('%Y-%m-%d')
-        # request
-        request_body = {
-            'customer':  self.customer.id,
-            'start_date': '2019-01-01',
-            'end_date': end_date
-        }
-        response = self.client.post(reverse(self.view_name), request_body)
-        # test database
-        self.assertFalse(models.Report.objects.exists())
-        self.assertFalse(models.SubTimeReport.objects.exists())
-        self.assertFalse(models.ComputerReport.objects.exists())
-        # test response
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_report_start_date_after_end_date(self):
-        """
-        Tests the response's status code for 400 BAD REQUEST given a start date that is after the end date.
-        """
-        # create the bad start and end date
-        end_date = date(2019, 1, 1).strftime('%Y-%m-%d')
-        start_date = date(2019, 1, 2).strftime('%Y-%m-%d')
-        # request
-        request_body = {
-            'customer':  self.customer.id,
-            'start_date': start_date,
-            'end_date': end_date
-        }
-        response = self.client.post(reverse(self.view_name), request_body)
-        # test database
-        self.assertFalse(models.Report.objects.exists())
-        self.assertFalse(models.SubTimeReport.objects.exists())
-        self.assertFalse(models.ComputerReport.objects.exists())
-        # test response
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
 def create_watchman_computer(customer, computer_id=None, name=None, date_reported=None, date_last_reported=None, os_type='mac', os_version='OS X 10.13.6', ram_gb=2, hdd_capacity_gb=100, hdd_usage_gb=50):
