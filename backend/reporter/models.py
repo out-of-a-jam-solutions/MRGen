@@ -94,4 +94,3 @@ class SubTimeReport(models.Model):
 
 class ComputerReport(Computer):
     computer = models.ForeignKey(WatchmanComputer, null=True, db_column='computer_id', on_delete=models.SET_NULL)
-
