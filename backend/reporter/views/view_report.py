@@ -39,7 +39,29 @@ class ReportLCView(views.APIView):
         # return the error response if necessary
         if bad_response:
             return response.Response(bad_response, status=status.HTTP_400_BAD_REQUEST)
+        # generate report statistics
+        num_mac_os = models.WatchmanComputer.objects.filter(os_type='mac',
+                                                            watchman_group_id=customer,
+                                                            date_reported__lt=end_date,
+                                                            date_last_reported__gt=start_date
+                                                           ).count()
+        num_windows_os = models.WatchmanComputer.objects.filter(os_type='windows',
+                                                            watchman_group_id=customer,
+                                                            date_reported__lt=end_date,
+                                                            date_last_reported__gt=start_date
+                                                           ).count()
+        num_linux_os = models.WatchmanComputer.objects.filter(os_type='linux',
+                                                            watchman_group_id=customer,
+                                                            date_reported__lt=end_date,
+                                                            date_last_reported__gt=start_date
+                                                           ).count()
         # create the report
-        models.Report.objects.create(customer=customer, start_date=start_date, end_date=end_date)
+        models.Report.objects.create(customer=customer,
+                                     start_date=start_date,
+                                     end_date=end_date,
+                                     num_mac_os=num_mac_os,
+                                     num_windows_os=num_windows_os,
+                                     num_linux_os=num_linux_os
+                                    )
         # return the success response
         return response.Response(status=status.HTTP_201_CREATED)

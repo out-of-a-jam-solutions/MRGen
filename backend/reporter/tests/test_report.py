@@ -49,6 +49,227 @@ class ReportCreateTest(test.APITestCase):
         # test database
         self.assertTrue(models.Report.objects.exists())
 
+    def test_report_object_customer(self):
+        """
+        Tests that a Report object assigns the right customer.
+        """
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertTrue(models.Report.objects.filter(customer=request_body['customer']).exists())
+
+    def test_report_object_start_date(self):
+        """
+        Tests that a Report object assigns the right start date.
+        """
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertTrue(models.Report.objects.filter(start_date=date(2019, 1, 1)).exists())
+
+    def test_report_object_end_date(self):
+        """
+        Tests that a Report object assigns the right end date.
+        """
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertTrue(models.Report.objects.filter(end_date=date(2019, 1, 31)).exists())
+
+    def test_report_object_date_generated(self):
+        """
+        Tests that a Report object assigns the right generated date.
+        """
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertTrue(models.Report.objects.filter(date_generated=datetime.now().date()).exists())
+
+    def test_report_object_num_mac_os(self):
+        """
+        Tests that a Report object assigns the right number of mac os computers and not other os types.
+        """
+        # create computers
+        create_watchman_computer(self.customer, os_type='mac', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
+        create_watchman_computer(self.customer, os_type='mac', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
+        create_watchman_computer(self.customer, os_type='windows', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
+        create_watchman_computer(self.customer, os_type='linux', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.Report.objects.first().num_mac_os, 2)
+
+    def test_report_object_num_windows_os(self):
+        """
+        Tests that a Report object assigns the right number of windows os computers and not other os types.
+        """
+        # create computers
+        create_watchman_computer(self.customer, os_type='windows', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
+        create_watchman_computer(self.customer, os_type='windows', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
+        create_watchman_computer(self.customer, os_type='mac', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
+        create_watchman_computer(self.customer, os_type='linux', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.Report.objects.first().num_windows_os, 2)
+
+    def test_report_object_num_linux_os(self):
+        """
+        Tests that a Report object assigns the right number of linux os computers and not other os types.
+        """
+        # create computers
+        create_watchman_computer(self.customer, os_type='linux', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
+        create_watchman_computer(self.customer, os_type='linux', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
+        create_watchman_computer(self.customer, os_type='mac', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
+        create_watchman_computer(self.customer, os_type='windows', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.Report.objects.first().num_linux_os, 2)
+
+    def test_report_object_num_mac_os_last_reported_before_start_date(self):
+        """
+        Tests that a Report object assigns the right number of mac os computers when some were last reported before the start date.
+        """
+        # create computers
+        create_watchman_computer(self.customer, os_type='mac', date_reported=date(2018, 12, 1), date_last_reported=date(2018, 12, 30))  # before start date
+        create_watchman_computer(self.customer, os_type='mac', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
+        create_watchman_computer(self.customer, os_type='mac', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.Report.objects.first().num_mac_os, 2)
+
+    def test_report_object_num_mac_os_first_reported_after_end_date(self):
+        """
+        Tests that a Report object assigns the right number of mac os computers when some were first reported after the end date.
+        """
+        # create computers
+        create_watchman_computer(self.customer, os_type='mac', date_reported=date(2019, 2, 15), date_last_reported=date(2019, 2, 15))  # first reported after end date
+        create_watchman_computer(self.customer, os_type='mac', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 2, 15))
+        create_watchman_computer(self.customer, os_type='mac', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 2, 15))
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.Report.objects.first().num_mac_os, 2)
+
+    def test_report_object_num_windows_os_last_reported_before_start_date(self):
+        """
+        Tests that a Report object assigns the right number of windows os computers when some were last reported before the start date.
+        """
+        # create computers
+        create_watchman_computer(self.customer, os_type='windows', date_reported=date(2018, 12, 1), date_last_reported=date(2018, 12, 30))  # before start date
+        create_watchman_computer(self.customer, os_type='windows', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
+        create_watchman_computer(self.customer, os_type='windows', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.Report.objects.first().num_windows_os, 2)
+
+    def test_report_object_num_windows_os_first_reported_after_end_date(self):
+        """
+        Tests that a Report object assigns the right number of windows os computers when some were first reported after the end date.
+        """
+        # create computers
+        create_watchman_computer(self.customer, os_type='windows', date_reported=date(2019, 2, 15), date_last_reported=date(2019, 2, 15))  # first reported after end date
+        create_watchman_computer(self.customer, os_type='windows', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 2, 15))
+        create_watchman_computer(self.customer, os_type='windows', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 2, 15))
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.Report.objects.first().num_windows_os, 2)
+
+    def test_report_object_num_linux_os_last_reported_before_start_date(self):
+        """
+        Tests that a Report object assigns the right number of windows os computers when some were last reported before the start date.
+        """
+        # create computers
+        create_watchman_computer(self.customer, os_type='linux', date_reported=date(2018, 12, 1), date_last_reported=date(2018, 12, 30))  # before start date
+        create_watchman_computer(self.customer, os_type='linux', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
+        create_watchman_computer(self.customer, os_type='linux', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.Report.objects.first().num_linux_os, 2)
+
+    def test_report_object_num_linux_os_first_reported_after_end_date(self):
+        """
+        Tests that a Report object assigns the right number of windows os computers when some were first reported after the end date.
+        """
+        # create computers
+        create_watchman_computer(self.customer, os_type='linux', date_reported=date(2019, 2, 15), date_last_reported=date(2019, 2, 15))  # first reported after end date
+        create_watchman_computer(self.customer, os_type='linux', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 2, 15))
+        create_watchman_computer(self.customer, os_type='linux', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 2, 15))
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.Report.objects.first().num_linux_os, 2)
+
     def test_report_customer(self):
         """
         Tests that the customer field was set properly in the Report object.
