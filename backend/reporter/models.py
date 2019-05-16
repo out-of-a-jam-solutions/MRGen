@@ -80,8 +80,8 @@ class Report(models.Model):
     class Meta:
         ordering = ['id']
 
-class SubTimeReport(models.Model):
-    report = models.OneToOneField(Report, db_column='report_id', on_delete=models.CASCADE)
+class SubReport(models.Model):
+    report = models.ForeignKey(Report, db_column='report_id', on_delete=models.CASCADE)
     start_date = models.DateField()
     end_date = models.DateField()
     num_warnings_unresolved = models.IntegerField(default=0)
@@ -90,7 +90,7 @@ class SubTimeReport(models.Model):
     num_tickets_resolved = models.IntegerField(default=0)
 
     class Meta:
-        ordering = ['id']
+        ordering = ['start_date']
 
 class ComputerReport(Computer):
     computer = models.OneToOneField(WatchmanComputer, null=True, db_column='computer_id', on_delete=models.SET_NULL)

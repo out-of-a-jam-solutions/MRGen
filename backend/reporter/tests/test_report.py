@@ -8,7 +8,7 @@ from rest_framework.reverse import reverse
 from reporter import models
 
 
-class ReportCreateTest(test.APITestCase):
+class ReportRequestTest(test.APITestCase):
     def setUp(self):
         # create test user
         self.username = 'test'
@@ -62,7 +62,7 @@ class ReportCreateTest(test.APITestCase):
         response = self.client.post(reverse(self.view_name), request_body)
         # test database
         self.assertFalse(models.Report.objects.exists())
-        self.assertFalse(models.SubTimeReport.objects.exists())
+        self.assertFalse(models.SubReport.objects.exists())
         self.assertFalse(models.ComputerReport.objects.exists())
         # test response
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -88,13 +88,13 @@ class ReportCreateTest(test.APITestCase):
         # request
         request_body = {
             'customer':  self.customer.id,
-            'start_date': 'bad',
-            'end_date': '2019-01-31'
+            'start_date': '2019-02-32',
+            'end_date': '2019-03-31'
         }
         response = self.client.post(reverse(self.view_name), request_body)
         # test database
         self.assertFalse(models.Report.objects.exists())
-        self.assertFalse(models.SubTimeReport.objects.exists())
+        self.assertFalse(models.SubReport.objects.exists())
         self.assertFalse(models.ComputerReport.objects.exists())
         # test response
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -115,7 +115,7 @@ class ReportCreateTest(test.APITestCase):
         response = self.client.post(reverse(self.view_name), request_body)
         # test database
         self.assertFalse(models.Report.objects.exists())
-        self.assertFalse(models.SubTimeReport.objects.exists())
+        self.assertFalse(models.SubReport.objects.exists())
         self.assertFalse(models.ComputerReport.objects.exists())
         # test response
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -141,13 +141,13 @@ class ReportCreateTest(test.APITestCase):
         # request
         request_body = {
             'customer':  self.customer.id,
-            'start_date': '2019-01-01',
-            'end_date': 'bad'
+            'start_date': '2019-02-01',
+            'end_date': '2019-02-31'
         }
         response = self.client.post(reverse(self.view_name), request_body)
         # test database
         self.assertFalse(models.Report.objects.exists())
-        self.assertFalse(models.SubTimeReport.objects.exists())
+        self.assertFalse(models.SubReport.objects.exists())
         self.assertFalse(models.ComputerReport.objects.exists())
         # test response
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -168,7 +168,7 @@ class ReportCreateTest(test.APITestCase):
         response = self.client.post(reverse(self.view_name), request_body)
         # test database
         self.assertFalse(models.Report.objects.exists())
-        self.assertFalse(models.SubTimeReport.objects.exists())
+        self.assertFalse(models.SubReport.objects.exists())
         self.assertFalse(models.ComputerReport.objects.exists())
         # test response
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -189,13 +189,23 @@ class ReportCreateTest(test.APITestCase):
         response = self.client.post(reverse(self.view_name), request_body)
         # test database
         self.assertFalse(models.Report.objects.exists())
-        self.assertFalse(models.SubTimeReport.objects.exists())
+        self.assertFalse(models.SubReport.objects.exists())
         self.assertFalse(models.ComputerReport.objects.exists())
         # test response
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.client.post(reverse(self.view_name), request_body)
-        # test database
-        self.assertTrue(models.Report.objects.exists())
+
+class ReportCreateObjectTest(test.APITestCase):
+    def setUp(self):
+        # create test user
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(username=self.username, password=self.password)
+        self.client.login(username=self.username, password=self.password)
+        # retrieve the view
+        self.view_name = 'reporter:report-lc'
+        # add customer to database
+        models.Customer(name='customer 1', watchman_group_id='g_1111111', repairshopr_id='1111111').save()
+        self.customer = models.Customer.objects.first()
 
     def test_report_object(self):
         """
@@ -207,6 +217,9 @@ class ReportCreateTest(test.APITestCase):
             'start_date': '2019-01-01',
             'end_date': '2019-01-31'
         }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertTrue(models.Report.objects.exists())
 
     def test_report_object_customer(self):
         """
@@ -428,6 +441,140 @@ class ReportCreateTest(test.APITestCase):
         self.client.post(reverse(self.view_name), request_body)
         # test database
         self.assertEqual(models.Report.objects.first().num_linux_os, 2)
+
+class SubReportCreateObjectTest(test.APITestCase):
+    def setUp(self):
+        # create test user
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(username=self.username, password=self.password)
+        self.client.login(username=self.username, password=self.password)
+        # retrieve the view
+        self.view_name = 'reporter:report-lc'
+        # add customer to database
+        models.Customer(name='customer 1', watchman_group_id='g_1111111', repairshopr_id='1111111').save()
+        self.customer = models.Customer.objects.first()
+
+    def test_sub_report_object(self):
+        """
+        Tests that a SubReport object is created.
+        """
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertTrue(models.SubReport.objects.exists())
+        self.assertEqual(models.SubReport.objects.count(), 1)
+
+    def test_sub_report_object_start_end_date(self):
+        """
+        Tests that a SubReport object assigns the right start and end date.
+        """
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': '2019-01-02',
+            'end_date': '2019-01-27'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.SubReport.objects.first().start_date, date(2019, 1, 2))
+        self.assertEqual(models.SubReport.objects.first().end_date, date(2019, 1, 27))
+
+    def test_sub_report_object_multiple(self):
+        """
+        Tests that multiple SubReport objects are created.
+        """
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-03-28'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertTrue(models.SubReport.objects.exists())
+        self.assertEqual(models.SubReport.objects.count(), 3)
+
+    def test_sub_report_object_multiple_start_end_date(self):
+        """
+        Tests that multiple SubReport objects are assigned the right start and end date.
+        """
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': '2019-01-03',
+            'end_date': '2019-03-18'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+
+        # test database
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 1, 3), end_date=date(2019, 1, 31)).exists())
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 2, 1), end_date=date(2019, 2, 28)).exists())
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 3, 1), end_date=date(2019, 3, 18)).exists())
+
+    def test_sub_report_object_multiple_cross_year(self):
+        """
+        Tests that multiple SubReport objects are created across different years.
+        """
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': '2017-11-01',
+            'end_date': '2019-02-28'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertTrue(models.SubReport.objects.exists())
+        self.assertEqual(models.SubReport.objects.count(), 16)
+
+    def test_sub_report_object_multiple_cross_year_start_end_dates(self):
+        """
+        Tests that multiple SubReport across multiple years are assigned the right start and end date.
+        """
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': '2017-11-19',
+            'end_date': '2019-02-20'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2017, 11, 19), end_date=date(2017, 11, 30)).exists())
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2017, 12, 1), end_date=date(2017, 12, 31)).exists())
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2018, 1, 1), end_date=date(2018, 1, 31)).exists())
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2018, 2, 1), end_date=date(2018, 2, 28)).exists())
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2018, 3, 1), end_date=date(2018, 3, 31)).exists())
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2018, 4, 1), end_date=date(2018, 4, 30)).exists())
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2018, 5, 1), end_date=date(2018, 5, 31)).exists())
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2018, 6, 1), end_date=date(2018, 6, 30)).exists())
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2018, 7, 1), end_date=date(2018, 7, 31)).exists())
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2018, 8, 1), end_date=date(2018, 8, 31)).exists())
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2018, 9, 1), end_date=date(2018, 9, 30)).exists())
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2018, 10, 1), end_date=date(2018, 10, 31)).exists())
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2018, 11, 1), end_date=date(2018, 11, 30)).exists())
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2018, 12, 1), end_date=date(2018, 12, 31)).exists())
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 1, 1), end_date=date(2019, 1, 31)).exists())
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 2, 1), end_date=date(2019, 2, 20)).exists())
+
+    def test_sub_report_object_report(self):
+        """
+        Tests that a SubReport object assigns the right report.
+        """
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        report = models.Report.objects.first()
+        self.assertEqual(models.SubReport.objects.first().report, report)
 
 
 def create_watchman_computer(customer, computer_id=None, name=None, date_reported=None, date_last_reported=None, os_type='mac', os_version='OS X 10.13.6', ram_gb=2, hdd_capacity_gb=100, hdd_usage_gb=50):

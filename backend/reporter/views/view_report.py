@@ -1,4 +1,5 @@
-from datetime import datetime
+import calendar
+from datetime import datetime, date
 
 from rest_framework import response, status, views
 
@@ -56,12 +57,51 @@ class ReportLCView(views.APIView):
                                                             date_last_reported__gt=start_date
                                                            ).count()
         # create the report
-        models.Report.objects.create(customer=customer,
-                                     start_date=start_date,
-                                     end_date=end_date,
-                                     num_mac_os=num_mac_os,
-                                     num_windows_os=num_windows_os,
-                                     num_linux_os=num_linux_os
-                                    )
+        report = models.Report(customer=customer,
+                               start_date=start_date,
+                               end_date=end_date,
+                               num_mac_os=num_mac_os,
+                               num_windows_os=num_windows_os,
+                               num_linux_os=num_linux_os
+                              )
+        report.save()
+        # iterate over every year within date range
+        for start, end in report_dates(start_date, end_date):
+            models.SubReport.objects.create(report=report, start_date=start, end_date=end)
         # return the success response
         return response.Response(status=status.HTTP_201_CREATED)
+
+
+def days_in_month(year, month):
+    """
+    A helper function that takes in month and year numbers and returns the number of day in the month.
+    """
+    return calendar.monthrange(year, month)[1]
+
+def report_dates(start_date, end_date):
+    # iterate over every year within date range
+    for year in range(start_date.year, end_date.year + 1):
+        # find the month range for the year
+        month_range = range(1, 13)
+        # start and end year cases
+        if year == start_date.year:
+            month_range = range(start_date.month, 13)
+        elif year == end_date.year:
+            month_range = range(1, end_date.month + 1)
+        # single year case
+        if start_date.year == end_date.year:
+            month_range = range(start_date.month, end_date.month + 1)
+        # iterate over every month in the year
+        for month in month_range:
+            # find the day range for the year
+            day_range = (1, days_in_month(year, month))
+            # start and end month cases
+            if year == start_date.year and month == start_date.month:
+                day_range = (start_date.day, days_in_month(year, month))
+            elif year == end_date.year and month == end_date.month:
+                day_range = (1, end_date.day)
+            # single month case
+            if start_date.year == end_date.year and start_date.month == end_date.month:
+                day_range = (start_date.day, end_date.day)
+            # create the sub reports
+            yield (date(year, month, day_range[0]), date(year, month, day_range[1]))
