@@ -67,7 +67,18 @@ class ReportLCView(views.APIView):
         report.save()
         # iterate over every year within date range
         for start, end in report_dates(start_date, end_date):
-            models.SubReport.objects.create(report=report, start_date=start, end_date=end)
+            # generate the subreport statistics
+            num_warnings_unresolved = models.WatchmanWarning.objects.filter(watchman_group_id=customer,
+                                                                            date_reported__gte=start,
+                                                                            date_reported__lte=end,
+                                                                            date_resolved=None
+                                                                           ).count()
+            # create the subreport
+            models.SubReport.objects.create(report=report,
+                                            start_date=start,
+                                            end_date=end,
+                                            num_warnings_unresolved=num_warnings_unresolved
+                                           )
         # return the success response
         return response.Response(status=status.HTTP_201_CREATED)
 

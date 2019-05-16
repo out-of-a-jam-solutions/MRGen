@@ -576,6 +576,69 @@ class SubReportCreateObjectTest(test.APITestCase):
         report = models.Report.objects.first()
         self.assertEqual(models.SubReport.objects.first().report, report)
 
+    def test_sub_report_object_warnings_unresolved(self):
+        """
+        Tests that a SubReport assigns the right number of unresolved warnings.
+        """
+        # create the computers
+        comp = create_watchman_computer(self.customer)
+        # cerate the warnings
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 3))
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 4))
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 5), date_resolved=date(2019, 1, 10))
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.SubReport.objects.first().num_warnings_unresolved, 2)
+
+    def test_sub_report_object_warnings_unresolved_recurring(self):
+        """
+        Tests that a SubReport assigns the right number of unresolved warnings when the same warning has occured multiple times.
+        """
+        # create the computers
+        comp = create_watchman_computer(self.customer)
+        # cerate the warnings
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 5), date_resolved=date(2019, 1, 6), warning_id='abc')
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 7), date_resolved=date(2019, 1, 8), warning_id='abc')
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 9), warning_id='abc')
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.SubReport.objects.first().num_warnings_unresolved, 1)
+
+    def test_sub_report_object_warnings_unresolved_cross_month(self):
+        """
+        Tests that multiple SubReports assign the right number of unresolved warnings to each.
+        """
+        # create the computers
+        comp = create_watchman_computer(self.customer)
+        # cerate the warnings
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 3))
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 4))
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 2, 3))
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 2, 4))
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 2, 5))
+        # request
+        request_body = {
+            'customer':  self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-02-28'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 1, 1), end_date=date(2019, 1, 31), num_warnings_unresolved=2).exists())
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 2, 1), end_date=date(2019, 2, 28), num_warnings_unresolved=3).exists())
+
 
 def create_watchman_computer(customer, computer_id=None, name=None, date_reported=None, date_last_reported=None, os_type='mac', os_version='OS X 10.13.6', ram_gb=2, hdd_capacity_gb=100, hdd_usage_gb=50):
     """
