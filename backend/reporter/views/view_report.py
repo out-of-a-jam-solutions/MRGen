@@ -41,44 +41,55 @@ class ReportLCView(views.APIView):
         if bad_response:
             return response.Response(bad_response, status=status.HTTP_400_BAD_REQUEST)
         # generate report statistics
-        num_mac_os = models.WatchmanComputer.objects.filter(os_type='mac',
-                                                            watchman_group_id=customer,
-                                                            date_reported__lt=end_date,
-                                                            date_last_reported__gt=start_date
-                                                           ).count()
-        num_windows_os = models.WatchmanComputer.objects.filter(os_type='windows',
-                                                            watchman_group_id=customer,
-                                                            date_reported__lt=end_date,
-                                                            date_last_reported__gt=start_date
-                                                           ).count()
-        num_linux_os = models.WatchmanComputer.objects.filter(os_type='linux',
-                                                            watchman_group_id=customer,
-                                                            date_reported__lt=end_date,
-                                                            date_last_reported__gt=start_date
-                                                           ).count()
+        num_mac_os = models.WatchmanComputer.objects.filter(
+            os_type='mac',
+            watchman_group_id=customer,
+            date_reported__lt=end_date,
+            date_last_reported__gt=start_date
+        ).count()
+        num_windows_os = models.WatchmanComputer.objects.filter(
+            os_type='windows',
+            watchman_group_id=customer,
+            date_reported__lt=end_date,
+            date_last_reported__gt=start_date
+        ).count()
+        num_linux_os = models.WatchmanComputer.objects.filter(
+            os_type='linux',
+            watchman_group_id=customer,
+            date_reported__lt=end_date,
+            date_last_reported__gt=start_date
+        ).count()
         # create the report
-        report = models.Report(customer=customer,
-                               start_date=start_date,
-                               end_date=end_date,
-                               num_mac_os=num_mac_os,
-                               num_windows_os=num_windows_os,
-                               num_linux_os=num_linux_os
-                              )
-        report.save()
+        report = models.Report.objects.create(
+            customer=customer,
+            start_date=start_date,
+            end_date=end_date,
+            num_mac_os=num_mac_os,
+            num_windows_os=num_windows_os,
+            num_linux_os=num_linux_os
+        )
         # iterate over every year within date range
         for start, end in report_dates(start_date, end_date):
             # generate the subreport statistics
-            num_warnings_unresolved = models.WatchmanWarning.objects.filter(watchman_group_id=customer,
-                                                                            date_reported__gte=start,
-                                                                            date_reported__lte=end,
-                                                                            date_resolved=None
-                                                                           ).count()
+            num_warnings_unresolved = models.WatchmanWarning.objects.filter(
+                watchman_group_id=customer,
+                date_reported__gte=start,
+                date_reported__lte=end,
+                date_resolved=None
+            ).count()
+            num_warnings_resolved = models.WatchmanWarning.objects.filter(
+                watchman_group_id=customer,
+                date_resolved__gte=start,
+                date_resolved__lte=end
+            ).count()
             # create the subreport
-            models.SubReport.objects.create(report=report,
-                                            start_date=start,
-                                            end_date=end,
-                                            num_warnings_unresolved=num_warnings_unresolved
-                                           )
+            models.SubReport.objects.create(
+                report=report,
+                start_date=start,
+                end_date=end,
+                num_warnings_unresolved=num_warnings_unresolved,
+                num_warnings_resolved=num_warnings_resolved
+            )
         # return the success response
         return response.Response(status=status.HTTP_201_CREATED)
 
@@ -90,6 +101,9 @@ def days_in_month(year, month):
     return calendar.monthrange(year, month)[1]
 
 def report_dates(start_date, end_date):
+    """
+    Generator function to create a range of report dates given a start and end date.
+    """
     # iterate over every year within date range
     for year in range(start_date.year, end_date.year + 1):
         # find the month range for the year
