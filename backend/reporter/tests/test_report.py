@@ -35,7 +35,7 @@ class ReportRequestTest(test.APITestCase):
         # test response
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_report_customer(self):
+    def test_customer(self):
         """
         Tests that the customer field was set properly in the Report object.
         """
@@ -49,7 +49,7 @@ class ReportRequestTest(test.APITestCase):
         # test database
         self.assertEqual(models.Report.objects.first().customer_id, request_body['customer'])
 
-    def test_report_customer_bad(self):
+    def test_customer_bad(self):
         """
         Tests the response's status code for 400 BAD REQUEST given an invalid customer ID.
         """
@@ -67,7 +67,7 @@ class ReportRequestTest(test.APITestCase):
         # test response
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_report_start_date(self):
+    def test_start_date(self):
         """
         Tests that the start date field was set properly in the Report object.
         """
@@ -81,7 +81,7 @@ class ReportRequestTest(test.APITestCase):
         # test database
         self.assertEqual(models.Report.objects.first().start_date.strftime('%Y-%m-%d'), request_body['start_date'])
 
-    def test_report_start_date_bad(self):
+    def test_start_date_bad(self):
         """
         Tests the response's status code for 400 BAD REQUEST given an invalid start date.
         """
@@ -99,7 +99,7 @@ class ReportRequestTest(test.APITestCase):
         # test response
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_report_start_date_future(self):
+    def test_start_date_future(self):
         """
         Tests the response's status code for 400 BAD REQUEST given a start date in the future.
         """
@@ -120,7 +120,7 @@ class ReportRequestTest(test.APITestCase):
         # test response
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_report_end_date(self):
+    def test_end_date(self):
         """
         Tests that the end date field was set properly in the Report object.
         """
@@ -134,7 +134,7 @@ class ReportRequestTest(test.APITestCase):
         # test database
         self.assertEqual(models.Report.objects.first().end_date.strftime('%Y-%m-%d'), request_body['end_date'])
 
-    def test_report_end_date_bad(self):
+    def test_end_date_bad(self):
         """
         Tests the response's status code for 400 BAD REQUEST given an invalid start date.
         """
@@ -152,7 +152,7 @@ class ReportRequestTest(test.APITestCase):
         # test response
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_report_end_date_future(self):
+    def test_end_date_future(self):
         """
         Tests the response's status code for 400 BAD REQUEST given an end date in the future.
         """
@@ -173,7 +173,7 @@ class ReportRequestTest(test.APITestCase):
         # test response
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_report_start_date_after_end_date(self):
+    def test_start_date_after_end_date(self):
         """
         Tests the response's status code for 400 BAD REQUEST given a start date that is after the end date.
         """
@@ -207,7 +207,7 @@ class ReportCreateReportTest(test.APITestCase):
         models.Customer(name='customer 1', watchman_group_id='g_1111111', repairshopr_id='1111111').save()
         self.customer = models.Customer.objects.first()
 
-    def test_report_object(self):
+    def test_create_object(self):
         """
         Tests that a Report object was created.
         """
@@ -221,7 +221,7 @@ class ReportCreateReportTest(test.APITestCase):
         # test database
         self.assertTrue(models.Report.objects.exists())
 
-    def test_report_object_customer(self):
+    def test_customer(self):
         """
         Tests that a Report object assigns the right customer.
         """
@@ -235,7 +235,7 @@ class ReportCreateReportTest(test.APITestCase):
         # test database
         self.assertTrue(models.Report.objects.filter(customer=request_body['customer']).exists())
 
-    def test_report_object_start_date(self):
+    def test_start_date(self):
         """
         Tests that a Report object assigns the right start date.
         """
@@ -249,7 +249,7 @@ class ReportCreateReportTest(test.APITestCase):
         # test database
         self.assertTrue(models.Report.objects.filter(start_date=date(2019, 1, 1)).exists())
 
-    def test_report_object_end_date(self):
+    def test_end_date(self):
         """
         Tests that a Report object assigns the right end date.
         """
@@ -263,7 +263,7 @@ class ReportCreateReportTest(test.APITestCase):
         # test database
         self.assertTrue(models.Report.objects.filter(end_date=date(2019, 1, 31)).exists())
 
-    def test_report_object_date_generated(self):
+    def test_date_generated(self):
         """
         Tests that a Report object assigns the right generated date.
         """
@@ -277,7 +277,7 @@ class ReportCreateReportTest(test.APITestCase):
         # test database
         self.assertTrue(models.Report.objects.filter(date_generated=datetime.now().date()).exists())
 
-    def test_report_object_num_mac_os(self):
+    def test_num_mac_os(self):
         """
         Tests that a Report object assigns the right number of mac os computers and not other os types.
         """
@@ -296,7 +296,7 @@ class ReportCreateReportTest(test.APITestCase):
         # test database
         self.assertEqual(models.Report.objects.first().num_mac_os, 2)
 
-    def test_report_object_num_windows_os(self):
+    def test_num_windows_os(self):
         """
         Tests that a Report object assigns the right number of windows os computers and not other os types.
         """
@@ -315,7 +315,7 @@ class ReportCreateReportTest(test.APITestCase):
         # test database
         self.assertEqual(models.Report.objects.first().num_windows_os, 2)
 
-    def test_report_object_num_linux_os(self):
+    def test_num_linux_os(self):
         """
         Tests that a Report object assigns the right number of linux os computers and not other os types.
         """
@@ -334,7 +334,7 @@ class ReportCreateReportTest(test.APITestCase):
         # test database
         self.assertEqual(models.Report.objects.first().num_linux_os, 2)
 
-    def test_report_object_num_mac_os_last_reported_before_start_date(self):
+    def test_num_mac_os_last_reported_before_start_date(self):
         """
         Tests that a Report object assigns the right number of mac os computers when some were last reported before the start date.
         """
@@ -352,7 +352,7 @@ class ReportCreateReportTest(test.APITestCase):
         # test database
         self.assertEqual(models.Report.objects.first().num_mac_os, 2)
 
-    def test_report_object_num_mac_os_first_reported_after_end_date(self):
+    def test_num_mac_os_first_reported_after_end_date(self):
         """
         Tests that a Report object assigns the right number of mac os computers when some were first reported after the end date.
         """
@@ -370,7 +370,7 @@ class ReportCreateReportTest(test.APITestCase):
         # test database
         self.assertEqual(models.Report.objects.first().num_mac_os, 2)
 
-    def test_report_object_num_windows_os_last_reported_before_start_date(self):
+    def test_num_windows_os_last_reported_before_start_date(self):
         """
         Tests that a Report object assigns the right number of windows os computers when some were last reported before the start date.
         """
@@ -388,7 +388,7 @@ class ReportCreateReportTest(test.APITestCase):
         # test database
         self.assertEqual(models.Report.objects.first().num_windows_os, 2)
 
-    def test_report_object_num_windows_os_first_reported_after_end_date(self):
+    def test_num_windows_os_first_reported_after_end_date(self):
         """
         Tests that a Report object assigns the right number of windows os computers when some were first reported after the end date.
         """
@@ -406,7 +406,7 @@ class ReportCreateReportTest(test.APITestCase):
         # test database
         self.assertEqual(models.Report.objects.first().num_windows_os, 2)
 
-    def test_report_object_num_linux_os_last_reported_before_start_date(self):
+    def test_num_linux_os_last_reported_before_start_date(self):
         """
         Tests that a Report object assigns the right number of windows os computers when some were last reported before the start date.
         """
@@ -424,7 +424,7 @@ class ReportCreateReportTest(test.APITestCase):
         # test database
         self.assertEqual(models.Report.objects.first().num_linux_os, 2)
 
-    def test_report_object_num_linux_os_first_reported_after_end_date(self):
+    def test_num_linux_os_first_reported_after_end_date(self):
         """
         Tests that a Report object assigns the right number of windows os computers when some were first reported after the end date.
         """
