@@ -69,6 +69,7 @@ class ReportLCView(views.APIView):
             num_windows_os=num_windows_os,
             num_linux_os=num_linux_os
         )
+
         # create all sub reports
         for start, end in report_dates(start_date, end_date):
             # count the number of warnings unresolved at the beginning of the sub report period
@@ -107,6 +108,21 @@ class ReportLCView(views.APIView):
                 num_warnings_created=num_warnings_created,
                 num_warnings_resolved=num_warnings_resolved
             )
+
+        # created the computer reports
+        for computer in models.WatchmanComputer.objects.filter(
+            watchman_group_id=customer,
+            date_last_reported__gte=start_date
+        ).all():
+            models.ComputerReport.objects.create(
+                name=computer.name,
+                os_type=computer.os_type,
+                os_version=computer.os_version,
+                ram_gb=computer.ram_gb,
+                hdd_capacity_gb=computer.hdd_capacity_gb,
+                hdd_usage_gb=computer.hdd_usage_gb
+            )
+
         # return the success response
         return response.Response(status=status.HTTP_201_CREATED)
 

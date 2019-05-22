@@ -1005,13 +1005,179 @@ class ReportCreateSubReportTest(test.APITestCase):
         self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 1, 1), end_date=date(2019, 1, 31), num_warnings_resolved=2).exists())
         self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 2, 1), end_date=date(2019, 2, 28), num_warnings_resolved=3).exists())
 
+class ReportCreateComputerReportTest(test.APITestCase):
+    def setUp(self):
+        # create test user
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(username=self.username, password=self.password)
+        self.client.login(username=self.username, password=self.password)
+        # retrieve the view
+        self.view_name = 'reporter:report-lc'
+        # add customer to database
+        models.Customer(name='customer 1', watchman_group_id='g_1111111', repairshopr_id='1111111').save()
+        self.customer = models.Customer.objects.first()
+
+    def test_create_object(self):
+        """
+        Tests that ComputerReport objects are created.
+        """
+        # create the computers
+        create_watchman_computer(self.customer, date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 10))
+        create_watchman_computer(self.customer, date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 10))
+        # request
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.ComputerReport.objects.count(), 2)
+
+    def test_create_object_multiple_customers(self):
+        """
+        Tests that the right number of computer report objects are created when there are multiple customers.
+        """
+        # create the customer
+        customer_2 = models.Customer.objects.create(name='customer 2', watchman_group_id='g_2222222', repairshopr_id='2222222')
+        # create the computers
+        create_watchman_computer(self.customer, date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 10))
+        create_watchman_computer(self.customer, date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 10))
+        create_watchman_computer(customer_2, date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 10))
+        # request
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.ComputerReport.objects.count(), 2)
+
+    def test_create_object_exclude_reported_in_past(self):
+        """
+        Tests that computers that were not reported anytime after the start date are not included.
+        """
+        # create the computers
+        comp_1 = create_watchman_computer(self.customer, date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 10))
+        comp_2 = create_watchman_computer(self.customer, date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 11))
+        comp_bad = create_watchman_computer(self.customer, date_reported=date(2018, 12, 1), date_last_reported=date(2018, 12, 31))
+        # request
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertTrue(models.ComputerReport.objects.filter(id=comp_1.id).exists())
+        self.assertTrue(models.ComputerReport.objects.filter(id=comp_2.id).exists())
+        self.assertFalse(models.ComputerReport.objects.filter(id=comp_bad.id).exists())
+
+    def test_name(self):
+        """
+        Tests that the name is set properly in a ComputerReport.
+        """
+        # create the computers
+        comp = create_watchman_computer(self.customer, date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 10))
+        # request
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.ComputerReport.objects.first().name, comp.name)
+
+    def test_os_type(self):
+        """
+        Tests that the OS type is set properly in a ComputerReport.
+        """
+        # create the computers
+        comp = create_watchman_computer(self.customer, date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 10))
+        # request
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.ComputerReport.objects.first().os_type, comp.os_type)
+
+    def test_os_version(self):
+        """
+        Tests that the OS version is set properly in a ComputerReport.
+        """
+        # create the computers
+        comp = create_watchman_computer(self.customer, date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 10))
+        # request
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.ComputerReport.objects.first().os_version, comp.os_version)
+
+    def test_ram_gb(self):
+        """
+        Tests that the amount of RAM is set properly in a ComputerReport.
+        """
+        # create the computers
+        comp = create_watchman_computer(self.customer, date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 10))
+        # request
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.ComputerReport.objects.first().ram_gb, comp.ram_gb)
+
+    def test_hdd_capacity_gb(self):
+        """
+        Tests that the HDD capacity is set properly in a ComputerReport.
+        """
+        # create the computers
+        comp = create_watchman_computer(self.customer, date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 10))
+        # request
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.ComputerReport.objects.first().hdd_capacity_gb, comp.hdd_capacity_gb)
+
+    def test_hdd_usage_gb(self):
+        """
+        Tests that the HDD usage is set properly in a ComputerReport.
+        """
+        # create the computers
+        comp = create_watchman_computer(self.customer, date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 10))
+        # request
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.ComputerReport.objects.first().hdd_usage_gb, comp.hdd_usage_gb)
+
 
 def create_watchman_computer(customer, computer_id=None, name=None, date_reported=None, date_last_reported=None, os_type='mac', os_version='OS X 10.13.6', ram_gb=2, hdd_capacity_gb=100, hdd_usage_gb=50):
     """
     Helper function to create watchman computers in a similar fassion to the Celery tasks.
     """
     # generate unique names and IDs if necessary
-    identifier = uuid.uuid1()
+    identifier = str(uuid.uuid1())
     if not computer_id:
         computer_id = identifier
     if not name:
@@ -1041,7 +1207,7 @@ def create_watchman_warning(customer, computer, date_reported=None, date_last_ch
     Helper function to create watchman warnings in a similar fassion to the Celery tasks.
     """
     # generate unique names and IDs if necessary
-    identifier = uuid.uuid1()
+    identifier = str(uuid.uuid1())
     if not warning_id:
         warning_id = identifier
     # setup the new computer
