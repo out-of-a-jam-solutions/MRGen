@@ -726,6 +726,156 @@ class ReportCreateSubReportTest(test.APITestCase):
         self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 1, 1), end_date=date(2019, 1, 31), num_warnings_unresolved_start=2).exists())
         self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 2, 1), end_date=date(2019, 2, 28), num_warnings_unresolved_start=4).exists())
 
+    def test_warnings_unresolved_end(self):
+        """
+        Tests that a SubReport assigns the right number of ending unresolved warnings.
+        """
+        # create the computers
+        comp = create_watchman_computer(self.customer)
+        # cerate the warnings
+        create_watchman_warning(self.customer, comp, date_reported=date(2018, 12, 3))
+        create_watchman_warning(self.customer, comp, date_reported=date(2018, 12, 4))
+        # request
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.SubReport.objects.first().num_warnings_unresolved_end, 2)
+
+    def test_warnings_unresolved_end_exclude_resolved(self):
+        """
+        Tests that a SubReport assigns the right number of ending unresolved warnings when past resolved warnings exist.
+        """
+        # create the computers
+        comp = create_watchman_computer(self.customer)
+        # cerate the warnings
+        create_watchman_warning(self.customer, comp, date_reported=date(2018, 12, 3))
+        create_watchman_warning(self.customer, comp, date_reported=date(2018, 12, 4))
+        create_watchman_warning(self.customer, comp, date_reported=date(2018, 12, 5), date_resolved=date(2019, 1, 10))
+        # request
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.SubReport.objects.first().num_warnings_unresolved_end, 2)
+
+    def test_warnings_unresolved_end_include_resolved(self):
+        """
+        Tests that a SubReport assigns the right number of ending unresolved warnings when future resolved warnings exist.
+        """
+        # create the computers
+        comp = create_watchman_computer(self.customer)
+        # cerate the warnings
+        create_watchman_warning(self.customer, comp, date_reported=date(2018, 12, 3))
+        create_watchman_warning(self.customer, comp, date_reported=date(2018, 12, 4))
+        create_watchman_warning(self.customer, comp, date_reported=date(2018, 12, 5), date_resolved=date(2019, 2, 10))
+        # request
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.SubReport.objects.first().num_warnings_unresolved_end, 3)
+
+    def test_warnings_unresolved_end_multiple_customers(self):
+        """
+        Tests that a SubReport assigns the right number of ending unresolved warnings when there are multiple customers.
+        """
+        # create a new customer
+        customer_2 = models.Customer.objects.create(name='customer 2', watchman_group_id='g_2222222', repairshopr_id='2222222')
+        # create the computers
+        comp = create_watchman_computer(self.customer)
+        # cerate the warnings
+        create_watchman_warning(self.customer, comp, date_reported=date(2018, 12, 3))
+        create_watchman_warning(self.customer, comp, date_reported=date(2018, 12, 4))
+        create_watchman_warning(customer_2, comp, date_reported=date(2018, 12, 4))
+        # request
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.SubReport.objects.first().num_warnings_unresolved_end, 2)
+
+    def test_warnings_unresolved_end_cross_month(self):
+        """
+        Tests that multiple SubReports assign the right number of ending unresolved warnings to each.
+        """
+        # create the computers
+        comp = create_watchman_computer(self.customer)
+        # cerate the warnings
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 4))
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 5))
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 2, 3))
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 2, 4))
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 2, 3))
+        # request
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-02-28'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 1, 1), end_date=date(2019, 1, 31), num_warnings_unresolved_end=2).exists())
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 2, 1), end_date=date(2019, 2, 28), num_warnings_unresolved_end=5).exists())
+
+    def test_warnings_unresolved_end_cross_month_exclude_resolved(self):
+        """
+        Tests that a SubReport assigns the right number of ending unresolved warnings when past resolved warnings exist across multiple SubReports.
+        """
+        # create the computers
+        comp = create_watchman_computer(self.customer)
+        # cerate the warnings
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 4))
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 5), date_resolved=date(2019, 1, 10))
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 2, 3))
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 2, 4))
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 2, 3), date_resolved=date(2019, 2, 10))
+        # request
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-02-28'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 1, 1), end_date=date(2019, 1, 31), num_warnings_unresolved_end=1).exists())
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 2, 1), end_date=date(2019, 2, 28), num_warnings_unresolved_end=3).exists())
+
+    def test_warnings_unresolved_end_cross_month_include_resolved(self):
+        """
+        Tests that a SubReport assigns the right number of ending unresolved warnings when future resolved warnings exist across multiple SubReports.
+        """
+        # create the computers
+        comp = create_watchman_computer(self.customer)
+        # cerate the warnings
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 4))
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 5), date_resolved=date(2019, 2, 10))
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 2, 3))
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 2, 4))
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 2, 3), date_resolved=date(2019, 3, 10))
+        # request
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-02-28'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 1, 1), end_date=date(2019, 1, 31), num_warnings_unresolved_end=2).exists())
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 2, 1), end_date=date(2019, 2, 28), num_warnings_unresolved_end=4).exists())
+
     def test_warnings_created(self):
         """
         Tests that a SubReport assigns the right number of created warnings.

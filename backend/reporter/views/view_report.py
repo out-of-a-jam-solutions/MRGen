@@ -76,7 +76,14 @@ class ReportLCView(views.APIView):
                 date_resolved__lt=start
             ).filter(
                 watchman_group_id=customer,
-                date_reported__lt=start,
+                date_reported__lt=start
+            ).count()
+            # count the number of warnings unresolved at the end of the sub report period
+            num_warnings_unresolved_end = models.WatchmanWarning.objects.exclude(
+                date_resolved__lte=end
+            ).filter(
+                watchman_group_id=customer,
+                date_reported__lte=end
             ).count()
             # count the number of warnings created during the sub report period
             num_warnings_created = models.WatchmanWarning.objects.filter(
@@ -96,6 +103,7 @@ class ReportLCView(views.APIView):
                 start_date=start,
                 end_date=end,
                 num_warnings_unresolved_start=num_warnings_unresolved_start,
+                num_warnings_unresolved_end=num_warnings_unresolved_end,
                 num_warnings_created=num_warnings_created,
                 num_warnings_resolved=num_warnings_resolved
             )
