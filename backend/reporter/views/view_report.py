@@ -1,13 +1,19 @@
 import calendar
 from datetime import datetime, date
+import tempfile
 
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from django.views.generic import DetailView
+from django_weasyprint import WeasyTemplateResponseMixin
 from rest_framework import response, status, views
+from weasyprint import HTML
 
 from reporter import models
 
 
 class ReportLCView(views.APIView):
-    def post(self, request, format=None):
+    def post(self, request):
         """
         Create a new report for given customer and time period.
         """
@@ -125,6 +131,16 @@ class ReportLCView(views.APIView):
 
         # return the success response
         return response.Response(status=status.HTTP_201_CREATED)
+
+
+class ReportDetailView(DetailView):
+    model = models.Report
+    template_name = 'report.html'
+
+
+class ReportPDFView(WeasyTemplateResponseMixin, ReportDetailView):
+    pdf_attachment = False
+    pdf_filename = 'report.pdf'
 
 
 def days_in_month(year, month):

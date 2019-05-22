@@ -1,0 +1,11 @@
+{% load static %}
+<html>
+  <head>
+    <link rel="stylesheet" href="{% static 'css/report.css' %}">
+  </head>
+  <body>
+    <h1>{{ report.customer.name }}</h1>
+    <p>Report period start: {{ report.start_date }}</p>
+    <p>Report period end: {{ report.end_date }}</p>
+  </body>
+</html>
