@@ -27,7 +27,7 @@ class ReportRequestTest(test.APITestCase):
         """
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-01',
             'end_date': '2019-01-31'
         }
@@ -41,7 +41,7 @@ class ReportRequestTest(test.APITestCase):
         """
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-01',
             'end_date': '2019-01-31'
         }
@@ -55,7 +55,7 @@ class ReportRequestTest(test.APITestCase):
         """
         # request
         request_body = {
-            'customer':  -1,
+            'customer': -1,
             'start_date': '2019-01-01',
             'end_date': '2019-01-31'
         }
@@ -73,7 +73,7 @@ class ReportRequestTest(test.APITestCase):
         """
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-01',
             'end_date': '2019-01-31'
         }
@@ -87,7 +87,7 @@ class ReportRequestTest(test.APITestCase):
         """
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-02-32',
             'end_date': '2019-03-31'
         }
@@ -108,7 +108,7 @@ class ReportRequestTest(test.APITestCase):
         start_date = start_date.date().strftime('%Y-%m-%d')
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': start_date,
             'end_date': '2019-01-31'
         }
@@ -126,7 +126,7 @@ class ReportRequestTest(test.APITestCase):
         """
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-01',
             'end_date': '2019-01-31'
         }
@@ -140,7 +140,7 @@ class ReportRequestTest(test.APITestCase):
         """
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-02-01',
             'end_date': '2019-02-31'
         }
@@ -161,7 +161,7 @@ class ReportRequestTest(test.APITestCase):
         end_date = end_date.date().strftime('%Y-%m-%d')
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-01',
             'end_date': end_date
         }
@@ -182,7 +182,7 @@ class ReportRequestTest(test.APITestCase):
         start_date = date(2019, 1, 2).strftime('%Y-%m-%d')
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': start_date,
             'end_date': end_date
         }
@@ -194,7 +194,7 @@ class ReportRequestTest(test.APITestCase):
         # test response
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-class ReportCreateObjectTest(test.APITestCase):
+class ReportCreateReportTest(test.APITestCase):
     def setUp(self):
         # create test user
         self.username = 'test'
@@ -213,7 +213,7 @@ class ReportCreateObjectTest(test.APITestCase):
         """
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-01',
             'end_date': '2019-01-31'
         }
@@ -227,7 +227,7 @@ class ReportCreateObjectTest(test.APITestCase):
         """
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-01',
             'end_date': '2019-01-31'
         }
@@ -241,7 +241,7 @@ class ReportCreateObjectTest(test.APITestCase):
         """
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-01',
             'end_date': '2019-01-31'
         }
@@ -255,7 +255,7 @@ class ReportCreateObjectTest(test.APITestCase):
         """
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-01',
             'end_date': '2019-01-31'
         }
@@ -269,7 +269,7 @@ class ReportCreateObjectTest(test.APITestCase):
         """
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-01',
             'end_date': '2019-01-31'
         }
@@ -288,7 +288,7 @@ class ReportCreateObjectTest(test.APITestCase):
         create_watchman_computer(self.customer, os_type='linux', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-01',
             'end_date': '2019-01-31'
         }
@@ -307,7 +307,7 @@ class ReportCreateObjectTest(test.APITestCase):
         create_watchman_computer(self.customer, os_type='linux', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-01',
             'end_date': '2019-01-31'
         }
@@ -326,7 +326,7 @@ class ReportCreateObjectTest(test.APITestCase):
         create_watchman_computer(self.customer, os_type='windows', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-01',
             'end_date': '2019-01-31'
         }
@@ -344,7 +344,7 @@ class ReportCreateObjectTest(test.APITestCase):
         create_watchman_computer(self.customer, os_type='mac', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-01',
             'end_date': '2019-01-31'
         }
@@ -362,7 +362,7 @@ class ReportCreateObjectTest(test.APITestCase):
         create_watchman_computer(self.customer, os_type='mac', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 2, 15))
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-01',
             'end_date': '2019-01-31'
         }
@@ -380,7 +380,7 @@ class ReportCreateObjectTest(test.APITestCase):
         create_watchman_computer(self.customer, os_type='windows', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-01',
             'end_date': '2019-01-31'
         }
@@ -398,7 +398,7 @@ class ReportCreateObjectTest(test.APITestCase):
         create_watchman_computer(self.customer, os_type='windows', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 2, 15))
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-01',
             'end_date': '2019-01-31'
         }
@@ -416,7 +416,7 @@ class ReportCreateObjectTest(test.APITestCase):
         create_watchman_computer(self.customer, os_type='linux', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-01',
             'end_date': '2019-01-31'
         }
@@ -434,7 +434,7 @@ class ReportCreateObjectTest(test.APITestCase):
         create_watchman_computer(self.customer, os_type='linux', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 2, 15))
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-01',
             'end_date': '2019-01-31'
         }
@@ -442,7 +442,7 @@ class ReportCreateObjectTest(test.APITestCase):
         # test database
         self.assertEqual(models.Report.objects.first().num_linux_os, 2)
 
-class SubReportCreateObjectTest(test.APITestCase):
+class ReportCreateSubReportTest(test.APITestCase):
     def setUp(self):
         # create test user
         self.username = 'test'
@@ -455,13 +455,13 @@ class SubReportCreateObjectTest(test.APITestCase):
         models.Customer(name='customer 1', watchman_group_id='g_1111111', repairshopr_id='1111111').save()
         self.customer = models.Customer.objects.first()
 
-    def test_sub_report_object(self):
+    def test_create_object(self):
         """
         Tests that a SubReport object is created.
         """
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-01',
             'end_date': '2019-01-31'
         }
@@ -470,28 +470,13 @@ class SubReportCreateObjectTest(test.APITestCase):
         self.assertTrue(models.SubReport.objects.exists())
         self.assertEqual(models.SubReport.objects.count(), 1)
 
-    def test_sub_report_object_start_end_date(self):
-        """
-        Tests that a SubReport object assigns the right start and end date.
-        """
-        # request
-        request_body = {
-            'customer':  self.customer.id,
-            'start_date': '2019-01-02',
-            'end_date': '2019-01-27'
-        }
-        self.client.post(reverse(self.view_name), request_body)
-        # test database
-        self.assertEqual(models.SubReport.objects.first().start_date, date(2019, 1, 2))
-        self.assertEqual(models.SubReport.objects.first().end_date, date(2019, 1, 27))
-
-    def test_sub_report_object_multiple(self):
+    def test_create_object_multiple(self):
         """
         Tests that multiple SubReport objects are created.
         """
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-01',
             'end_date': '2019-03-28'
         }
@@ -500,13 +485,43 @@ class SubReportCreateObjectTest(test.APITestCase):
         self.assertTrue(models.SubReport.objects.exists())
         self.assertEqual(models.SubReport.objects.count(), 3)
 
-    def test_sub_report_object_multiple_start_end_date(self):
+    def test_create_object_multiple_cross_year(self):
+        """
+        Tests that multiple SubReport objects are created across different years.
+        """
+        # request
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2017-11-01',
+            'end_date': '2019-02-28'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertTrue(models.SubReport.objects.exists())
+        self.assertEqual(models.SubReport.objects.count(), 16)
+
+    def test_start_end_date(self):
+        """
+        Tests that a SubReport object assigns the right start and end date.
+        """
+        # request
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-02',
+            'end_date': '2019-01-27'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.SubReport.objects.first().start_date, date(2019, 1, 2))
+        self.assertEqual(models.SubReport.objects.first().end_date, date(2019, 1, 27))
+
+    def test_start_end_date_multiple(self):
         """
         Tests that multiple SubReport objects are assigned the right start and end date.
         """
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-03',
             'end_date': '2019-03-18'
         }
@@ -517,28 +532,13 @@ class SubReportCreateObjectTest(test.APITestCase):
         self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 2, 1), end_date=date(2019, 2, 28)).exists())
         self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 3, 1), end_date=date(2019, 3, 18)).exists())
 
-    def test_sub_report_object_multiple_cross_year(self):
-        """
-        Tests that multiple SubReport objects are created across different years.
-        """
-        # request
-        request_body = {
-            'customer':  self.customer.id,
-            'start_date': '2017-11-01',
-            'end_date': '2019-02-28'
-        }
-        self.client.post(reverse(self.view_name), request_body)
-        # test database
-        self.assertTrue(models.SubReport.objects.exists())
-        self.assertEqual(models.SubReport.objects.count(), 16)
-
-    def test_sub_report_object_multiple_cross_year_start_end_dates(self):
+    def test_start_end_dates_multiple_cross_year(self):
         """
         Tests that multiple SubReport across multiple years are assigned the right start and end date.
         """
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2017-11-19',
             'end_date': '2019-02-20'
         }
@@ -561,44 +561,193 @@ class SubReportCreateObjectTest(test.APITestCase):
         self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 1, 1), end_date=date(2019, 1, 31)).exists())
         self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 2, 1), end_date=date(2019, 2, 20)).exists())
 
-    def test_sub_report_object_report(self):
+    def test_report(self):
         """
         Tests that a SubReport object assigns the right report.
         """
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-01',
             'end_date': '2019-01-31'
         }
         self.client.post(reverse(self.view_name), request_body)
         # test database
         report = models.Report.objects.first()
-        self.assertEqual(models.SubReport.objects.first().report, report)
+        self.assertTrue(models.SubReport.objects.filter(report=report).exists())
 
-    def test_sub_report_object_warnings_unresolved(self):
+    def test_warnings_unresolved_start(self):
         """
-        Tests that a SubReport assigns the right number of unresolved warnings.
+        Tests that a SubReport assigns the right number of starting unresolved warnings.
         """
         # create the computers
         comp = create_watchman_computer(self.customer)
         # cerate the warnings
-        create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 3))
-        create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 4))
-        create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 5), date_resolved=date(2019, 1, 10))
+        create_watchman_warning(self.customer, comp, date_reported=date(2018, 12, 3))
+        create_watchman_warning(self.customer, comp, date_reported=date(2018, 12, 4))
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-01',
             'end_date': '2019-01-31'
         }
         self.client.post(reverse(self.view_name), request_body)
         # test database
-        self.assertEqual(models.SubReport.objects.first().num_warnings_unresolved, 2)
+        self.assertEqual(models.SubReport.objects.first().num_warnings_unresolved_start, 2)
 
-    def test_sub_report_object_warnings_unresolved_multiple_customers(self):
+    def test_warnings_unresolved_start_exclude_resolved(self):
         """
-        Tests that a SubReport assigns the right number of unresolved warnings when there are multiple customers.
+        Tests that a SubReport assigns the right number of starting unresolved warnings when past resolved warnings exist.
+        """
+        # create the computers
+        comp = create_watchman_computer(self.customer)
+        # cerate the warnings
+        create_watchman_warning(self.customer, comp, date_reported=date(2018, 12, 3))
+        create_watchman_warning(self.customer, comp, date_reported=date(2018, 12, 4))
+        create_watchman_warning(self.customer, comp, date_reported=date(2018, 12, 5), date_resolved=date(2018, 12, 10))
+        # request
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.SubReport.objects.first().num_warnings_unresolved_start, 2)
+
+    def test_warnings_unresolved_start_include_resolved(self):
+        """
+        Tests that a SubReport assigns the right number of starting unresolved warnings when future resolved warnings exist.
+        """
+        # create the computers
+        comp = create_watchman_computer(self.customer)
+        # cerate the warnings
+        create_watchman_warning(self.customer, comp, date_reported=date(2018, 12, 3))
+        create_watchman_warning(self.customer, comp, date_reported=date(2018, 12, 4))
+        create_watchman_warning(self.customer, comp, date_reported=date(2018, 12, 5), date_resolved=date(2019, 1, 10))
+        # request
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.SubReport.objects.first().num_warnings_unresolved_start, 3)
+
+    def test_warnings_unresolved_start_multiple_customers(self):
+        """
+        Tests that a SubReport assigns the right number of starting unresolved warnings when there are multiple customers.
+        """
+        # create a new customer
+        customer_2 = models.Customer.objects.create(name='customer 2', watchman_group_id='g_2222222', repairshopr_id='2222222')
+        # create the computers
+        comp = create_watchman_computer(self.customer)
+        # cerate the warnings
+        create_watchman_warning(self.customer, comp, date_reported=date(2018, 12, 3))
+        create_watchman_warning(self.customer, comp, date_reported=date(2018, 12, 4))
+        create_watchman_warning(customer_2, comp, date_reported=date(2018, 12, 4))
+        # request
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.SubReport.objects.first().num_warnings_unresolved_start, 2)
+
+    def test_warnings_unresolved_start_cross_month(self):
+        """
+        Tests that multiple SubReports assign the right number of starting unresolved warnings to each.
+        """
+        # create the computers
+        comp = create_watchman_computer(self.customer)
+        # cerate the warnings
+        create_watchman_warning(self.customer, comp, date_reported=date(2018, 12, 4))
+        create_watchman_warning(self.customer, comp, date_reported=date(2018, 12, 5))
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 3))
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 4))
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 3))
+        # request
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-02-28'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 1, 1), end_date=date(2019, 1, 31), num_warnings_unresolved_start=2).exists())
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 2, 1), end_date=date(2019, 2, 28), num_warnings_unresolved_start=5).exists())
+
+    def test_warnings_unresolved_start_cross_month_exclude_resolved(self):
+        """
+        Tests that a SubReport assigns the right number of starting unresolved warnings when past resolved warnings exist across multiple SubReports.
+        """
+        # create the computers
+        comp = create_watchman_computer(self.customer)
+        # cerate the warnings
+        create_watchman_warning(self.customer, comp, date_reported=date(2018, 12, 4))
+        create_watchman_warning(self.customer, comp, date_reported=date(2018, 12, 5), date_resolved=date(2018, 12, 10))
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 3))
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 4))
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 3), date_resolved=date(2019, 1, 10))
+        # request
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-02-28'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 1, 1), end_date=date(2019, 1, 31), num_warnings_unresolved_start=1).exists())
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 2, 1), end_date=date(2019, 2, 28), num_warnings_unresolved_start=3).exists())
+
+    def test_warnings_unresolved_start_cross_month_include_resolved(self):
+        """
+        Tests that a SubReport assigns the right number of starting unresolved warnings when future resolved warnings exist across multiple SubReports.
+        """
+        # create the computers
+        comp = create_watchman_computer(self.customer)
+        # cerate the warnings
+        create_watchman_warning(self.customer, comp, date_reported=date(2018, 12, 4))
+        create_watchman_warning(self.customer, comp, date_reported=date(2018, 12, 5), date_resolved=date(2019, 1, 10))
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 3))
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 4))
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 3), date_resolved=date(2019, 2, 10))
+        # request
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-02-28'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 1, 1), end_date=date(2019, 1, 31), num_warnings_unresolved_start=2).exists())
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 2, 1), end_date=date(2019, 2, 28), num_warnings_unresolved_start=4).exists())
+
+    def test_warnings_created(self):
+        """
+        Tests that a SubReport assigns the right number of created warnings.
+        """
+        # create the computers
+        comp = create_watchman_computer(self.customer)
+        # create the warnings
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 3))
+        create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 4))
+        # request
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.SubReport.objects.first().num_warnings_created, 2)
+
+    def test_warnings_created_multiple_customers(self):
+        """
+        tests that a SubReport assigns the right number of created warnings when there are multiple customers.
         """
         # create a new customer
         customer_2 = models.Customer.objects.create(name='customer 2', watchman_group_id='g_2222222', repairshopr_id='2222222')
@@ -610,17 +759,17 @@ class SubReportCreateObjectTest(test.APITestCase):
         create_watchman_warning(customer_2, comp, date_reported=date(2019, 1, 4))
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-01',
             'end_date': '2019-01-31'
         }
         self.client.post(reverse(self.view_name), request_body)
         # test database
-        self.assertEqual(models.SubReport.objects.first().num_warnings_unresolved, 2)
+        self.assertEqual(models.SubReport.objects.first().num_warnings_created, 2)
 
-    def test_sub_report_object_warnings_unresolved_cross_month(self):
+    def test_warnings_created_cross_month(self):
         """
-        Tests that multiple SubReports assign the right number of unresolved warnings to each.
+        Tests that multiple SubReports assign the right number of created warnings to each.
         """
         # create the computers
         comp = create_watchman_computer(self.customer)
@@ -632,16 +781,16 @@ class SubReportCreateObjectTest(test.APITestCase):
         create_watchman_warning(self.customer, comp, date_reported=date(2019, 2, 5))
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-01',
             'end_date': '2019-02-28'
         }
         self.client.post(reverse(self.view_name), request_body)
         # test database
-        self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 1, 1), end_date=date(2019, 1, 31), num_warnings_unresolved=2).exists())
-        self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 2, 1), end_date=date(2019, 2, 28), num_warnings_unresolved=3).exists())
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 1, 1), end_date=date(2019, 1, 31), num_warnings_created=2).exists())
+        self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 2, 1), end_date=date(2019, 2, 28), num_warnings_created=3).exists())
 
-    def test_sub_report_object_warnings_resolved(self):
+    def test_warnings_resolved(self):
         """
         Tests that a SubReport assigns the right number of resolved warnings.
         """
@@ -653,7 +802,7 @@ class SubReportCreateObjectTest(test.APITestCase):
         create_watchman_warning(self.customer, comp, date_reported=date(2019, 1, 5), date_resolved=date(2019, 1, 10))
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-01',
             'end_date': '2019-01-31'
         }
@@ -661,7 +810,7 @@ class SubReportCreateObjectTest(test.APITestCase):
         # test database
         self.assertEqual(models.SubReport.objects.first().num_warnings_resolved, 2)
 
-    def test_sub_report_object_warnings_resolved_multiple_customers(self):
+    def test_warnings_resolved_multiple_customers(self):
         """
         Tests that a SubReport assigns the right number of resolved warnings when there are mutliple customers.
         """
@@ -675,7 +824,7 @@ class SubReportCreateObjectTest(test.APITestCase):
         create_watchman_warning(customer_2, comp, date_reported=date(2019, 1, 4), date_resolved=date(2019, 1, 10))
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-01',
             'end_date': '2019-01-31'
         }
@@ -683,7 +832,7 @@ class SubReportCreateObjectTest(test.APITestCase):
         # test database
         self.assertEqual(models.SubReport.objects.first().num_warnings_resolved, 2)
 
-    def test_sub_report_object_warnings_resolved_cross_month(self):
+    def test_warnings_resolved_cross_month(self):
         """
         Tests that multiple SubReports assign the right number of resolved warnings to each.
         """
@@ -697,7 +846,7 @@ class SubReportCreateObjectTest(test.APITestCase):
         create_watchman_warning(self.customer, comp, date_reported=date(2018, 12, 5), date_resolved=date(2019, 2, 10))
         # request
         request_body = {
-            'customer':  self.customer.id,
+            'customer': self.customer.id,
             'start_date': '2019-01-01',
             'end_date': '2019-02-28'
         }
@@ -705,8 +854,6 @@ class SubReportCreateObjectTest(test.APITestCase):
         # test database
         self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 1, 1), end_date=date(2019, 1, 31), num_warnings_resolved=2).exists())
         self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 2, 1), end_date=date(2019, 2, 28), num_warnings_resolved=3).exists())
-
-    # TODO: number of new warnings for them month vs total existing warnings for the month
 
 
 def create_watchman_computer(customer, computer_id=None, name=None, date_reported=None, date_last_reported=None, os_type='mac', os_version='OS X 10.13.6', ram_gb=2, hdd_capacity_gb=100, hdd_usage_gb=50):

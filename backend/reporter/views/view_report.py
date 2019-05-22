@@ -40,6 +40,7 @@ class ReportLCView(views.APIView):
         # return the error response if necessary
         if bad_response:
             return response.Response(bad_response, status=status.HTTP_400_BAD_REQUEST)
+
         # generate report statistics
         num_mac_os = models.WatchmanComputer.objects.filter(
             os_type='mac',
@@ -68,15 +69,22 @@ class ReportLCView(views.APIView):
             num_windows_os=num_windows_os,
             num_linux_os=num_linux_os
         )
-        # iterate over every year within date range
+        # create all sub reports
         for start, end in report_dates(start_date, end_date):
-            # generate the subreport statistics
-            num_warnings_unresolved = models.WatchmanWarning.objects.filter(
+            # count the number of warnings unresolved at the beginning of the sub report period
+            num_warnings_unresolved_start = models.WatchmanWarning.objects.exclude(
+                date_resolved__lt=start
+            ).filter(
+                watchman_group_id=customer,
+                date_reported__lt=start,
+            ).count()
+            # count the number of warnings created during the sub report period
+            num_warnings_created = models.WatchmanWarning.objects.filter(
                 watchman_group_id=customer,
                 date_reported__gte=start,
-                date_reported__lte=end,
-                date_resolved=None
+                date_reported__lte=end
             ).count()
+            # cound the number of warnings resolved during the sub report period
             num_warnings_resolved = models.WatchmanWarning.objects.filter(
                 watchman_group_id=customer,
                 date_resolved__gte=start,
@@ -87,7 +95,8 @@ class ReportLCView(views.APIView):
                 report=report,
                 start_date=start,
                 end_date=end,
-                num_warnings_unresolved=num_warnings_unresolved,
+                num_warnings_unresolved_start=num_warnings_unresolved_start,
+                num_warnings_created=num_warnings_created,
                 num_warnings_resolved=num_warnings_resolved
             )
         # return the success response
