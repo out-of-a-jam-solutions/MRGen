@@ -134,6 +134,8 @@ The only environment variables that must be set are:
 
 - ``DJANGO_SECRET_KEY`` - The secret key to prevent CSRF
 - ``DJANGO_HOST_DOMAIN`` - The domain name the site is running on
+- ``DJANGO_URL`` - The base url for the Django server used by Vue
+- ``VUE_URL`` - The base url for the Vue server used by Django
 - ``RDS_PASSWORD`` - The password to use for the MySQL database
 - ``WATCHMAN_API_KEY`` - The Watchman Monitoring API key
 - ``REPAIRSHOPR_API_KEY`` - The RepairShopr API key
@@ -164,7 +166,7 @@ can run the migrations with the following command:
 
 ::
 
-  $ docker-compose exec mrgen python manage.py migrate
+  $ docker-compose exec backend python manage.py migrate
 
 If you already have an existing database, this command does not need to be run
 again unless the MRGen database configuration has changed.
