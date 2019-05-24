@@ -5,7 +5,7 @@ LABEL maintainer contact@sheldonw.com
 # install build dependencies and create new user
 RUN apk add mariadb-dev pcre pcre-dev libxml2 xmlsec-dev cairo-dev pango-dev gdk-pixbuf && \
     apk add --no-cache --virtual .build-deps gcc libc-dev linux-headers libffi-dev libxslt-dev nodejs-npm musl-dev jpeg-dev zlib-dev && \
-    pip install pipenv==2018.11.26 && \
+    pip install pipenv==2018.11.26 uwsgi~=2.0 && \
     set -e && \
     adduser -S mrgen
 # create the webroot with Django's static file directory
@@ -13,12 +13,12 @@ ENV DJANGO_STATIC_DIR /home/mrgen/static/
 # cd to the user's home directory
 WORKDIR /home/mrgen
 # copy necessary Django files and directories
-COPY backend/manage.py manage.py
-COPY backend/Pipfile Pipfile
-COPY backend/Pipfile.lock Pipfile.lock
-COPY backend/uwsgi.ini uwsgi.ini
-COPY backend/MRGen MRGen
-COPY backend/reporter reporter
+COPY manage.py manage.py
+COPY Pipfile Pipfile
+COPY Pipfile.lock Pipfile.lock
+COPY uwsgi.ini uwsgi.ini
+COPY MRGen MRGen
+COPY reporter reporter
 # install the dependencies and collect the static files
 RUN pipenv install --system --deploy && \
     python manage.py collectstatic --noinput

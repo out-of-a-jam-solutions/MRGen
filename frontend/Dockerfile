@@ -5,15 +5,15 @@ RUN npm install -g http-server && \
     adduser -S mrgen
 # cd into the user's home directory
 WORKDIR /home/mrgen
-# install project dependencies
-COPY frontend/package.json package.json
-COPY frontend/package-lock.json package-lock.json
-RUN npm install
 # copy project files and folders to the current working directory (i.e. 'app' folder)
-COPY frontend/.eslintrc.js .eslintrc.js
-COPY frontend/babel.config.js babel.config.js
-COPY frontend/public public
-COPY frontend/src src
+COPY package.json package.json
+COPY package-lock.json package-lock.json
+COPY .eslintrc.js .eslintrc.js
+COPY babel.config.js babel.config.js
+COPY public public
+COPY src src
+# install project dependencies
+RUN npm install
 # build app for production with minification
 ARG VUE_APP_BACKEND_URL
 RUN echo "VUE_APP_BACKEND_URL=$VUE_APP_BACKEND_URL" > .env.production && \

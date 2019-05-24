@@ -11,12 +11,11 @@ services:
       - backend
 
   celery:
-    image: ooaj/celery-mrgen:${IMAGE_TAG:-latest}
+    image: ooaj/mrgen-backend:${IMAGE_TAG:-latest}
     container_name: mrgen_celery
-    command: worker -l info
+    command: celery -A MRGen worker -l info
     build:
-      context: .
-      dockerfile: celery.Dockerfile
+      context: backend
     restart: always
     networks:
       - backend
@@ -36,12 +35,11 @@ services:
       REPAIRSHOPR_API_KEY:
 
   beat:
-    image: ooaj/celery-mrgen:${IMAGE_TAG:-latest}
+    image: ooaj/mrgen-backend:${IMAGE_TAG:-latest}
     container_name: mrgen_beat
-    command: beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    command: celery -A MRGen beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
     build:
-      context: .
-      dockerfile: celery.Dockerfile
+      context: backend
     restart: always
     networks:
       - backend
@@ -77,8 +75,7 @@ services:
     image: ooaj/mrgen-frontend:${IMAGE_TAG:-latest}
     container_name: mrgen_frontend
     build:
-      context: .
-      dockerfile: frontend.Dockerfile
+      context: frontend
       args:
         VUE_APP_BACKEND_URL: ${DJANGO_URL}
     restart: always
@@ -97,8 +94,7 @@ services:
     image: ooaj/mrgen-backend:${IMAGE_TAG:-latest}
     container_name: mrgen_backend
     build:
-      context: .
-      dockerfile: backend.Dockerfile
+      context: backend
     restart: always
     expose:
       - 8000
