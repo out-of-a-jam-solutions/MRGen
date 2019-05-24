@@ -62,7 +62,7 @@ class WatchmanWarning(models.Model):
     date_last_checked = models.DateField(auto_now_add=True)
     date_resolved = models.DateField(null=True)
     name = models.CharField(max_length=100)
-    details = models.CharField(max_length=100)
+    details = models.TextField()
 
     class Meta:
         ordering = ['id']
