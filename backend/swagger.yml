@@ -220,36 +220,52 @@ paths:
           $ref: '#/components/responses/422UnprocessableEntity'
       requestBody:
         $ref: '#/components/requestBodies/ReportBody'
-  '/report/{report_id}':
+  # '/report/{report_id}':
+  #   get:
+  #     summary: Read a report
+  #     tags:
+  #       - report
+  #     parameters:
+  #       - $ref: '#/components/parameters/report_id'
+  #     responses:
+  #       '200':
+  #         description: The report was read successfully.
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/Report'
+  #       '404':
+  #         $ref: '#/components/responses/404NotFound'
+  #   delete:
+  #     summary: Delete a report
+  #     tags:
+  #       - report
+  #     parameters:
+  #       - $ref: '#/components/parameters/report_id'
+  #     responses:
+  #       '204':
+  #         $ref: '#/components/responses/204NoContent'
+  #       '403':
+  #         $ref: '#/components/responses/403Forbidden'
+  #       '404':
+  #         $ref: '#/components/responses/404NotFound'
+  '/report/detail/{report_id}':
     get:
-      summary: Read a report
+      summary: Read a report in HTML format
       tags:
         - report
       parameters:
         - $ref: '#/components/parameters/report_id'
       responses:
         '200':
-          description: The report was read successfully.
+          description: The report HTML was read successfully.
           content:
-            application/json:
+            text/html:
               schema:
-                $ref: '#/components/schemas/Report'
+                example: <html><body><h1>Report</h1></body></html>
         '404':
           $ref: '#/components/responses/404NotFound'
-    delete:
-      summary: Delete a report
-      tags:
-        - report
-      parameters:
-        - $ref: '#/components/parameters/report_id'
-      responses:
-        '204':
-          $ref: '#/components/responses/204NoContent'
-        '403':
-          $ref: '#/components/responses/403Forbidden'
-        '404':
-          $ref: '#/components/responses/404NotFound'
-  '/report/{report_id}.pdf':
+  '/report/detail/{report_id}.pdf':
     get:
       summary: Read a report in PDF format
       tags:
@@ -262,7 +278,6 @@ paths:
           content:
             application/pdf:
               schema:
-                type: string
                 format: binary
         '404':
           $ref: '#/components/responses/404NotFound'
@@ -407,73 +422,73 @@ components:
           type: string
         end_date:
           type: string
-        total_stats:
-          type: array
-          items:
-            type: object
-            properties:
-              num_mac_os:
-                type: number
-              num_windows_os:
-                type: number
-              num_linux_os:
-                type: number
-              warnings_unresolved:
-                type: number
-              warnings_resolved:
-                type: number
-              tickets_created:
-                type: number
-              tickets_resolved:
-                type: number
-              num_hdd_below_80:
-                type: number
-              num_hdd_80_to_90:
-                type: number
-              num_hdd_above_90:
-                type: number
-              num_ram_below_4:
-                type: number
-              num_ram_4_to_8:
-                type: number
-              num_ram_above_8:
-                type: number
-        time_stats:
-          type: array
-          items:
-            type: object
-            properties:
-              start_date:
-                type: string
-              end_date:
-                type: string
-              warnings_unresolved:
-                type: number
-              warnings_resolved:
-                type: number
-              tickets_created:
-                type: number
-              tickets_resolved:
-                type: number
-        computers:
-          type: array
-          items:
-            type: object
-            properties:
-              name:
-                type: string
-              os_type:
-                type: string
-              os_version:
-                type: string
-              ram_gb:
-                type: number
-              hdd_capacity_gb:
-                type: number
-              hdd_usage_gb:
-                type: number
-              num_warnings:
-                type: number
+        # total_stats:
+        #   type: array
+        #   items:
+        #     type: object
+        #     properties:
+        #       num_mac_os:
+        #         type: number
+        #       num_windows_os:
+        #         type: number
+        #       num_linux_os:
+        #         type: number
+        #       warnings_unresolved:
+        #         type: number
+        #       warnings_resolved:
+        #         type: number
+        #       tickets_created:
+        #         type: number
+        #       tickets_resolved:
+        #         type: number
+        #       num_hdd_below_80:
+        #         type: number
+        #       num_hdd_80_to_90:
+        #         type: number
+        #       num_hdd_above_90:
+        #         type: number
+        #       num_ram_below_4:
+        #         type: number
+        #       num_ram_4_to_8:
+        #         type: number
+        #       num_ram_above_8:
+        #         type: number
+        # time_stats:
+        #   type: array
+        #   items:
+        #     type: object
+        #     properties:
+        #       start_date:
+        #         type: string
+        #       end_date:
+        #         type: string
+        #       warnings_unresolved:
+        #         type: number
+        #       warnings_resolved:
+        #         type: number
+        #       tickets_created:
+        #         type: number
+        #       tickets_resolved:
+        #         type: number
+        # computers:
+        #   type: array
+        #   items:
+        #     type: object
+        #     properties:
+        #       name:
+        #         type: string
+        #       os_type:
+        #         type: string
+        #       os_version:
+        #         type: string
+        #       ram_gb:
+        #         type: number
+        #       hdd_capacity_gb:
+        #         type: number
+        #       hdd_usage_gb:
+        #         type: number
+        #       num_warnings:
+        #         type: number
     PaginationPage:
       type: number
       example: 1

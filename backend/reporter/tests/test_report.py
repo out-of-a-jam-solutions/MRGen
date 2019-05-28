@@ -67,7 +67,7 @@ class ReportListRequestTest(test.APITestCase):
 
     def test_list_none(self):
         """
-        Tests that no schedules are listed if none exist in the database.
+        Tests that no reports are listed if none exist in the database.
         """
         # request
         response = self.client.get(reverse(self.view_name))
@@ -124,7 +124,7 @@ class ReportListRequestTest(test.APITestCase):
 
     def test_list_filter_id(self):
         """
-        Tests that schedules are listed if they match the id filter parameter.
+        Tests that reports are listed if they match the id filter parameter.
         """
         # create reports
         report_1 = models.Report.objects.create(customer=self.customer, start_date=date(2019, 1, 1), end_date=date(2019, 1, 31))
@@ -139,6 +139,32 @@ class ReportListRequestTest(test.APITestCase):
             {
                 'pk': report_2.id,
                 'customer': self.customer.id,
+                'start_date': '2019-02-01',
+                'end_date': '2019-02-28',
+                'date_generated': datetime.now().date().strftime('%Y-%m-%d')
+            },
+            response_body['results']
+        )
+
+    def test_list_filter_customer(self):
+        """
+        Tests that reports are listed if they match the customer id filter parameter.
+        """
+        # create a second customer
+        customer_2 = models.Customer.objects.create(name='customer 2', watchman_group_id='g_2222222', repairshopr_id='2222222')
+        # create reports
+        report_1 = models.Report.objects.create(customer=self.customer, start_date=date(2019, 1, 1), end_date=date(2019, 1, 31))
+        report_2 = models.Report.objects.create(customer=customer_2, start_date=date(2019, 2, 1), end_date=date(2019, 2, 28))
+        # request
+        response = self.client.get(reverse(self.view_name), {'customer': report_2.customer.id})
+        response_body = json.loads(response.content.decode('utf-8'))
+        # test response
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response_body['results']), 1)
+        self.assertIn(
+            {
+                'pk': report_2.id,
+                'customer': customer_2.id,
                 'start_date': '2019-02-01',
                 'end_date': '2019-02-28',
                 'date_generated': datetime.now().date().strftime('%Y-%m-%d')

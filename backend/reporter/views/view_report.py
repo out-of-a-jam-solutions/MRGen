@@ -16,7 +16,7 @@ class ReportLCView(generics.ListCreateAPIView):
     lookup_field = 'pk'
     serializer_class = serializers.ReportSerializer
     queryset = models.Report.objects.all()
-    filterset_fields = ('id', 'start_date', 'end_date', 'date_generated')
+    filterset_fields = ('id', 'customer')
 
     def post(self, request):
         """
