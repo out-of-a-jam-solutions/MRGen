@@ -19,9 +19,14 @@ export default new Vuex.Store({
       results: []
     },
     newScheduleModalOpen: false,
+    // reports
+    reports: {
+      results: []
+    },
     // defaults
     DEFAULT_CUSTOMERS_PER_PAGE: 10,
     DEFAULT_SCHEDULES_PER_PAGE: 10,
+    DEFAULT_REPORTS_PER_PAGE: 10,
     DEFAULT_SERVICES: ["watchman", "repairshopr"],
     DEFAULT_PERIODIC_TASK: {
       minute: "0",
@@ -43,6 +48,9 @@ export default new Vuex.Store({
     },
     SET_SCHEDULES(state, schedules) {
       state.schedules = schedules;
+    },
+    SET_REPORTS(state, reports) {
+      state.reports = reports;
     }
   },
   actions: {
@@ -56,8 +64,9 @@ export default new Vuex.Store({
       }
       // select the customer
       commit("SET_CURRENT_CUSTOMER", customer);
-      // load the customers schedules
+      // load the customers schedules and reports
       dispatch("loadSchedules", customerId);
+      dispatch("loadCustomerReports", [customerId]);
     },
     loadCustomers({ commit, state }, startingPage = null) {
       // keep the current page number if no page is given
@@ -176,6 +185,29 @@ export default new Vuex.Store({
         .then(() => {
           // load in the non-deleted schedules from the back-end for the current customer
           dispatch("loadSchedules", state.selectedCustomer.pk);
+        });
+    },
+
+    // reports
+    loadCustomerReports({ commit, state }, [customer, startingPage = null]) {
+      // keep the current page number if no page is given
+      if (startingPage === null) {
+        startingPage = state.reports.page;
+      }
+      // construct the pagination query parameters for the request
+      const parameters = {
+        params: {
+          customer: customer,
+          page: startingPage,
+          page_size: state.DEFAULT_REPORTS_PER_PAGE
+        }
+      };
+      // request the reports from the server
+      axios
+        .get(`${process.env.VUE_APP_BACKEND_URL}/api/report`, parameters)
+        .then(r => r.data)
+        .then(reports => {
+          commit("SET_REPORTS", reports);
         });
     }
   }

@@ -11,6 +11,7 @@ export default {
       "customers",
       "selectedCustomer",
       "schedules",
+      "reports",
       "DEFAULT_SERVICES"
     ]),
     selectedServices: {
@@ -57,7 +58,23 @@ export default {
           this.$store.dispatch("deleteSchedule", schedule.pk);
         }
       }
+    },
+    loadReport(reportId, pdf = true) {
+      var link = `${
+        process.env.VUE_APP_BACKEND_URL
+      }/api/report/detail/${reportId}`;
+      // go to the PDF if necessarry
+      if (pdf) {
+        link = link.concat(".pdf");
+      }
+      // open the selected report in a new window
+      window.open(link);
     }
+  },
+  data() {
+    return {
+      reportDisplayFeilds: ["start_date", "end_date", "view_report"]
+    };
   }
 };
 </script>
@@ -65,7 +82,7 @@ export default {
 <template>
   <div v-if="selectedCustomer">
     <!-- customer info -->
-    <b-card :title="selectedCustomer.name">
+    <b-card :title="selectedCustomer.name" class="mb-3">
       <!-- customer information -->
       <h5 class="mt-3">Customer Information</h5>
       <b-card-text>
@@ -90,6 +107,27 @@ export default {
           </b-form-checkbox-group>
         </b-form-group>
       </b-form>
+    </b-card>
+    <!-- reports -->
+    <b-card title="Reports">
+      <b-table :items="reports.results" :fields="reportDisplayFeilds" striped>
+        <template slot="view_report" slot-scope="row">
+          <b-button
+            @click="loadReport(row.item.pk, false)"
+            size="sm"
+            class="mr-2"
+          >
+            HTML
+          </b-button>
+          <b-button
+            @click="loadReport(row.item.pk, true)"
+            size="sm"
+            class="mr-2"
+          >
+            PDF
+          </b-button>
+        </template>
+      </b-table>
     </b-card>
   </div>
 </template>
