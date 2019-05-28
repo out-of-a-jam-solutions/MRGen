@@ -6,13 +6,18 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.views.generic import DetailView
 from django_weasyprint import WeasyTemplateResponseMixin
-from rest_framework import response, status, views
+from rest_framework import generics, response, status
 from weasyprint import HTML
 
-from reporter import models
+from reporter import models, serializers
 
 
-class ReportLCView(views.APIView):
+class ReportLCView(generics.ListCreateAPIView):
+    lookup_field = 'pk'
+    serializer_class = serializers.ReportSerializer
+    queryset = models.Report.objects.all()
+    filterset_fields = ('id', 'start_date', 'end_date', 'date_generated')
+
     def post(self, request):
         """
         Create a new report for given customer and time period.

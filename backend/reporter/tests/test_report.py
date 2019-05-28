@@ -1,4 +1,5 @@
 from datetime import datetime, date, timedelta
+import json
 import uuid
 
 from django.contrib.auth.models import User
@@ -8,7 +9,145 @@ from rest_framework.reverse import reverse
 from reporter import models
 
 
-class ReportRequestTest(test.APITestCase):
+class ReportListRequestTest(test.APITestCase):
+    def setUp(self):
+        # create test user
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(username=self.username, password=self.password)
+        self.client.login(username=self.username, password=self.password)
+        # retrieve the view
+        self.view_name = 'reporter:report-lc'
+        # add customer to database
+        models.Customer(name='customer 1', watchman_group_id='g_1111111', repairshopr_id='1111111').save()
+        self.customer = models.Customer.objects.first()
+
+    def test_list_status_code(self):
+        """
+        Tests the response's status code for 200 OK.
+        """
+        # request
+        response = self.client.get(reverse(self.view_name))
+        # test response
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_list(self):
+        """
+        Tests that reports are listed if they exist in the database.
+        """
+        # create reports
+        report_1 = models.Report.objects.create(customer=self.customer, start_date=date(2019, 1, 1), end_date=date(2019, 1, 31))
+        report_2 = models.Report.objects.create(customer=self.customer, start_date=date(2019, 2, 1), end_date=date(2019, 2, 28))
+        # request
+        response = self.client.get(reverse(self.view_name))
+        response_body = json.loads(response.content.decode('utf-8'))
+        # test response
+        self.assertEqual(type(response_body), dict)
+        self.assertEqual(len(response_body['results']), 2)
+        self.assertIn(
+            {
+                'pk': report_1.id,
+                'customer': self.customer.id,
+                'start_date': '2019-01-01',
+                'end_date': '2019-01-31',
+                'date_generated': datetime.now().date().strftime('%Y-%m-%d')
+            },
+            response_body['results']
+        )
+        self.assertIn(
+            {
+                'pk': report_2.id,
+                'customer': self.customer.id,
+                'start_date': '2019-02-01',
+                'end_date': '2019-02-28',
+                'date_generated': datetime.now().date().strftime('%Y-%m-%d')
+            },
+            response_body['results']
+        )
+
+    def test_list_none(self):
+        """
+        Tests that no schedules are listed if none exist in the database.
+        """
+        # request
+        response = self.client.get(reverse(self.view_name))
+        repsonse_body = json.loads(response.content.decode('utf-8'))
+        # test response
+        self.assertEqual(type(repsonse_body), dict)
+        self.assertEqual(len(repsonse_body['results']), 0)
+
+    def test_list_pagination(self):
+        """
+        Tests that pagination works properly.
+        """
+        # create reports
+        report_1 = models.Report.objects.create(customer=self.customer, start_date=date(2019, 1, 1), end_date=date(2019, 1, 31))
+        report_2 = models.Report.objects.create(customer=self.customer, start_date=date(2019, 2, 1), end_date=date(2019, 2, 28))
+        # request
+        response = self.client.get(reverse(self.view_name), {'page': '2', 'page_size': '1'})
+        response_body = json.loads(response.content.decode('utf-8'))
+        # test response
+        self.assertEqual(type(response_body), dict)
+        self.assertEqual(len(response_body['results']), 1)
+        self.assertIn(
+            {
+                'pk': report_2.id,
+                'customer': self.customer.id,
+                'start_date': '2019-02-01',
+                'end_date': '2019-02-28',
+                'date_generated': datetime.now().date().strftime('%Y-%m-%d')
+            },
+            response_body['results']
+        )
+
+    def test_list_pagination_meta(self):
+        """
+        Tests that a paginated list request includes the proper metdata.
+        """
+        # create reports
+        report_1 = models.Report.objects.create(customer=self.customer, start_date=date(2019, 1, 1), end_date=date(2019, 1, 31))
+        report_2 = models.Report.objects.create(customer=self.customer, start_date=date(2019, 2, 1), end_date=date(2019, 2, 28))
+        # request
+        response = self.client.get(reverse(self.view_name), {'page_size': '1'})
+        repsonse_body = json.loads(response.content.decode('utf-8'))
+        # test response
+        self.assertIn('page', repsonse_body)
+        self.assertEqual(repsonse_body['page'], 1)
+        self.assertIn('page_count', repsonse_body)
+        self.assertEqual(repsonse_body['page_count'], 2)
+        self.assertIn('page_size', repsonse_body)
+        self.assertEqual(repsonse_body['page_size'], 1)
+        self.assertIn('page_next', repsonse_body)
+        self.assertIn('page_previous', repsonse_body)
+        self.assertIn('results_count', repsonse_body)
+        self.assertEqual(repsonse_body['results_count'], 2)
+
+    def test_list_filter_id(self):
+        """
+        Tests that schedules are listed if they match the id filter parameter.
+        """
+        # create reports
+        report_1 = models.Report.objects.create(customer=self.customer, start_date=date(2019, 1, 1), end_date=date(2019, 1, 31))
+        report_2 = models.Report.objects.create(customer=self.customer, start_date=date(2019, 2, 1), end_date=date(2019, 2, 28))
+        # request
+        response = self.client.get(reverse(self.view_name), {'id': report_2.id})
+        response_body = json.loads(response.content.decode('utf-8'))
+        # test response
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response_body['results']), 1)
+        self.assertIn(
+            {
+                'pk': report_2.id,
+                'customer': self.customer.id,
+                'start_date': '2019-02-01',
+                'end_date': '2019-02-28',
+                'date_generated': datetime.now().date().strftime('%Y-%m-%d')
+            },
+            response_body['results']
+        )
+
+
+class ReportCreateRequestTest(test.APITestCase):
     def setUp(self):
         # create test user
         self.username = 'test'
@@ -193,6 +332,7 @@ class ReportRequestTest(test.APITestCase):
         self.assertFalse(models.ComputerReport.objects.exists())
         # test response
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
 
 class ReportCreateReportTest(test.APITestCase):
     def setUp(self):
@@ -441,6 +581,7 @@ class ReportCreateReportTest(test.APITestCase):
         self.client.post(reverse(self.view_name), request_body)
         # test database
         self.assertEqual(models.Report.objects.first().num_linux_os, 2)
+
 
 class ReportCreateSubReportTest(test.APITestCase):
     def setUp(self):
@@ -1004,6 +1145,7 @@ class ReportCreateSubReportTest(test.APITestCase):
         # test database
         self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 1, 1), end_date=date(2019, 1, 31), num_warnings_resolved=2).exists())
         self.assertTrue(models.SubReport.objects.filter(start_date=date(2019, 2, 1), end_date=date(2019, 2, 28), num_warnings_resolved=3).exists())
+
 
 class ReportCreateComputerReportTest(test.APITestCase):
     def setUp(self):

@@ -48,7 +48,7 @@ class ScheduleListTest(test.APITestCase):
 
     def test_schedule_list_status_code(self):
         """
-        Tests the responses status code for 201 CREATED.
+        Tests the responses status code for 200 OK.
         """
         # create schedules
         request_body = {
