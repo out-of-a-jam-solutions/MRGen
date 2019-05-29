@@ -1374,6 +1374,90 @@ class ReportCreateComputerReportTest(test.APITestCase):
         self.assertEqual(models.ComputerReport.objects.first().computer, comp)
 
 
+class ReportDeleteTest(test.APITestCase):
+    def setUp(self):
+        # create test user
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(username=self.username, password=self.password)
+        self.client.login(username=self.username, password=self.password)
+        # retrieve the view
+        self.view_name = 'reporter:report-d'
+        # add customer to database
+        models.Customer(name='customer 1', watchman_group_id='g_1111111', repairshopr_id='1111111').save()
+        self.customer = models.Customer.objects.first()
+
+    def test_status_code(self):
+        """
+        Tests that the request returns status code 204 NO CONTENT.
+        """
+        # create the report
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse('reporter:report-lc'), request_body)
+        # request
+        report = models.Report.objects.first()
+        response = self.client.delete(reverse(self.view_name, args=[report.id]))
+        # test response
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_report_object(self):
+        """
+        Tests that the Report objects are deleted.
+        """
+        # create the report
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse('reporter:report-lc'), request_body)
+        # request
+        report = models.Report.objects.first()
+        self.client.delete(reverse(self.view_name, args=[report.id]), request_body)
+        # test database
+        self.assertEqual(models.Report.objects.count(), 0)
+
+    def test_sub_report_object(self):
+        """
+        Tests that the SubReport objects are deleted.
+        """
+        # create the report
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-02-28'
+        }
+        self.client.post(reverse('reporter:report-lc'), request_body)
+        # request
+        report = models.Report.objects.first()
+        self.client.delete(reverse(self.view_name, args=[report.id]), request_body)
+        # test database
+        self.assertEqual(models.SubReport.objects.count(), 0)
+
+    def test_computer_report_object(self):
+        """
+        Tests that the ComputerReport objects are deleted.
+        """
+        # create the computers
+        create_watchman_computer(self.customer, date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 10))
+        create_watchman_computer(self.customer, date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 10))
+        # create the report
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-02-28'
+        }
+        self.client.post(reverse('reporter:report-lc'), request_body)
+        # request
+        report = models.Report.objects.first()
+        self.client.delete(reverse(self.view_name, args=[report.id]), request_body)
+        # test database
+        self.assertEqual(models.ComputerReport.objects.count(), 0)
+
 def create_watchman_computer(customer, computer_id=None, name=None, date_reported=None, date_last_reported=None, os_type='mac', os_version='OS X 10.13.6', ram_gb=2, hdd_capacity_gb=100, hdd_usage_gb=50):
     """
     Helper function to create watchman computers in a similar fassion to the Celery tasks.

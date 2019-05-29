@@ -140,6 +140,11 @@ class ReportLCView(generics.ListCreateAPIView):
         return response.Response(status=status.HTTP_201_CREATED)
 
 
+class ReportDeleteView(generics.DestroyAPIView):
+    lookup_field = 'pk'
+    queryset = models.Report.objects.all()
+
+
 class ReportDetailView(DetailView):
     model = models.Report
     template_name = 'report.html'
