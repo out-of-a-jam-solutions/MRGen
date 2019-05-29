@@ -85,12 +85,20 @@ export default {
           <b-button @click="openNewCustomerModal()" variant="primary">
             <font-awesome-icon icon="user-plus" />
           </b-button>
-          <b-button @click="deleteSelectedCustomer()" variant="danger">
+          <b-button
+            :disabled="selectedCustomer === null"
+            @click="deleteSelectedCustomer()"
+            variant="danger"
+          >
             <font-awesome-icon icon="user-minus" />
           </b-button>
         </b-button-group>
         <!-- manage reports -->
-        <b-button @click="openNewReportModal()" variant="primary">
+        <b-button
+          :disabled="selectedCustomer === null"
+          @click="openNewReportModal()"
+          variant="primary"
+        >
           <font-awesome-icon icon="file" />
         </b-button>
       </div>

@@ -112,20 +112,25 @@ export default {
     <b-card title="Reports" class="mb-3">
       <b-table :items="reports.results" :fields="reportDisplayFeilds" striped>
         <template slot="view_report" slot-scope="row">
-          <b-button
-            @click="loadReport(row.item.pk, false)"
-            size="sm"
-            class="mr-2"
-          >
-            HTML
-          </b-button>
-          <b-button
-            @click="loadReport(row.item.pk, true)"
-            size="sm"
-            class="mr-2"
-          >
-            PDF
-          </b-button>
+          <b-button-group>
+            <b-button
+              variant="secondary"
+              @click="loadReport(row.item.pk, false)"
+              size="sm"
+            >
+              HTML
+            </b-button>
+            <b-button
+              variant="secondary"
+              @click="loadReport(row.item.pk, true)"
+              size="sm"
+            >
+              PDF
+            </b-button>
+            <b-button variant="danger">
+              <font-awesome-icon icon="trash-alt" />
+            </b-button>
+          </b-button-group>
         </template>
       </b-table>
     </b-card>
