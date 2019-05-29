@@ -109,7 +109,7 @@ export default {
       </b-form>
     </b-card>
     <!-- reports -->
-    <b-card title="Reports">
+    <b-card title="Reports" class="mb-3">
       <b-table :items="reports.results" :fields="reportDisplayFeilds" striped>
         <template slot="view_report" slot-scope="row">
           <b-button

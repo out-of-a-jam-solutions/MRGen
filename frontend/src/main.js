@@ -21,7 +21,8 @@ import {
   faUserMinus,
   faSearch,
   faCalendarMinus,
-  faCalendarPlus
+  faCalendarPlus,
+  faFile
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(faUserPlus);
@@ -29,6 +30,7 @@ library.add(faUserMinus);
 library.add(faSearch);
 library.add(faCalendarMinus);
 library.add(faCalendarPlus);
+library.add(faFile);
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 
 // main vue component

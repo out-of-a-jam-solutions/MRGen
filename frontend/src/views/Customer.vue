@@ -2,13 +2,15 @@
 import { mapState } from "vuex";
 import CustomerInfo from "@/components/CustomerInfo.vue";
 import NewCustomerModal from "@/components/NewCustomerModal.vue";
+import NewReportModal from "@/components/NewReportModal.vue";
 
 export default {
   // component setup
   name: "customer",
   components: {
     CustomerInfo,
-    NewCustomerModal
+    NewCustomerModal,
+    NewReportModal
   },
 
   // lifecycle hooks
@@ -52,8 +54,8 @@ export default {
     openNewCustomerModal() {
       this.$store.dispatch("toggleNewCustomerModal", true);
     },
-    openNewScheduleModal() {
-      this.$store.dispatch("toggleNewScheduleModal", true);
+    openNewReportModal() {
+      this.$store.dispatch("toggleNewReportModal", true);
     }
   }
 };
@@ -78,7 +80,8 @@ export default {
       </div>
       <!-- customer options -->
       <div class="col">
-        <b-button-group>
+        <!-- manage customers -->
+        <b-button-group class="mr-3">
           <b-button @click="openNewCustomerModal()" variant="primary">
             <font-awesome-icon icon="user-plus" />
           </b-button>
@@ -86,6 +89,10 @@ export default {
             <font-awesome-icon icon="user-minus" />
           </b-button>
         </b-button-group>
+        <!-- manage reports -->
+        <b-button @click="openNewReportModal()" variant="primary">
+          <font-awesome-icon icon="file" />
+        </b-button>
       </div>
     </div>
     <!-- information row -->
@@ -122,6 +129,7 @@ export default {
 
     <!-- modals -->
     <NewCustomerModal></NewCustomerModal>
+    <NewReportModal></NewReportModal>
   </div>
 </template>
 

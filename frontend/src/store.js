@@ -18,11 +18,11 @@ export default new Vuex.Store({
     schedules: {
       results: []
     },
-    newScheduleModalOpen: false,
     // reports
     reports: {
       results: []
     },
+    newReportModalOpen: false,
     // defaults
     DEFAULT_CUSTOMERS_PER_PAGE: 10,
     DEFAULT_SCHEDULES_PER_PAGE: 10,
@@ -51,6 +51,9 @@ export default new Vuex.Store({
     },
     SET_REPORTS(state, reports) {
       state.reports = reports;
+    },
+    SET_NEW_REPORT_MODAL_OPEN(state, open) {
+      state.newReportModalOpen = open;
     }
   },
   actions: {
@@ -66,7 +69,7 @@ export default new Vuex.Store({
       commit("SET_CURRENT_CUSTOMER", customer);
       // load the customers schedules and reports
       dispatch("loadSchedules", customerId);
-      dispatch("loadCustomerReports", [customerId]);
+      dispatch("loadReports", [customerId]);
     },
     loadCustomers({ commit, state }, startingPage = null) {
       // keep the current page number if no page is given
@@ -189,7 +192,7 @@ export default new Vuex.Store({
     },
 
     // reports
-    loadCustomerReports({ commit, state }, [customer, startingPage = null]) {
+    loadReports({ commit, state }, [customerId, startingPage = null]) {
       // keep the current page number if no page is given
       if (startingPage === null) {
         startingPage = state.reports.page;
@@ -197,7 +200,7 @@ export default new Vuex.Store({
       // construct the pagination query parameters for the request
       const parameters = {
         params: {
-          customer: customer,
+          customer: customerId,
           page: startingPage,
           page_size: state.DEFAULT_REPORTS_PER_PAGE
         }
@@ -209,6 +212,29 @@ export default new Vuex.Store({
         .then(reports => {
           commit("SET_REPORTS", reports);
         });
+    },
+    createReport({ dispatch }, [customerId, startDate, endDate]) {
+      // create the request body
+      const body = {
+        customer: customerId,
+        start_date: startDate,
+        end_date: endDate
+      };
+      // send the POST request
+      return axios
+        .post(`${process.env.VUE_APP_BACKEND_URL}/api/report`, body)
+        .then(r => r.data)
+        .then(() => {
+          // load in reports
+          dispatch("loadReports", [customerId]);
+        });
+    },
+    toggleNewReportModal({ commit, state }, open = null) {
+      if (open || open === false) {
+        commit("SET_NEW_REPORT_MODAL_OPEN", open);
+      } else {
+        commit("SET_NEW_REPORT_MODAL_OPEN", !state.newReportModalOpen);
+      }
     }
   }
 });
