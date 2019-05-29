@@ -95,4 +95,5 @@ class SubReport(models.Model):
         ordering = ['start_date']
 
 class ComputerReport(Computer):
-    computer = models.OneToOneField(WatchmanComputer, null=True, db_column='computer_id', on_delete=models.SET_NULL)
+    report = models.ForeignKey(Report, db_column='report_id', on_delete=models.CASCADE)
+    computer = models.ForeignKey(WatchmanComputer, null=True, db_column='computer_id', on_delete=models.SET_NULL)

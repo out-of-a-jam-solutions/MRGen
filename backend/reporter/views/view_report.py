@@ -131,7 +131,9 @@ class ReportLCView(generics.ListCreateAPIView):
                 os_version=computer.os_version,
                 ram_gb=computer.ram_gb,
                 hdd_capacity_gb=computer.hdd_capacity_gb,
-                hdd_usage_gb=computer.hdd_usage_gb
+                hdd_usage_gb=computer.hdd_usage_gb,
+                report=report,
+                computer=computer
             )
 
         # return the success response

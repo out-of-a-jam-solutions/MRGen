@@ -1339,6 +1339,40 @@ class ReportCreateComputerReportTest(test.APITestCase):
         # test database
         self.assertEqual(models.ComputerReport.objects.first().hdd_usage_gb, comp.hdd_usage_gb)
 
+    def test_report(self):
+        """
+        Tests that the report is WatchmanComputer's report is assigned the right foreign key.
+        """
+        # create the computers
+        comp_1 = create_watchman_computer(self.customer, date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 10))
+        comp_2 = create_watchman_computer(self.customer, date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 10))
+        # request
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        report = models.Report.objects.first()
+        self.assertEqual(models.ComputerReport.objects.filter(report=report).count(), 2)
+
+    def test_computer(self):
+        """
+        Tests that the WatchmanComputer's computer is assigned the right forign key.
+        """
+        # create the computers
+        comp = create_watchman_computer(self.customer, date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 10))
+        # request
+        request_body = {
+            'customer': self.customer.id,
+            'start_date': '2019-01-01',
+            'end_date': '2019-01-31'
+        }
+        self.client.post(reverse(self.view_name), request_body)
+        # test database
+        self.assertEqual(models.ComputerReport.objects.first().computer, comp)
+
 
 def create_watchman_computer(customer, computer_id=None, name=None, date_reported=None, date_last_reported=None, os_type='mac', os_version='OS X 10.13.6', ram_gb=2, hdd_capacity_gb=100, hdd_usage_gb=50):
     """
