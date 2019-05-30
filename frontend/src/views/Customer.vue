@@ -82,13 +82,18 @@ export default {
       <div class="col">
         <!-- manage customers -->
         <b-button-group class="mr-3">
-          <b-button @click="openNewCustomerModal()" variant="primary">
+          <b-button
+            @click="openNewCustomerModal()"
+            variant="primary"
+            class="add-customer"
+          >
             <font-awesome-icon icon="user-plus" />
           </b-button>
           <b-button
             :disabled="selectedCustomer === null"
             @click="deleteSelectedCustomer()"
             variant="danger"
+            class="delete-customer"
           >
             <font-awesome-icon icon="user-minus" />
           </b-button>
@@ -144,5 +149,11 @@ export default {
 <style scoped>
 .no-focus:focus {
   outline: none;
+}
+.add-customer {
+  z-index: 2;
+}
+.delete-customer {
+  z-index: 1;
 }
 </style>

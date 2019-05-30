@@ -62,6 +62,7 @@ export default new Vuex.Store({
       // unselect the customer if customerId is null
       if (customerId === null) {
         commit("SET_CURRENT_CUSTOMER", null);
+        return;
       }
       // attempt to load the customer
       const customer = state.customers.results.find(c => c.pk === customerId);
