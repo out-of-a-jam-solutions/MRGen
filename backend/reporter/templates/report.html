@@ -4,8 +4,53 @@
     <link rel="stylesheet" href="{% static 'css/report.css' %}">
   </head>
   <body>
+    <!-- header -->
     <h1>{{ report.customer.name }}</h1>
-    <p>Report period start: {{ report.start_date }}</p>
-    <p>Report period end: {{ report.end_date }}</p>
+    <h2>Report #{{ report.pk }}</h2>
+    <p>{{ report.start_date }} to {{ report.end_date }}</p>
+    <p>Created {{ report.date_generated }}</p>
+    <hr>
+
+    <!-- report stats -->
+    <h2>Statistics</h2>
+    <!-- computer counts -->
+    <p>{{ report.num_mac_os }} MacOS Computers</p>
+    <p>{{ report.num_windows_os }} Windows Computers</p>
+    <p>{{ report.num_linux_os }} Linux Computers</p>
+    <hr>
+
+    <!-- sub reports -->
+    <h2>Monthly Breakdowns</h2>
+    <hr>
+    {% for sub_report in report.subreport_set.all %}
+      <h3>{{ sub_report.start_date|date:"F" }}</h3>
+      <hr>
+      <p>{{ sub_report.num_warnings_unresolved_start }} warnings unresolved at month start</p>
+      <p>{{ sub_report.num_warnings_unresolved_end }} warnings unresolved at month end</p>
+      <p>{{ sub_report.num_warnings_created }} warnings created during the month</p>
+      <p>{{ sub_report.num_warnings_resolved }} warnings resolved during the month</p>
+    {% endfor %}
+
+    <!-- computer reports -->
+    <h2>Computers</h2>
+    <hr>
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>OS</th>
+        <th>RAM</th>
+        <th>HDD Capacity</th>
+        <th>HDD Usage</th>
+      </tr>
+      {% for computer_report in report.computerreport_set.all %}
+        <tr>
+          <td>{{ computer_report.name }}</td>
+          <td>{{ computer_report.os_type }} {{ computer_report.os_version }}</td>
+          <td>{{ computer_report.ram_gb }} GBs</td>
+          <td>{{ computer_report.hdd_capacity_gb }} GBs</td>
+          <td>{{ computer_report.hdd_usage_gb }} GBs</td>
+        </tr>
+      {% endfor %}
+    </table>
   </body>
 </html>
