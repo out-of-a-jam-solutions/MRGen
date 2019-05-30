@@ -35,6 +35,17 @@ export default {
           }
         }
       }
+    },
+    currentPage: {
+      get() {
+        return this.reports.page;
+      },
+      set(pageNumber) {
+        this.$store.dispatch("loadReports", [
+          this.selectedCustomer.pk,
+          pageNumber
+        ]);
+      }
     }
   },
   methods: {
@@ -113,6 +124,15 @@ export default {
     </b-card>
     <!-- reports -->
     <b-card title="Reports" class="mb-3">
+      <!-- reports pagination bar -->
+      <b-pagination
+        v-if="reports.page_count > 1"
+        v-model="currentPage"
+        :total-rows="reports.results_count"
+        :per-page="reports.page_size"
+        size="sm"
+      ></b-pagination>
+      <!-- reports table -->
       <b-table :items="reports.results" :fields="reportDisplayFeilds" striped>
         <template slot="view_report" slot-scope="row">
           <b-button-group>

@@ -78,7 +78,7 @@ class Report(models.Model):
     num_linux_os = models.IntegerField(default=0)
 
     class Meta:
-        ordering = ['id']
+        ordering = ['-start_date']
 
 class SubReport(models.Model):
     report = models.ForeignKey(Report, db_column='report_id', on_delete=models.CASCADE)
