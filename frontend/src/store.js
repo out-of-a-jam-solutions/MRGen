@@ -59,6 +59,10 @@ export default new Vuex.Store({
   actions: {
     // customers
     selectCustomer({ commit, state, dispatch }, customerId) {
+      // unselect the customer if customerId is null
+      if (customerId === null) {
+        commit("SET_CURRENT_CUSTOMER", null);
+      }
       // attempt to load the customer
       const customer = state.customers.results.find(c => c.pk === customerId);
       // check if the customer is loaded
@@ -71,7 +75,7 @@ export default new Vuex.Store({
       dispatch("loadSchedules", customerId);
       dispatch("loadReports", [customerId]);
     },
-    loadCustomers({ commit, state }, startingPage = null) {
+    loadCustomers({ commit, dispatch, state }, startingPage = null) {
       // keep the current page number if no page is given
       if (startingPage === null) {
         startingPage = state.customers.page;
@@ -89,6 +93,15 @@ export default new Vuex.Store({
         .then(r => r.data)
         .then(customers => {
           commit("SET_CUSTOMERS", customers);
+        })
+        .then(() => {
+          // select first customer if none is selected
+          if (
+            state.selectedCustomer === null &&
+            state.customers.results.length > 0
+          ) {
+            dispatch("selectCustomer", state.customers.results[0].pk);
+          }
         });
     },
     createCustomer(
@@ -117,6 +130,10 @@ export default new Vuex.Store({
       // keep the current page number if no page is given
       if (startingPage === null) {
         startingPage = state.customers.page;
+      }
+      // deselect the customer if they are currently selected
+      if (customerId === state.selectedCustomer.pk) {
+        dispatch("selectCustomer", null);
       }
       // delete the customer from the server
       axios

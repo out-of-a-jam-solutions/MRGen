@@ -83,6 +83,15 @@ export default {
     },
     deleteReport(reportId) {
       this.$store.dispatch("deleteReport", [reportId]);
+    },
+    disableService(service) {
+      // returns true if the service is not null
+      if (service === "repairshopr") {
+        return this.selectedCustomer.repairshopr_id === null;
+      } else if (service === "watchman") {
+        return this.selectedCustomer.watchman_group_id === null;
+      }
+      return false;
     }
   },
   data() {
@@ -115,6 +124,7 @@ export default {
               v-for="service of DEFAULT_SERVICES"
               :key="service"
               :value="service"
+              :disabled="disableService(service)"
             >
               {{ getServiceName(service) }}
             </b-form-checkbox>
@@ -133,7 +143,7 @@ export default {
         size="sm"
       ></b-pagination>
       <!-- reports table -->
-      <b-table :items="reports.results" :fields="reportDisplayFeilds" striped>
+      <b-table :items="reports.results" :fields="reportDisplayFeilds" fixed>
         <template slot="view_report" slot-scope="row">
           <b-button-group>
             <b-button
