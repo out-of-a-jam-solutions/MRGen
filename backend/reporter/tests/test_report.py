@@ -84,7 +84,7 @@ class ReportListRequestTest(test.APITestCase):
         report_1 = models.Report.objects.create(customer=self.customer, start_date=date(2019, 1, 1), end_date=date(2019, 1, 31))
         report_2 = models.Report.objects.create(customer=self.customer, start_date=date(2019, 2, 1), end_date=date(2019, 2, 28))
         # request
-        response = self.client.get(reverse(self.view_name), {'page': '2', 'page_size': '1'})
+        response = self.client.get(reverse(self.view_name), {'page': '1', 'page_size': '1'})
         response_body = json.loads(response.content.decode('utf-8'))
         # test response
         self.assertEqual(type(response_body), dict)
