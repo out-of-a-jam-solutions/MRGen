@@ -1,25 +1,18 @@
 from celery.result import result_from_tuple
-from rest_framework import views
-from rest_framework import generics
-from rest_framework import response
+from knox.auth import TokenAuthentication
+from rest_framework import generics, response, views
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 from reporter import models, serializers, tasks_watchman
-
-
-class Forward(views.APIView):
-    def get(self, request):
-        # get watchman concatenated results
-        results = tasks_watchman.update_client(request.query_params['watchman_group_id'])
-        results = result_from_tuple(results.get())
-        results = results.get()
-
-        return response.Response(results)
 
 
 class CustomerLCView(generics.ListCreateAPIView):
     lookup_field = 'pk'
     serializer_class = serializers.CustomerSerializer
     queryset = models.Customer.objects.all()
+    authentication_classes = (TokenAuthentication, SessionAuthentication)
+    permission_classes = (IsAuthenticated,)
     filterset_fields = ('id', 'name', 'watchman_group_id', 'repairshopr_id')
 
 
@@ -27,6 +20,8 @@ class CustomerRDView(generics.RetrieveDestroyAPIView):  # pylint: disable=too-ma
     lookup_field = 'pk'
     serializer_class = serializers.CustomerSerializer
     queryset = models.Customer.objects.all()
+    authentication_classes = (TokenAuthentication, SessionAuthentication)
+    permission_classes = (IsAuthenticated,)
 
     def perform_destroy(self, instance):
         # get all schedules associated with the customer and delete them
