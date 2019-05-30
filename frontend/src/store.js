@@ -229,6 +229,20 @@ export default new Vuex.Store({
           dispatch("loadReports", [customerId]);
         });
     },
+    deleteReport({ dispatch, state }, [reportId, startingPage = null]) {
+      // keep the current page number if no page is given
+      if (startingPage === null) {
+        startingPage = state.reports.page;
+      }
+      // delete the customer from the server
+      axios
+        .delete(`${process.env.VUE_APP_BACKEND_URL}/api/report/${reportId}`)
+        .then(r => r.data)
+        .then(() => {
+          // load in the non-deleted customers from the back-end
+          dispatch("loadReports", [state.selectedCustomer.pk, startingPage]);
+        });
+    },
     toggleNewReportModal({ commit, state }, open = null) {
       if (open || open === false) {
         commit("SET_NEW_REPORT_MODAL_OPEN", open);

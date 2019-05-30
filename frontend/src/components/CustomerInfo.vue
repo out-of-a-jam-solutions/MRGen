@@ -69,6 +69,9 @@ export default {
       }
       // open the selected report in a new window
       window.open(link);
+    },
+    deleteReport(reportId) {
+      this.$store.dispatch("deleteReport", [reportId]);
     }
   },
   data() {
@@ -114,20 +117,20 @@ export default {
         <template slot="view_report" slot-scope="row">
           <b-button-group>
             <b-button
-              variant="secondary"
               @click="loadReport(row.item.pk, false)"
+              variant="secondary"
               size="sm"
             >
               HTML
             </b-button>
             <b-button
-              variant="secondary"
               @click="loadReport(row.item.pk, true)"
+              variant="secondary"
               size="sm"
             >
               PDF
             </b-button>
-            <b-button variant="danger">
+            <b-button @click="deleteReport(row.item.pk)" variant="danger">
               <font-awesome-icon icon="trash-alt" />
             </b-button>
           </b-button-group>
