@@ -9,7 +9,6 @@ Vue.config.productionTip = false;
 // bootstrap
 import BootstrapVue from "bootstrap-vue";
 import "./scss/custom.scss";
-
 Vue.use(BootstrapVue);
 
 // font awesome
@@ -33,6 +32,9 @@ library.add(faCalendarPlus);
 library.add(faFile);
 library.add(faTrashAlt);
 Vue.component("font-awesome-icon", FontAwesomeIcon);
+
+// vue cookies
+Vue.use(require("vue-cookies"));
 
 // main vue component
 new Vue({

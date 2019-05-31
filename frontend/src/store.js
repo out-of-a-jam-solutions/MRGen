@@ -8,6 +8,9 @@ Vue.use(VueAxios, axios);
 
 export default new Vuex.Store({
   state: {
+    // authentication
+    loggedIn: false,
+
     // customers
     customers: {
       results: []
@@ -37,6 +40,9 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    SET_LOGGED_IN(state, loggedIn) {
+      state.loggedIn = loggedIn;
+    },
     SET_CUSTOMERS(state, customers) {
       state.customers = customers;
     },
@@ -57,6 +63,41 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    // authentication
+    loginUserPass({ commit }, [username, password]) {
+      // base64 encode the login details
+      const authDetails = btoa(`${username}:${password}`);
+      // create the headers
+      const config = {
+        headers: {
+          Authorization: `Basic ${authDetails}`
+        }
+      };
+      // make the login request
+      return axios
+        .post(`${process.env.VUE_APP_BACKEND_URL}/auth/login/`, {}, config)
+        .then(r => r.data)
+        .then(data => {
+          // set the login cookie
+          window.$cookies.set("token", data.token, data.expiry);
+          // update the login state
+          commit("SET_LOGGED_IN", true);
+        });
+    },
+    verifyLogin({ commit }) {
+      // get the token from the cookie
+      const token = window.$cookies.get("token");
+      if (token) {
+        // Add a request interceptor
+        axios.interceptors.request.use(function(config) {
+          const tokenHeader = `Token ${token}`;
+          config.headers.Authorization = tokenHeader;
+          return config;
+        });
+        commit("SET_LOGGED_IN", true);
+      }
+    },
+
     // customers
     selectCustomer({ commit, state, dispatch }, customerId) {
       // unselect the customer if customerId is null
