@@ -106,7 +106,7 @@ class ReportListRequestTest(test.APITestCase):
         """
         # create reports
         report_1 = models.Report.objects.create(customer=self.customer, start_date=date(2019, 1, 1), end_date=date(2019, 1, 31))
-        report_2 = models.Report.objects.create(customer=self.customer, start_date=date(2019, 2, 1), end_date=date(2019, 2, 28))
+        models.Report.objects.create(customer=self.customer, start_date=date(2019, 2, 1), end_date=date(2019, 2, 28))
         # request
         response = self.client.get(reverse(self.view_name), {'page_size': '1'})
         repsonse_body = json.loads(response.content.decode('utf-8'))
@@ -153,7 +153,7 @@ class ReportListRequestTest(test.APITestCase):
         # create a second customer
         customer_2 = models.Customer.objects.create(name='customer 2', watchman_group_id='g_2222222', repairshopr_id='2222222')
         # create reports
-        report_1 = models.Report.objects.create(customer=self.customer, start_date=date(2019, 1, 1), end_date=date(2019, 1, 31))
+        models.Report.objects.create(customer=self.customer, start_date=date(2019, 1, 1), end_date=date(2019, 1, 31))
         report_2 = models.Report.objects.create(customer=customer_2, start_date=date(2019, 2, 1), end_date=date(2019, 2, 28))
         # request
         response = self.client.get(reverse(self.view_name), {'customer': report_2.customer.id})
@@ -1344,8 +1344,8 @@ class ReportCreateComputerReportTest(test.APITestCase):
         Tests that the report is WatchmanComputer's report is assigned the right foreign key.
         """
         # create the computers
-        comp_1 = create_watchman_computer(self.customer, date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 10))
-        comp_2 = create_watchman_computer(self.customer, date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 10))
+        create_watchman_computer(self.customer, date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 10))
+        create_watchman_computer(self.customer, date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 10))
         # request
         request_body = {
             'customer': self.customer.id,
