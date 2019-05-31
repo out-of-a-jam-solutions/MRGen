@@ -1,6 +1,13 @@
 <script>
+import { mapState } from "vuex";
 export default {
   name: "login",
+  mounted: function() {
+    this.$store.dispatch("verifyLogin")
+  },
+  computed: {
+    ...mapState(["loggedIn"])
+  },
   methods: {
     onSubmit(evt) {
       evt.preventDefault();
@@ -23,7 +30,7 @@ export default {
 <template>
   <div>
     <h1>Login</h1>
-    <b-form @submit="onSubmit">
+    <b-form v-if="!loggedIn" @submit="onSubmit">
       <!-- username -->
       <b-form-group id="username-group" label="Username" label-for="username">
         <b-form-input
@@ -44,6 +51,7 @@ export default {
       <!-- login button -->
       <b-button type="submit" variant="primary">Login</b-button>
     </b-form>
+    <p v-else>Your are already logged in!</p>
   </div>
 </template>
 

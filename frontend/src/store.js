@@ -84,17 +84,23 @@ export default new Vuex.Store({
           commit("SET_LOGGED_IN", true);
         });
     },
+    logout({ commit }) {
+      return axios
+        .post(`${process.env.VUE_APP_BACKEND_URL}/auth/logout/`, {})
+        .then(() => {
+          window.$cookies.remove("token");
+          commit("SET_LOGGED_IN", false);
+        });
+    },
     verifyLogin({ commit }) {
       // get the token from the cookie
       const token = window.$cookies.get("token");
       if (token) {
-        // Add a request interceptor
-        axios.interceptors.request.use(function(config) {
-          const tokenHeader = `Token ${token}`;
-          config.headers.Authorization = tokenHeader;
-          return config;
-        });
+        axios.defaults.headers.common["Authorization"] = `Token ${token}`;
         commit("SET_LOGGED_IN", true);
+      } else {
+        delete axios.defaults.headers.common["Authorization"];
+        commit("SET_LOGGED_IN", false);
       }
     },
 
