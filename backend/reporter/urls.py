@@ -14,6 +14,5 @@ urlpatterns = [
     url(r'^schedule/(?P<pk>\d+)$', views.ScheduleRDView.as_view(), name='schedule-rd'),
     url(r'^report$', views.ReportLCView.as_view(), name='report-lc'),
     url(r'^report/(?P<pk>\d+)$', views.ReportDeleteView.as_view(), name='report-d'),
-    url(r'^report/detail/(?P<pk>\d+)$', views.ReportDetailView.as_view(), name='report-detail'),
     url(r'^report/detail/(?P<pk>\d+).pdf$', views.ReportPDFView.as_view(), name='report-pdf')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
