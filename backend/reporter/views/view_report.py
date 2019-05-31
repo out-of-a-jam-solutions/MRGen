@@ -1,17 +1,14 @@
 import calendar
 from datetime import datetime, date
-import tempfile
 
-from django.conf import settings
 from django.http import HttpResponse, HttpResponseNotFound
 from django.template.loader import render_to_string
-from django.views.generic import DetailView
+
 from knox.auth import TokenAuthentication
 from rest_framework import generics, response, status, views
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
-from weasyprint import HTML, CSS
-from weasyprint.fonts import FontConfiguration
+from weasyprint import HTML
 
 from reporter import models, serializers
 
