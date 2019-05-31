@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "15bd29b666c3c23cb2e2a97a68e052971d18afadbabf0aa8535fc299fdd9ea71"
+            "sha256": "2e4536e7ad5ec1e4efb9855bde53df6cabae708a7fbb95443e74b35b8d8f4566"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -18,10 +18,10 @@
     "default": {
         "amqp": {
             "hashes": [
-                "sha256:043beb485774ca69718a35602089e524f87168268f0d1ae115f28b88d27f92d7",
-                "sha256:35a3b5006ca00b21aaeec8ceea07130f07b902dd61bfe42815039835f962f5f1"
+                "sha256:aa4409446139676943a2eaa27d5f58caf750f4ca5a89f888c452afd86be6a67d",
+                "sha256:cbb6f87d53cac612a594f982b717cc1c54c6a1e17943a0a0d32dc6cc9e2120c8"
             ],
-            "version": "==2.4.2"
+            "version": "==2.5.0"
         },
         "billiard": {
             "hashes": [
@@ -129,11 +129,11 @@
         },
         "django-celery-results": {
             "hashes": [
-                "sha256:0a01b449f2c98d552c837bbcf9127775c1043ac77d9f94d2e44c5afc4556c7f0",
-                "sha256:1c4473de897d4e2ea2aa813771d2424c7d183ea2e9c8aa04c58234113a381e84"
+                "sha256:7c4c6d6d20d6dd7074b07b7a236b5e7769e515379191608527f7fbcc95a669a5",
+                "sha256:f7638b4eaa30ae8c58d3b07196c855c67f341760f434fb64a4c81bf4daf28789"
             ],
             "index": "pypi",
-            "version": "==1.1.0"
+            "version": "==1.1.1"
         },
         "django-cors-headers": {
             "hashes": [
@@ -157,14 +157,6 @@
                 "sha256:d9fdab77c443b78c362ffaeb50fe7d7b54692c89aaae8ca1cae67848139b82ac"
             ],
             "version": "==3.0"
-        },
-        "django-weasyprint": {
-            "hashes": [
-                "sha256:10cf8d134f5ef54a79f017a651d477da937a6798cf6f4c2bed2669af76785e9d",
-                "sha256:5666e7e12fa4f2059d84c2c33e0028131768c25cc5a5dc1ee62591bf940b5a49"
-            ],
-            "index": "pypi",
-            "version": "==0.5.4"
         },
         "djangorestframework": {
             "hashes": [
@@ -190,10 +182,10 @@
         },
         "kombu": {
             "hashes": [
-                "sha256:389ba09e03b15b55b1a7371a441c894fd8121d174f5583bbbca032b9ea8c9edd",
-                "sha256:7b92303af381ef02fad6899fd5f5a9a96031d781356cd8e505fa54ae5ddee181"
+                "sha256:14997e6d76d36f2b296f57e37fd1d388e4e0159edea8368a8c6f4620a355a722",
+                "sha256:27345bb569eb6bb583bca27dfc0ef181ca6c59c40c6e203cecaa0aeca84360be"
             ],
-            "version": "==4.5.0"
+            "version": "==4.6.0"
         },
         "mysqlclient": {
             "hashes": [

@@ -2,12 +2,13 @@ import calendar
 from datetime import datetime, date
 import tempfile
 
-from django.http import HttpResponse
+from django.conf import settings
+from django.http import HttpResponse, HttpResponseNotFound
 from django.template.loader import render_to_string
 from django.views.generic import DetailView
-from django_weasyprint import WeasyTemplateResponseMixin
-from rest_framework import generics, response, status
-from weasyprint import HTML
+from rest_framework import generics, response, status, views
+from weasyprint import HTML, CSS
+from weasyprint.fonts import FontConfiguration
 
 from reporter import models, serializers
 
@@ -145,14 +146,21 @@ class ReportDeleteView(generics.DestroyAPIView):
     queryset = models.Report.objects.all()
 
 
-class ReportDetailView(DetailView):
-    model = models.Report
-    template_name = 'report.html'
-
-
-class ReportPDFView(WeasyTemplateResponseMixin, ReportDetailView):
-    pdf_attachment = False
-    pdf_filename = 'report.pdf'
+class ReportPDFView(views.APIView):
+    def get(self, request, *args, **kwargs):
+        # get the report specified in the URL
+        try:
+            report = models.Report.objects.get(id=kwargs.get('pk'))
+        except models.Report.DoesNotExist:
+            return HttpResponseNotFound()
+        # generate the pdf response
+        pdf_response = HttpResponse(content_type="application/pdf")
+        pdf_response['Content-Disposition'] = "inline; filename=report.pdf"
+        # render the PDF
+        html = render_to_string("report.html", {'report': report})
+        HTML(string=html).write_pdf(pdf_response)
+        # return the PDF response
+        return pdf_response
 
 
 def days_in_month(year, month):
