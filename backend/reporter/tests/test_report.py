@@ -127,7 +127,7 @@ class ReportListRequestTest(test.APITestCase):
         Tests that reports are listed if they match the id filter parameter.
         """
         # create reports
-        report_1 = models.Report.objects.create(customer=self.customer, start_date=date(2019, 1, 1), end_date=date(2019, 1, 31))
+        models.Report.objects.create(customer=self.customer, start_date=date(2019, 1, 1), end_date=date(2019, 1, 31))
         report_2 = models.Report.objects.create(customer=self.customer, start_date=date(2019, 2, 1), end_date=date(2019, 2, 28))
         # request
         response = self.client.get(reverse(self.view_name), {'id': report_2.id})
