@@ -1,6 +1,28 @@
 {% load static %}
 <html>
   <head>
+    <style>
+      @font-face {
+        font-family: "OpenSans Light";
+        src: url("{% static 'fonts/OpenSans-Light.ttf' %}");
+      }
+      @font-face {
+        font-family: "OpenSans Regular";
+        src: url("{% static 'fonts/OpenSans-Regular.ttf' %}");
+      }
+      @font-face {
+        font-family: "OpenSans Semibold";
+        src: url("{% static 'fonts/OpenSans-Semibold.ttf' %}");
+      }
+      @font-face {
+        font-family: "OpenSans Bold";
+        src: url("{% static 'fonts/OpenSans-Bold.ttf' %}");
+      }
+      @font-face {
+        font-family: "OpenSans ExtraBold";
+        src: url("{% static 'fonts/OpenSans-ExtraBold.ttf' %}");
+      }
+    </style>
     <link rel="stylesheet" href="{% static 'css/report.css' %}">
   </head>
   <body>
