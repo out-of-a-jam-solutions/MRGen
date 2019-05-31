@@ -1,11 +1,9 @@
-import ast
 import json
 
 from django.contrib.auth.models import User
 from django_celery_beat.models import CrontabSchedule, PeriodicTask
+from rest_framework import status, test
 from rest_framework.reverse import reverse
-from rest_framework import status
-from rest_framework import test
 
 from reporter import models
 
@@ -50,7 +48,7 @@ class ScheduleListTest(test.APITestCase):
 
     def test_schedule_list_status_code(self):
         """
-        Tests the responses status code for 201 CREATED.
+        Tests the responses status code for 200 OK.
         """
         # create schedules
         request_body = {

@@ -11,6 +11,7 @@ export default {
       "customers",
       "selectedCustomer",
       "schedules",
+      "reports",
       "DEFAULT_SERVICES"
     ]),
     selectedServices: {
@@ -33,6 +34,17 @@ export default {
             ]);
           }
         }
+      }
+    },
+    currentPage: {
+      get() {
+        return this.reports.page;
+      },
+      set(pageNumber) {
+        this.$store.dispatch("loadReports", [
+          this.selectedCustomer.pk,
+          pageNumber
+        ]);
       }
     }
   },
@@ -57,7 +69,35 @@ export default {
           this.$store.dispatch("deleteSchedule", schedule.pk);
         }
       }
+    },
+    loadReport(reportId, pdf = true) {
+      var link = `${
+        process.env.VUE_APP_BACKEND_URL
+      }/api/report/detail/${reportId}`;
+      // go to the PDF if necessarry
+      if (pdf) {
+        link = link.concat(".pdf");
+      }
+      // open the selected report in a new window
+      window.open(link);
+    },
+    deleteReport(reportId) {
+      this.$store.dispatch("deleteReport", [reportId]);
+    },
+    disableService(service) {
+      // returns true if the service is not null
+      if (service === "repairshopr") {
+        return this.selectedCustomer.repairshopr_id === null;
+      } else if (service === "watchman") {
+        return this.selectedCustomer.watchman_group_id === null;
+      }
+      return false;
     }
+  },
+  data() {
+    return {
+      reportDisplayFeilds: ["start_date", "end_date", "view_report"]
+    };
   }
 };
 </script>
@@ -65,7 +105,7 @@ export default {
 <template>
   <div v-if="selectedCustomer">
     <!-- customer info -->
-    <b-card :title="selectedCustomer.name">
+    <b-card :title="selectedCustomer.name" class="mb-3">
       <!-- customer information -->
       <h5 class="mt-3">Customer Information</h5>
       <b-card-text>
@@ -84,12 +124,48 @@ export default {
               v-for="service of DEFAULT_SERVICES"
               :key="service"
               :value="service"
+              :disabled="disableService(service)"
             >
               {{ getServiceName(service) }}
             </b-form-checkbox>
           </b-form-checkbox-group>
         </b-form-group>
       </b-form>
+    </b-card>
+    <!-- reports -->
+    <b-card title="Reports" class="mb-3">
+      <!-- reports pagination bar -->
+      <b-pagination
+        v-if="reports.page_count > 1"
+        v-model="currentPage"
+        :total-rows="reports.results_count"
+        :per-page="reports.page_size"
+        size="sm"
+      ></b-pagination>
+      <!-- reports table -->
+      <b-table :items="reports.results" :fields="reportDisplayFeilds" fixed>
+        <template slot="view_report" slot-scope="row">
+          <b-button-group>
+            <b-button
+              @click="loadReport(row.item.pk, false)"
+              variant="secondary"
+              size="sm"
+            >
+              HTML
+            </b-button>
+            <b-button
+              @click="loadReport(row.item.pk, true)"
+              variant="secondary"
+              size="sm"
+            >
+              PDF
+            </b-button>
+            <b-button @click="deleteReport(row.item.pk)" variant="danger">
+              <font-awesome-icon icon="trash-alt" />
+            </b-button>
+          </b-button-group>
+        </template>
+      </b-table>
     </b-card>
   </div>
 </template>

@@ -2,13 +2,15 @@
 import { mapState } from "vuex";
 import CustomerInfo from "@/components/CustomerInfo.vue";
 import NewCustomerModal from "@/components/NewCustomerModal.vue";
+import NewReportModal from "@/components/NewReportModal.vue";
 
 export default {
   // component setup
   name: "customer",
   components: {
     CustomerInfo,
-    NewCustomerModal
+    NewCustomerModal,
+    NewReportModal
   },
 
   // lifecycle hooks
@@ -52,8 +54,8 @@ export default {
     openNewCustomerModal() {
       this.$store.dispatch("toggleNewCustomerModal", true);
     },
-    openNewScheduleModal() {
-      this.$store.dispatch("toggleNewScheduleModal", true);
+    openNewReportModal() {
+      this.$store.dispatch("toggleNewReportModal", true);
     }
   }
 };
@@ -78,14 +80,32 @@ export default {
       </div>
       <!-- customer options -->
       <div class="col">
-        <b-button-group>
-          <b-button @click="openNewCustomerModal()" variant="primary">
+        <!-- manage customers -->
+        <b-button-group class="mr-3">
+          <b-button
+            @click="openNewCustomerModal()"
+            variant="primary"
+            class="add-customer"
+          >
             <font-awesome-icon icon="user-plus" />
           </b-button>
-          <b-button @click="deleteSelectedCustomer()" variant="danger">
+          <b-button
+            :disabled="selectedCustomer === null"
+            @click="deleteSelectedCustomer()"
+            variant="danger"
+            class="delete-customer"
+          >
             <font-awesome-icon icon="user-minus" />
           </b-button>
         </b-button-group>
+        <!-- manage reports -->
+        <b-button
+          :disabled="selectedCustomer === null"
+          @click="openNewReportModal()"
+          variant="primary"
+        >
+          <font-awesome-icon icon="file" />
+        </b-button>
       </div>
     </div>
     <!-- information row -->
@@ -122,11 +142,18 @@ export default {
 
     <!-- modals -->
     <NewCustomerModal></NewCustomerModal>
+    <NewReportModal></NewReportModal>
   </div>
 </template>
 
 <style scoped>
 .no-focus:focus {
   outline: none;
+}
+.add-customer {
+  z-index: 2;
+}
+.delete-customer {
+  z-index: 1;
 }
 </style>

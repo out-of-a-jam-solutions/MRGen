@@ -11,18 +11,17 @@ services:
       - backend
 
   celery:
-    image: ooaj/celery-mrgen:${IMAGE_TAG:-latest}
+    image: ooaj/mrgen-backend:${IMAGE_TAG:-latest}
     container_name: mrgen_celery
-    command: worker -l info
+    command: celery -A MRGen worker -l info
     build:
-      context: .
-      dockerfile: celery.Dockerfile
+      context: backend
     restart: always
     networks:
       - backend
     depends_on:
       - redis
-      - mrgen
+      - backend
       - mysql
     environment:
       DJANGO_ENV: ${DJANGO_ENV:-prod}
@@ -36,18 +35,17 @@ services:
       REPAIRSHOPR_API_KEY:
 
   beat:
-    image: ooaj/celery-mrgen:${IMAGE_TAG:-latest}
+    image: ooaj/mrgen-backend:${IMAGE_TAG:-latest}
     container_name: mrgen_beat
-    command: beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    command: celery -A MRGen beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
     build:
-      context: .
-      dockerfile: celery.Dockerfile
+      context: backend
     restart: always
     networks:
       - backend
     depends_on:
       - celery
-      - mrgen
+      - backend
     environment:
       DJANGO_ENV: ${DJANGO_ENV:-prod}
       DJANGO_RDS: ${DJANGO_RDS:-prod}
@@ -73,19 +71,37 @@ services:
       MYSQL_PASSWORD: ${RDS_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${RDS_PASSWORD}
 
-  mrgen:
-    image: ooaj/mrgen:${IMAGE_TAG:-latest}
-    container_name: mrgen_mrgen
+  frontend:
+    image: ooaj/mrgen-frontend:${IMAGE_TAG:-latest}
+    container_name: mrgen_frontend
     build:
-      context: .
-      dockerfile: mrgen.Dockerfile
+      context: frontend
+      args:
+        VUE_APP_BACKEND_URL: ${DJANGO_URL}
+    restart: always
+    expose:
+      - 8080
+    ports:
+      - 8080:8080
+    volumes:
+      - static:/home/mrgen/dist/static
+    networks:
+      - frontend
+    depends_on:
+      - backend
+
+  backend:
+    image: ooaj/mrgen-backend:${IMAGE_TAG:-latest}
+    container_name: mrgen_backend
+    build:
+      context: backend
     restart: always
     expose:
       - 8000
     ports:
       - 8000:8000
     volumes:
-      - webroot:/home/mrgen/webroot
+      - static:/home/mrgen/static
     networks:
       - backend
       - frontend
@@ -97,6 +113,7 @@ services:
       DJANGO_RDS: ${DJANGO_RDS:-prod}
       DJANGO_SECRET_KEY:
       DJANGO_HOST_DOMAIN:
+      VUE_URL:
       RDS_HOSTNAME: mysql
       RDS_DB_NAME: ${RDS_DB_NAME:-mrgen}
       RDS_USERNAME: ${RDS_USERNAME:-mrgen}
@@ -106,8 +123,8 @@ services:
 volumes:
   mysql:
     name: mrgen_mysql
-  webroot:
-    name: mrgen_webroot
+  static:
+    name: mrgen_static
 
 networks:
   frontend:

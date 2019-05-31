@@ -8,8 +8,7 @@ Vue.config.productionTip = false;
 
 // bootstrap
 import BootstrapVue from "bootstrap-vue";
-import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap-vue/dist/bootstrap-vue.css";
+import "./scss/custom.scss";
 
 Vue.use(BootstrapVue);
 
@@ -21,7 +20,9 @@ import {
   faUserMinus,
   faSearch,
   faCalendarMinus,
-  faCalendarPlus
+  faCalendarPlus,
+  faFile,
+  faTrashAlt
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(faUserPlus);
@@ -29,6 +30,8 @@ library.add(faUserMinus);
 library.add(faSearch);
 library.add(faCalendarMinus);
 library.add(faCalendarPlus);
+library.add(faFile);
+library.add(faTrashAlt);
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 
 // main vue component

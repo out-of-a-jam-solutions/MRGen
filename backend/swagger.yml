@@ -13,6 +13,9 @@ paths:
       tags:
         - customer
       parameters:
+        - $ref: '#/components/parameters/customer_name_query'
+        - $ref: '#/components/parameters/customer_watchman_query'
+        - $ref: '#/components/parameters/customer_repairshopr_query'
         - $ref: '#/components/parameters/page_query'
         - $ref: '#/components/parameters/page_size_query'
       responses:
@@ -91,6 +94,8 @@ paths:
       tags:
         - schedule
       parameters:
+        - $ref: '#/components/parameters/schedule_customer_query'
+        - $ref: '#/components/parameters/schedule_task_type_query'
         - $ref: '#/components/parameters/page_query'
         - $ref: '#/components/parameters/page_size_query'
       responses:
@@ -165,6 +170,117 @@ paths:
           $ref: '#/components/responses/403Forbidden'
         '404':
           $ref: '#/components/responses/404NotFound'
+  '/report':
+    get:
+      summary: List reports
+      tags:
+        - report
+      parameters:
+        - $ref: '#/components/parameters/report_customer_query'
+        - $ref: '#/components/parameters/page_query'
+        - $ref: '#/components/parameters/page_size_query'
+      responses:
+        '200':
+          description: The reports were retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Report'
+                  page:
+                    $ref: '#/components/schemas/PaginationPage'
+                  page_count:
+                    $ref: '#/components/schemas/PaginationPageCount'
+                  page_size:
+                    $ref: '#/components/schemas/PaginationPageSize'
+                  page_next:
+                    $ref: '#/components/schemas/PaginationNext'
+                  page_previous:
+                    $ref: '#/components/schemas/PaginationPrevious'
+                  results_count:
+                    $ref: '#/components/schemas/PaginationResultsCount'
+    post:
+      summary: Generate a report
+      tags:
+        - report
+      responses:
+        '201':
+          description: The report was generated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Report'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '422':
+          $ref: '#/components/responses/422UnprocessableEntity'
+      requestBody:
+        $ref: '#/components/requestBodies/ReportBody'
+  '/report/{report_id}':
+  #   get:
+  #     summary: Read a report
+  #     tags:
+  #       - report
+  #     parameters:
+  #       - $ref: '#/components/parameters/report_id'
+  #     responses:
+  #       '200':
+  #         description: The report was read successfully.
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/Report'
+  #       '404':
+  #         $ref: '#/components/responses/404NotFound'
+    delete:
+      summary: Delete a report
+      tags:
+        - report
+      parameters:
+        - $ref: '#/components/parameters/report_id'
+      responses:
+        '204':
+          $ref: '#/components/responses/204NoContent'
+        '403':
+          $ref: '#/components/responses/403Forbidden'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+  '/report/detail/{report_id}':
+    get:
+      summary: Read a report in HTML format
+      tags:
+        - report
+      parameters:
+        - $ref: '#/components/parameters/report_id'
+      responses:
+        '200':
+          description: The report HTML was read successfully.
+          content:
+            text/html:
+              schema:
+                example: <html><body><h1>Report</h1></body></html>
+        '404':
+          $ref: '#/components/responses/404NotFound'
+  '/report/detail/{report_id}.pdf':
+    get:
+      summary: Read a report in PDF format
+      tags:
+        - report
+      parameters:
+        - $ref: '#/components/parameters/report_id'
+      responses:
+        '200':
+          description: The report PDF was read successfully.
+          content:
+            application/pdf:
+              schema:
+                format: binary
+        '404':
+          $ref: '#/components/responses/404NotFound'
 components:
   parameters:
     customer_id:
@@ -179,6 +295,55 @@ components:
       in: path
       description: The ID of the schedule to work with.
       required: true
+      schema:
+        type: string
+    report_id:
+      name: report_id
+      in: path
+      description: The ID of the report to work with.
+      required: true
+      schema:
+        type: string
+    customer_name_query:
+      name: name
+      in: query
+      description: The customer name to filter by
+      required: false
+      schema:
+        type: string
+    customer_watchman_query:
+      name: watchman_group_id
+      in: query
+      description: The watchman ID to filter by
+      required: false
+      schema:
+        type: string
+    customer_repairshopr_query:
+      name: repairshopr_id
+      in: query
+      description: The RepairShopr ID to filter by
+      required: false
+      schema:
+        type: string
+    schedule_customer_query:
+      name: customer
+      in: query
+      description: The customer name to filter by
+      required: false
+      schema:
+        type: string
+    schedule_task_type_query:
+      name: task_type
+      in: query
+      description: The task type to filter by
+      required: false
+      schema:
+        type: string
+    report_customer_query:
+      name: customer
+      in: query
+      description: The customer ID to filter by
+      required: false
       schema:
         type: string
     page_query:
@@ -244,6 +409,19 @@ components:
           month_of_year: '*'
         customer: 2
         task_type: 'watchman'
+    Report:
+      type: object
+      properties:
+        id:
+          type: number
+        customer:
+          type: number
+        date_generated:
+          type: string
+        start_date:
+          type: string
+        end_date:
+          type: string
     PaginationPage:
       type: number
       example: 1
@@ -316,6 +494,23 @@ components:
               - periodic_task
               - customer
               - task_type
+    ReportBody:
+      description: A JSON object containing report information.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              customer:
+                description: The customer's ID.
+                type: number
+              start_date:
+                description: The beginning date of the reporting period.
+                type: string
+              end_date:
+                description: The end date of the reporting period
+                type: string
   responses:
     204NoContent:
       description: The request completed successfully and has no response body.

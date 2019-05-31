@@ -18,10 +18,15 @@ export default new Vuex.Store({
     schedules: {
       results: []
     },
-    newScheduleModalOpen: false,
+    // reports
+    reports: {
+      results: []
+    },
+    newReportModalOpen: false,
     // defaults
     DEFAULT_CUSTOMERS_PER_PAGE: 10,
     DEFAULT_SCHEDULES_PER_PAGE: 10,
+    DEFAULT_REPORTS_PER_PAGE: 10,
     DEFAULT_SERVICES: ["watchman", "repairshopr"],
     DEFAULT_PERIODIC_TASK: {
       minute: "0",
@@ -43,11 +48,22 @@ export default new Vuex.Store({
     },
     SET_SCHEDULES(state, schedules) {
       state.schedules = schedules;
+    },
+    SET_REPORTS(state, reports) {
+      state.reports = reports;
+    },
+    SET_NEW_REPORT_MODAL_OPEN(state, open) {
+      state.newReportModalOpen = open;
     }
   },
   actions: {
     // customers
     selectCustomer({ commit, state, dispatch }, customerId) {
+      // unselect the customer if customerId is null
+      if (customerId === null) {
+        commit("SET_CURRENT_CUSTOMER", null);
+        return;
+      }
       // attempt to load the customer
       const customer = state.customers.results.find(c => c.pk === customerId);
       // check if the customer is loaded
@@ -56,10 +72,11 @@ export default new Vuex.Store({
       }
       // select the customer
       commit("SET_CURRENT_CUSTOMER", customer);
-      // load the customers schedules
+      // load the customers schedules and reports
       dispatch("loadSchedules", customerId);
+      dispatch("loadReports", [customerId]);
     },
-    loadCustomers({ commit, state }, startingPage = null) {
+    loadCustomers({ commit, dispatch, state }, startingPage = null) {
       // keep the current page number if no page is given
       if (startingPage === null) {
         startingPage = state.customers.page;
@@ -73,10 +90,19 @@ export default new Vuex.Store({
       };
       // request the customers from the server
       axios
-        .get(`${process.env.VUE_APP_API_URL}/customer`, parameters)
+        .get(`${process.env.VUE_APP_BACKEND_URL}/api/customer`, parameters)
         .then(r => r.data)
         .then(customers => {
           commit("SET_CUSTOMERS", customers);
+        })
+        .then(() => {
+          // select first customer if none is selected
+          if (
+            state.selectedCustomer === null &&
+            state.customers.results.length > 0
+          ) {
+            dispatch("selectCustomer", state.customers.results[0].pk);
+          }
         });
     },
     createCustomer(
@@ -91,7 +117,7 @@ export default new Vuex.Store({
       };
       // send the POST request
       return axios
-        .post(`${process.env.VUE_APP_API_URL}/customer`, body)
+        .post(`${process.env.VUE_APP_BACKEND_URL}/api/customer`, body)
         .then(r => r.data)
         .then(customer => {
           // load in customers
@@ -106,9 +132,13 @@ export default new Vuex.Store({
       if (startingPage === null) {
         startingPage = state.customers.page;
       }
+      // deselect the customer if they are currently selected
+      if (customerId === state.selectedCustomer.pk) {
+        dispatch("selectCustomer", null);
+      }
       // delete the customer from the server
       axios
-        .delete(`${process.env.VUE_APP_API_URL}/customer/${customerId}`)
+        .delete(`${process.env.VUE_APP_BACKEND_URL}/api/customer/${customerId}`)
         .then(r => r.data)
         .then(() => {
           // load in the non-deleted customers from the back-end
@@ -139,7 +169,7 @@ export default new Vuex.Store({
       };
       // request the schedules from the server
       axios
-        .get(`${process.env.VUE_APP_API_URL}/schedule`, parameters)
+        .get(`${process.env.VUE_APP_BACKEND_URL}/api/schedule`, parameters)
         .then(r => r.data)
         .then(schedules => {
           commit("SET_SCHEDULES", schedules);
@@ -161,7 +191,7 @@ export default new Vuex.Store({
       };
       // request to create new schedule
       axios
-        .post(`${process.env.VUE_APP_API_URL}/schedule`, body)
+        .post(`${process.env.VUE_APP_BACKEND_URL}/api/schedule`, body)
         .then(r => r.data)
         .then(() => {
           // load in the customers from the back-end
@@ -171,12 +201,72 @@ export default new Vuex.Store({
     deleteSchedule({ dispatch, state }, scheduleId) {
       // delete the schedule from the server
       axios
-        .delete(`${process.env.VUE_APP_API_URL}/schedule/${scheduleId}`)
+        .delete(`${process.env.VUE_APP_BACKEND_URL}/api/schedule/${scheduleId}`)
         .then(r => r.data)
         .then(() => {
           // load in the non-deleted schedules from the back-end for the current customer
           dispatch("loadSchedules", state.selectedCustomer.pk);
         });
+    },
+
+    // reports
+    loadReports({ commit, state }, [customerId, startingPage = null]) {
+      // keep the current page number if no page is given
+      if (startingPage === null) {
+        startingPage = state.reports.page;
+      }
+      // construct the pagination query parameters for the request
+      const parameters = {
+        params: {
+          customer: customerId,
+          page: startingPage,
+          page_size: state.DEFAULT_REPORTS_PER_PAGE
+        }
+      };
+      // request the reports from the server
+      axios
+        .get(`${process.env.VUE_APP_BACKEND_URL}/api/report`, parameters)
+        .then(r => r.data)
+        .then(reports => {
+          commit("SET_REPORTS", reports);
+        });
+    },
+    createReport({ dispatch }, [customerId, startDate, endDate]) {
+      // create the request body
+      const body = {
+        customer: customerId,
+        start_date: startDate,
+        end_date: endDate
+      };
+      // send the POST request
+      return axios
+        .post(`${process.env.VUE_APP_BACKEND_URL}/api/report`, body)
+        .then(r => r.data)
+        .then(() => {
+          // load in reports
+          dispatch("loadReports", [customerId]);
+        });
+    },
+    deleteReport({ dispatch, state }, [reportId, startingPage = null]) {
+      // keep the current page number if no page is given
+      if (startingPage === null) {
+        startingPage = state.reports.page;
+      }
+      // delete the customer from the server
+      axios
+        .delete(`${process.env.VUE_APP_BACKEND_URL}/api/report/${reportId}`)
+        .then(r => r.data)
+        .then(() => {
+          // load in the non-deleted customers from the back-end
+          dispatch("loadReports", [state.selectedCustomer.pk, startingPage]);
+        });
+    },
+    toggleNewReportModal({ commit, state }, open = null) {
+      if (open || open === false) {
+        commit("SET_NEW_REPORT_MODAL_OPEN", open);
+      } else {
+        commit("SET_NEW_REPORT_MODAL_OPEN", !state.newReportModalOpen);
+      }
     }
   }
 });
