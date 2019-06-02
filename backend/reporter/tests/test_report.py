@@ -47,6 +47,7 @@ class ReportListRequestTest(test.APITestCase):
         self.assertIn(
             {
                 'pk': report_1.id,
+                'uuid': str(report_1.uuid),
                 'customer': self.customer.id,
                 'start_date': '2019-01-01',
                 'end_date': '2019-01-31',
@@ -57,6 +58,7 @@ class ReportListRequestTest(test.APITestCase):
         self.assertIn(
             {
                 'pk': report_2.id,
+                'uuid': str(report_2.uuid),
                 'customer': self.customer.id,
                 'start_date': '2019-02-01',
                 'end_date': '2019-02-28',
@@ -92,6 +94,7 @@ class ReportListRequestTest(test.APITestCase):
         self.assertIn(
             {
                 'pk': report_2.id,
+                'uuid': str(report_2.uuid),
                 'customer': self.customer.id,
                 'start_date': '2019-02-01',
                 'end_date': '2019-02-28',
@@ -138,6 +141,7 @@ class ReportListRequestTest(test.APITestCase):
         self.assertIn(
             {
                 'pk': report_2.id,
+                'uuid': str(report_2.uuid),
                 'customer': self.customer.id,
                 'start_date': '2019-02-01',
                 'end_date': '2019-02-28',
@@ -164,6 +168,7 @@ class ReportListRequestTest(test.APITestCase):
         self.assertIn(
             {
                 'pk': report_2.id,
+                'uuid': str(report_2.uuid),
                 'customer': customer_2.id,
                 'start_date': '2019-02-01',
                 'end_date': '2019-02-28',
@@ -449,7 +454,7 @@ class ReportCreateReportTest(test.APITestCase):
         """
         # create computers
         create_watchman_computer(self.customer, os_type='mac', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
-        create_watchman_computer(self.customer, os_type='mac', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
+        create_watchman_computer(self.customer, os_type='mac', date_reported=date(2019, 1, 10), date_last_reported=date(2019, 1, 15))
         create_watchman_computer(self.customer, os_type='windows', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
         create_watchman_computer(self.customer, os_type='linux', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
         # request
@@ -468,7 +473,7 @@ class ReportCreateReportTest(test.APITestCase):
         """
         # create computers
         create_watchman_computer(self.customer, os_type='windows', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
-        create_watchman_computer(self.customer, os_type='windows', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
+        create_watchman_computer(self.customer, os_type='windows', date_reported=date(2019, 1, 10), date_last_reported=date(2019, 1, 15))
         create_watchman_computer(self.customer, os_type='mac', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
         create_watchman_computer(self.customer, os_type='linux', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
         # request
@@ -487,7 +492,7 @@ class ReportCreateReportTest(test.APITestCase):
         """
         # create computers
         create_watchman_computer(self.customer, os_type='linux', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
-        create_watchman_computer(self.customer, os_type='linux', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
+        create_watchman_computer(self.customer, os_type='linux', date_reported=date(2019, 1, 10), date_last_reported=date(2019, 1, 15))
         create_watchman_computer(self.customer, os_type='mac', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
         create_watchman_computer(self.customer, os_type='windows', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
         # request

@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 from django_celery_beat.models import PeriodicTask
 
@@ -69,6 +71,7 @@ class WatchmanWarning(models.Model):
 
 
 class Report(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     start_date = models.DateField()
     end_date = models.DateField()
