@@ -1,6 +1,6 @@
 from celery.result import result_from_tuple
 from knox.auth import TokenAuthentication
-from rest_framework import generics, response, views
+from rest_framework import generics
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 
