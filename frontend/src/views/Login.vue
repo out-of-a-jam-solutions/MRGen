@@ -46,6 +46,7 @@ export default {
           v-model="form.username"
           id="username"
           required
+          autofocus
         ></b-form-input>
       </b-form-group>
       <!-- password -->
