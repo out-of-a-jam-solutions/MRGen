@@ -10,7 +10,7 @@ export default {
       this.$store.dispatch("logout");
     }
   }
-}
+};
 </script>
 
 <template>
@@ -25,7 +25,9 @@ export default {
           <b-nav-item to="/reports">Reports</b-nav-item>
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto">
-          <b-nav-item v-if="loggedIn" @click="logout()" to="/login" right>Logout</b-nav-item>
+          <b-nav-item v-if="loggedIn" @click="logout()" to="/login" right>
+            Logout
+          </b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>

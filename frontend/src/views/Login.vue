@@ -3,7 +3,7 @@ import { mapState } from "vuex";
 export default {
   name: "login",
   mounted: function() {
-    this.$store.dispatch("verifyLogin")
+    this.$store.dispatch("verifyLogin");
   },
   computed: {
     ...mapState(["loggedIn"])
@@ -11,9 +11,11 @@ export default {
   methods: {
     onSubmit(evt) {
       evt.preventDefault();
-      this.$store.dispatch("loginUserPass", [this.form.username, this.form.password]).then(() => {
-        this.$router.push("/")
-      });
+      this.$store
+        .dispatch("loginUserPass", [this.form.username, this.form.password])
+        .then(() => {
+          this.$router.push("/");
+        });
     }
   },
   data() {
