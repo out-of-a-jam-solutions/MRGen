@@ -15,6 +15,13 @@ export default {
         .dispatch("loginUserPass", [this.form.username, this.form.password])
         .then(() => {
           this.$router.push("/");
+        })
+        .catch(error => {
+          this.$bvToast.toast(error.response.data.detail, {
+            title: "Login Failed!",
+            variant: "danger",
+            solid: true
+          });
         });
     }
   },
