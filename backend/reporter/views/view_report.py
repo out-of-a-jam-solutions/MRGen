@@ -158,10 +158,10 @@ class ReportPDFView(views.APIView):
         except models.Report.DoesNotExist:
             return HttpResponseNotFound()
         # generate the pdf response
-        pdf_response = HttpResponse(content_type="application/pdf")
-        pdf_response['Content-Disposition'] = "inline; filename=report.pdf"
+        pdf_response = HttpResponse(content_type='application/pdf')
+        pdf_response['Content-Disposition'] = 'inline; filename={}'.format(f'report_{report.customer.name}_{report.start_date}_{report.end_date}.pdf')
         # render the PDF
-        html = render_to_string("report.html", {'report': report})
+        html = render_to_string('report.html', {'report': report})
         HTML(string=html).write_pdf(pdf_response)
         # return the PDF response
         return pdf_response
