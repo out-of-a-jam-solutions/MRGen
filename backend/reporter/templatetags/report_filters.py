@@ -1,7 +1,5 @@
 from django import template
 
-from reporter import models
-
 register = template.Library()
 
 @register.filter
