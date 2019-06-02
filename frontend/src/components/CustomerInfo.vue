@@ -70,14 +70,10 @@ export default {
         }
       }
     },
-    loadReport(reportId, pdf = true) {
+    loadReport(reportId) {
       var link = `${
         process.env.VUE_APP_BACKEND_URL
-      }/api/report/detail/${reportId}`;
-      // go to the PDF if necessarry
-      if (pdf) {
-        link = link.concat(".pdf");
-      }
+      }/api/report/detail/${reportId}.pdf`;
       // open the selected report in a new window
       window.open(link);
     },
@@ -96,7 +92,7 @@ export default {
   },
   data() {
     return {
-      reportDisplayFeilds: ["start_date", "end_date", "view_report"]
+      reportDisplayFeilds: ["start_date", "end_date", "options"]
     };
   }
 };
@@ -144,21 +140,14 @@ export default {
       ></b-pagination>
       <!-- reports table -->
       <b-table :items="reports.results" :fields="reportDisplayFeilds" fixed>
-        <template slot="view_report" slot-scope="row">
+        <template slot="options" slot-scope="row">
           <b-button-group>
             <b-button
-              @click="loadReport(row.item.pk, false)"
+              @click="loadReport(row.item.pk)"
               variant="secondary"
               size="sm"
             >
-              HTML
-            </b-button>
-            <b-button
-              @click="loadReport(row.item.pk, true)"
-              variant="secondary"
-              size="sm"
-            >
-              PDF
+              View PDF
             </b-button>
             <b-button @click="deleteReport(row.item.pk)" variant="danger">
               <font-awesome-icon icon="trash-alt" />
