@@ -4,7 +4,7 @@ FROM python:3.7-alpine
 LABEL maintainer contact@sheldonw.com
 # install build dependencies and create new user
 RUN apk add mariadb-dev pcre pcre-dev libxml2 xmlsec-dev cairo-dev pango-dev gdk-pixbuf && \
-    apk add --no-cache --virtual .build-deps gcc libc-dev linux-headers libffi-dev libxslt-dev nodejs-npm musl-dev jpeg-dev zlib-dev && \
+    apk add --no-cache --virtual .build-deps gcc libc-dev linux-headers libffi-dev libxslt-dev nodejs-npm musl-dev jpeg-dev zlib-dev openssl-dev && \
     pip install pipenv==2018.11.26 uwsgi~=2.0 && \
     set -e && \
     adduser -S mrgen

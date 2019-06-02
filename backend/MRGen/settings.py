@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'corsheaders',
     'django_filters',
+    'knox',
     'reporter',
 ]
 

@@ -3,7 +3,11 @@ from datetime import datetime, date
 
 from django.http import HttpResponse, HttpResponseNotFound
 from django.template.loader import render_to_string
+
+from knox.auth import TokenAuthentication
 from rest_framework import generics, response, status, views
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.permissions import IsAuthenticated
 from weasyprint import HTML
 
 from reporter import models, serializers
@@ -13,6 +17,8 @@ class ReportLCView(generics.ListCreateAPIView):
     lookup_field = 'pk'
     serializer_class = serializers.ReportSerializer
     queryset = models.Report.objects.all()
+    authentication_classes = (TokenAuthentication, SessionAuthentication)
+    permission_classes = (IsAuthenticated,)
     filterset_fields = ('id', 'customer')
 
     def post(self, request):
@@ -140,6 +146,8 @@ class ReportLCView(generics.ListCreateAPIView):
 class ReportDeleteView(generics.DestroyAPIView):
     lookup_field = 'pk'
     queryset = models.Report.objects.all()
+    authentication_classes = (TokenAuthentication, SessionAuthentication)
+    permission_classes = (IsAuthenticated,)
 
 
 class ReportPDFView(views.APIView):
