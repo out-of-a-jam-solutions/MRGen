@@ -454,7 +454,7 @@ class ReportCreateReportTest(test.APITestCase):
         """
         # create computers
         create_watchman_computer(self.customer, os_type='mac', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
-        create_watchman_computer(self.customer, os_type='mac', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
+        create_watchman_computer(self.customer, os_type='mac', date_reported=date(2019, 1, 10), date_last_reported=date(2019, 1, 15))
         create_watchman_computer(self.customer, os_type='windows', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
         create_watchman_computer(self.customer, os_type='linux', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
         # request
@@ -473,7 +473,7 @@ class ReportCreateReportTest(test.APITestCase):
         """
         # create computers
         create_watchman_computer(self.customer, os_type='windows', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
-        create_watchman_computer(self.customer, os_type='windows', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
+        create_watchman_computer(self.customer, os_type='windows', date_reported=date(2019, 1, 10), date_last_reported=date(2019, 1, 15))
         create_watchman_computer(self.customer, os_type='mac', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
         create_watchman_computer(self.customer, os_type='linux', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
         # request
@@ -492,7 +492,7 @@ class ReportCreateReportTest(test.APITestCase):
         """
         # create computers
         create_watchman_computer(self.customer, os_type='linux', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
-        create_watchman_computer(self.customer, os_type='linux', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
+        create_watchman_computer(self.customer, os_type='linux', date_reported=date(2019, 1, 10), date_last_reported=date(2019, 1, 15))
         create_watchman_computer(self.customer, os_type='mac', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
         create_watchman_computer(self.customer, os_type='windows', date_reported=date(2018, 12, 1), date_last_reported=date(2019, 1, 15))
         # request
