@@ -154,7 +154,7 @@ class ReportPDFView(views.APIView):
     def get(self, request, *args, **kwargs):
         # get the report specified in the URL
         try:
-            report = models.Report.objects.get(id=kwargs.get('pk'))
+            report = models.Report.objects.get(uuid=kwargs.get('uuid'))
         except models.Report.DoesNotExist:
             return HttpResponseNotFound()
         # generate the pdf response

@@ -70,10 +70,10 @@ export default {
         }
       }
     },
-    loadReport(reportId) {
+    loadReport(reportUUID) {
       var link = `${
         process.env.VUE_APP_BACKEND_URL
-      }/api/report/detail/${reportId}.pdf`;
+      }/api/report/detail/${reportUUID}.pdf`;
       // open the selected report in a new window
       window.open(link);
     },
@@ -143,7 +143,7 @@ export default {
         <template slot="options" slot-scope="row">
           <b-button-group>
             <b-button
-              @click="loadReport(row.item.pk)"
+              @click="loadReport(row.item.uuid)"
               variant="secondary"
               size="sm"
             >

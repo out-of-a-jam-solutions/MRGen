@@ -47,6 +47,7 @@ class ReportListRequestTest(test.APITestCase):
         self.assertIn(
             {
                 'pk': report_1.id,
+                'uuid': str(report_1.uuid),
                 'customer': self.customer.id,
                 'start_date': '2019-01-01',
                 'end_date': '2019-01-31',
@@ -57,6 +58,7 @@ class ReportListRequestTest(test.APITestCase):
         self.assertIn(
             {
                 'pk': report_2.id,
+                'uuid': str(report_2.uuid),
                 'customer': self.customer.id,
                 'start_date': '2019-02-01',
                 'end_date': '2019-02-28',
@@ -92,6 +94,7 @@ class ReportListRequestTest(test.APITestCase):
         self.assertIn(
             {
                 'pk': report_2.id,
+                'uuid': str(report_2.uuid),
                 'customer': self.customer.id,
                 'start_date': '2019-02-01',
                 'end_date': '2019-02-28',
@@ -138,6 +141,7 @@ class ReportListRequestTest(test.APITestCase):
         self.assertIn(
             {
                 'pk': report_2.id,
+                'uuid': str(report_2.uuid),
                 'customer': self.customer.id,
                 'start_date': '2019-02-01',
                 'end_date': '2019-02-28',
@@ -164,6 +168,7 @@ class ReportListRequestTest(test.APITestCase):
         self.assertIn(
             {
                 'pk': report_2.id,
+                'uuid': str(report_2.uuid),
                 'customer': customer_2.id,
                 'start_date': '2019-02-01',
                 'end_date': '2019-02-28',

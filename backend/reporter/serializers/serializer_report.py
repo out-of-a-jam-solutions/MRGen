@@ -8,6 +8,7 @@ class ReportSerializer(serializers.ModelSerializer):
         model = models.Report
         fields = (
             'pk',
+            'uuid',
             'customer',
             'start_date',
             'end_date',
