@@ -1,0 +1,12 @@
+// default style overrides
+$enable-rounded: false;
+$theme-colors: (
+  "primary": #81A847,
+  "secondary": #47A89E,
+  "danger": #A84751
+);
+
+// import bootstrap scss
+@import 'node_modules/bootstrap/scss/bootstrap';
+@import 'node_modules/bootstrap-vue/src/index.scss';
+
