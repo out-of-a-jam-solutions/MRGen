@@ -10,14 +10,14 @@ if os.getenv('DJANGO_ENV') == 'prod':
     DEBUG = False
     ALLOWED_HOSTS = [os.getenv('DJANGO_HOST_DOMAIN')]
     STATIC_URL = '{}/static/'.format(os.getenv('VUE_URL'))
-    # SECURE_CONTENT_TYPE_NOSNIFF = True
-    # SECURE_BROWSER_XSS_FILTER = True
-    # SESSION_COOKIE_SECURE = True
-    # CSRF_COOKIE_SECURE = True
-    # X_FRAME_OPTIONS = 'DENY'
-    # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    # USE_X_FORWARDED_PORT = True
-    # SECURE_SSL_REDIRECT = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    X_FRAME_OPTIONS = 'DENY'
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    USE_X_FORWARDED_PORT = True
+    SECURE_SSL_REDIRECT = True
 else:
     DEBUG = True
     STATIC_URL = '/static/'
